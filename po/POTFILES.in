@@ -1,3 +1,4 @@
-data/com.github.danrabbit.harvey.appdata.xml.in
-data/com.github.danrabbit.harvey.desktop.in
+data/com.bytepixie.snippet-pixie.appdata.xml.in
+data/com.bytepixie.snippet-pixie.desktop.in
+src/Application.vala
 src/MainWindow.vala
