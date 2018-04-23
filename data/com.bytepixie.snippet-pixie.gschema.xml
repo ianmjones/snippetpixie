@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/com/bytepixie/snippet-pixie/"
+  id="com.bytepixie.snippet-pixie"
+  gettext-domain="com.bytepixie.snippet-pixie">
+    <key name="window-x" type="i">
+      <default>-1</default>
+      <summary>Most recent x position of Snippet Pixie</summary>
+      <description>Most recent x position of Snippet Pixie</description>
+    </key>
+    <key name="window-y" type="i">
+      <default>-1</default>
+      <summary>Most recent y position of Snippet Pixie</summary>
+      <description>Most recent y position of Snippet Pixie</description>
+    </key>
+  </schema>
+</schemalist>
+

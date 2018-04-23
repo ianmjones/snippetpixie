@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Snippet Pixie
+Comment=Your little snippet helper
+Exec=com.bytepixie.snippet-pixie
+Icon=com.bytepixie.snippet-pixie
+Keywords=expand;text;snippet;
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=utilities;
