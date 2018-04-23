@@ -7,4 +7,4 @@ Keywords=expand;text;snippet;
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=utilities;
+Categories=GTK;Utility;
