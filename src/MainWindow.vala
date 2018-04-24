@@ -18,11 +18,13 @@
 */
 
 public class MainWindow : Gtk.ApplicationWindow {
+    public Gtk.SearchEntry search_entry { get; private set; }
+
     private Settings settings;
     private Gtk.Paned main_hpaned;
     private WelcomeView welcome;
     private Granite.Widgets.SourceList snippet_list;
-
+    
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
@@ -37,6 +39,31 @@ public class MainWindow : Gtk.ApplicationWindow {
     construct {
         settings = new Settings ("com.bytepixie.snippet-pixie");
 
+        var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
+        //play_button.action_name = ACTION_PREFIX + ACTION_PLAY;
+        add_button.tooltip_text = _("Add snippet");
+
+        var import_button = new Gtk.Button.from_icon_name ("document-import", Gtk.IconSize.LARGE_TOOLBAR);
+        //next_button.action_name = ACTION_PREFIX + ACTION_PLAY_NEXT;
+        import_button.tooltip_text = _("Import snippets");
+
+        var export_button = new Gtk.Button.from_icon_name ("document-export", Gtk.IconSize.LARGE_TOOLBAR);
+        //next_button.action_name = ACTION_PREFIX + ACTION_PLAY_NEXT;
+        export_button.tooltip_text = _("Export snippets");
+
+        search_entry = new Gtk.SearchEntry ();
+        search_entry.valign = Gtk.Align.CENTER;
+        search_entry.placeholder_text = _("Search Snippets");
+        
+        var headerbar = new Gtk.HeaderBar ();
+        headerbar.show_close_button = true;
+        headerbar.pack_start (add_button);
+        headerbar.pack_start (import_button);
+        headerbar.pack_start (export_button);
+        headerbar.pack_end (search_entry);
+        headerbar.set_title (_("Snippet Pixie"));
+        headerbar.show_all ();
+ 
         var left_pane = new Gtk.Grid ();
         left_pane.orientation = Gtk.Orientation.VERTICAL;
 
@@ -65,5 +92,6 @@ public class MainWindow : Gtk.ApplicationWindow {
         main_hpaned.show_all ();
         
         this.add (main_hpaned);
+        this.set_titlebar (headerbar);
     }
 }
