@@ -41,11 +41,15 @@ public class MainWindow : Gtk.ApplicationWindow {
         left_pane.orientation = Gtk.Orientation.VERTICAL;
 
         snippet_list = new Granite.Widgets.SourceList();
-        var snippets_group = new Granite.Widgets.SourceList.ExpandableItem (_("Snippets")); // Default for time being.
-        var spr = new Granite.Widgets.SourceList.Item ("spr`");
-        snippets_group.add (spr);
         var root = snippet_list.root;
-        root.add (snippets_group);
+
+        // TODO: Get snippets from settings/database.
+        // TODO: Maybe use snippet groups?
+        var spr = new Granite.Widgets.SourceList.Item ("spr`");
+        root.add (spr);
+        var sprt = new Granite.Widgets.SourceList.Item ("sprt`");
+        root.add (sprt);
+
         left_pane.add (snippet_list);
 
         var right_pane = new Gtk.Grid ();
@@ -57,6 +61,7 @@ public class MainWindow : Gtk.ApplicationWindow {
         main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         main_hpaned.pack1 (left_pane, false, false);
         main_hpaned.pack2 (right_pane, true, false);
+        main_hpaned.position = 100; // TODO: Get from settings, enforce minimum.
         main_hpaned.show_all ();
         
         this.add (main_hpaned);
