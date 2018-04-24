@@ -19,19 +19,46 @@
 
 public class MainWindow : Gtk.ApplicationWindow {
     private Settings settings;
+    private Gtk.Paned main_hpaned;
+    private WelcomeView welcome;
+    private Granite.Widgets.SourceList snippet_list;
 
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
-            height_request: 500,
+            height_request: 600,
             icon_name: "com.bytepixie.snippet-pixie",
             resizable: true,
             title: _("Snippet Pixie"),
-            width_request: 700
+            width_request: 800
         );
     }
 
     construct {
         settings = new Settings ("com.bytepixie.snippet-pixie");
+
+        var left_pane = new Gtk.Grid ();
+        left_pane.orientation = Gtk.Orientation.VERTICAL;
+
+        snippet_list = new Granite.Widgets.SourceList();
+        var snippets_group = new Granite.Widgets.SourceList.ExpandableItem (_("Snippets")); // Default for time being.
+        var spr = new Granite.Widgets.SourceList.Item ("spr`");
+        snippets_group.add (spr);
+        var root = snippet_list.root;
+        root.add (snippets_group);
+        left_pane.add (snippet_list);
+
+        var right_pane = new Gtk.Grid ();
+        right_pane.orientation = Gtk.Orientation.VERTICAL;
+
+        welcome = new WelcomeView();
+        right_pane.add (welcome);
+
+        main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
+        main_hpaned.pack1 (left_pane, false, false);
+        main_hpaned.pack2 (right_pane, true, false);
+        main_hpaned.show_all ();
+        
+        this.add (main_hpaned);
     }
 }

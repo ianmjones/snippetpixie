@@ -15,11 +15,13 @@ executable(
     meson.project_name(),
     'src/Application.vala',
     'src/MainWindow.vala',
+    'src/WelcomeView.vala',
     asresources,
     dependencies: [
         dependency('glib-2.0'),
         dependency('gobject-2.0'),
         dependency('gtk+-3.0'),
+        dependency('granite', version: '>=0.5'),
         meson.get_compiler('c').find_library('m', required : false)
     ],
     install: true
