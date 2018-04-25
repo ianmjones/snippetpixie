@@ -21,6 +21,7 @@ public class MainWindow : Gtk.ApplicationWindow {
     public Gtk.SearchEntry search_entry { get; private set; }
 
     private Settings settings;
+    private Gtk.Stack view_stack;
     private Gtk.Paned main_hpaned;
     private WelcomeView welcome;
     private Granite.Widgets.SourceList snippet_list;
@@ -87,6 +88,8 @@ public class MainWindow : Gtk.ApplicationWindow {
         headerbar.set_title (_("Snippet Pixie"));
         headerbar.show_all ();
  
+        // Construct MainView.
+        // TODO: Move to own class.
         var left_pane = new Gtk.Grid ();
         left_pane.orientation = Gtk.Orientation.VERTICAL;
 
@@ -105,8 +108,13 @@ public class MainWindow : Gtk.ApplicationWindow {
         var right_pane = new Gtk.Grid ();
         right_pane.orientation = Gtk.Orientation.VERTICAL;
 
+        var abbreviation_label = new Gtk.Label (_("Abbreviation"));
+        right_pane.add (abbreviation_label);
+        var body_label = new Gtk.Label (_("Body"));
+        right_pane.add (body_label);
+
         welcome = new WelcomeView();
-        right_pane.add (welcome);
+//        right_pane.add (welcome);
 
         main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         main_hpaned.pack1 (left_pane, false, false);
@@ -114,7 +122,27 @@ public class MainWindow : Gtk.ApplicationWindow {
         main_hpaned.position = 100; // TODO: Get from settings, enforce minimum.
         main_hpaned.show_all ();
         
-        this.add (main_hpaned);
+        view_stack = new Gtk.Stack ();
+        view_stack.transition_type = Gtk.StackTransitionType.CROSSFADE;
+        
+        view_stack.add_named (welcome, "welcome");
+        view_stack.add_named (main_hpaned, "snippets");
+        view_stack.show_all ();
+        
+        this.add (view_stack);
         this.set_titlebar (headerbar);
-    }
+        
+        // TODO: Depending on whether there are snippets or not, might set "snippets" visible.
+        view_stack.visible_child_name = "welcome";
+         
+        // TODO: REMOVE_DEBUG
+        add_button.clicked.connect (() => {
+            view_stack.visible_child_name = "snippets";
+        });
+        
+        // TODO: REMOVE_DEBUG
+        import_button.clicked.connect (() => {
+            view_stack.visible_child_name = "welcome";
+        });
+   }
 }
