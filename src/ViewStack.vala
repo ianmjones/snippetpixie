@@ -53,15 +53,23 @@ public class ViewStack : Gtk.Stack {
         var abbreviation_label = new Gtk.Label (_("Abbreviation"));
         abbreviation_label.xalign = 0;
         right_pane.add (abbreviation_label);
+
         var abbreviation_entry = new Gtk.Entry ();
         abbreviation_entry.hexpand = true;
         right_pane.add (abbreviation_entry);
+
         var body_label = new Gtk.Label (_("Body"));
         body_label.xalign = 0;
         right_pane.add (body_label);
-        var body_entry = new Gtk.TextView ();
-        body_entry.hexpand = true;
-        body_entry.vexpand = true;
+
+        var textview = new Gtk.TextView ();
+        textview.wrap_mode = Gtk.WrapMode.WORD_CHAR;
+        var scroll = new Gtk.ScrolledWindow (null, null);
+        scroll.set_policy (Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.AUTOMATIC);
+        scroll.add (textview);
+        var body_entry = new Gtk.Frame (null);
+        body_entry.expand = true;
+        body_entry.add (scroll);
         right_pane.add (body_entry);
 
         main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
