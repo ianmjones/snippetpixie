@@ -47,11 +47,22 @@ public class ViewStack : Gtk.Stack {
         // Snippet details in right pane.
         var right_pane = new Gtk.Grid ();
         right_pane.orientation = Gtk.Orientation.VERTICAL;
+        right_pane.margin = 12;
+        right_pane.row_spacing = 6;
 
         var abbreviation_label = new Gtk.Label (_("Abbreviation"));
+        abbreviation_label.xalign = 0;
         right_pane.add (abbreviation_label);
+        var abbreviation_entry = new Gtk.Entry ();
+        abbreviation_entry.hexpand = true;
+        right_pane.add (abbreviation_entry);
         var body_label = new Gtk.Label (_("Body"));
+        body_label.xalign = 0;
         right_pane.add (body_label);
+        var body_entry = new Gtk.TextView ();
+        body_entry.hexpand = true;
+        body_entry.vexpand = true;
+        right_pane.add (body_entry);
 
         main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         main_hpaned.pack1 (left_pane, false, false);
