@@ -20,8 +20,10 @@
 
 public class SnippetPixie : Gtk.Application {
     public SnippetPixie () {
-        Object (application_id: "com.bytepixie.snippet-pixie",
-        flags: ApplicationFlags.FLAGS_NONE);
+        Object (
+            application_id: "com.bytepixie.snippet-pixie",
+            flags: ApplicationFlags.FLAGS_NONE
+        );
     }
 
     protected override void activate () {

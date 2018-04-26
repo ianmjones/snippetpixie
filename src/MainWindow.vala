@@ -18,13 +18,9 @@
 */
 
 public class MainWindow : Gtk.ApplicationWindow {
-    public Gtk.SearchEntry search_entry { get; private set; }
-
     private Settings settings;
-    private Gtk.Stack view_stack;
-    private Gtk.Paned main_hpaned;
-    private WelcomeView welcome;
-    private Granite.Widgets.SourceList snippet_list;
+    private MainWindowHeader headerbar;
+    private ViewStack main_view;
     
     public MainWindow (Gtk.Application application) {
         Object (
@@ -40,109 +36,29 @@ public class MainWindow : Gtk.ApplicationWindow {
     construct {
         settings = new Settings ("com.bytepixie.snippet-pixie");
 
-        var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
-        //play_button.action_name = ACTION_PREFIX + ACTION_PLAY;
-        add_button.tooltip_text = _("Add snippet");
-
-        var import_button = new Gtk.Button.from_icon_name ("document-import", Gtk.IconSize.LARGE_TOOLBAR);
-        //next_button.action_name = ACTION_PREFIX + ACTION_PLAY_NEXT;
-        import_button.tooltip_text = _("Import snippets…");
-
-        var export_button = new Gtk.Button.from_icon_name ("document-export", Gtk.IconSize.LARGE_TOOLBAR);
-        //next_button.action_name = ACTION_PREFIX + ACTION_PLAY_NEXT;
-        export_button.tooltip_text = _("Export snippets…");
-
-        search_entry = new Gtk.SearchEntry ();
-        search_entry.valign = Gtk.Align.CENTER;
-        search_entry.placeholder_text = _("Search Snippets");
- 
-        // Preferences menu etc.
-        var import_menuitem = new Gtk.MenuItem.with_label (_("Import snippets…"));
-        //import_menuitem.action_name = ACTION_PREFIX + ACTION_IMPORT;
-
-        var export_menuitem = new Gtk.MenuItem.with_label (_("Export snippets…"));
-        //export_menuitem.action_name = ACTION_PREFIX + ACTION_EXPORT;
-
-        var preferences_menuitem = new Gtk.MenuItem.with_label (_("Preferences"));
-        //preferences_menuitem.activate.connect (editPreferencesClick);
-
-        var menu = new Gtk.Menu ();
-        menu.append (import_menuitem);
-        menu.append (export_menuitem);
-        menu.append (new Gtk.SeparatorMenuItem ());
-        menu.append (preferences_menuitem);
-        menu.show_all ();
-
-        var menu_button = new Gtk.MenuButton ();
-        menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
-        menu_button.popup = menu;
-        menu_button.valign = Gtk.Align.CENTER;
-       
-        var headerbar = new Gtk.HeaderBar ();
-        headerbar.show_close_button = true;
-        headerbar.pack_start (add_button);
-        headerbar.pack_start (import_button);
-        headerbar.pack_start (export_button);
-        headerbar.pack_end (menu_button);
-        headerbar.pack_end (search_entry);
-        headerbar.set_title (_("Snippet Pixie"));
-        headerbar.show_all ();
- 
-        // Construct MainView.
-        // TODO: Move to own class.
-        var left_pane = new Gtk.Grid ();
-        left_pane.orientation = Gtk.Orientation.VERTICAL;
-
-        snippet_list = new Granite.Widgets.SourceList();
-        var root = snippet_list.root;
-
-        // TODO: Get snippets from settings/database.
-        // TODO: Maybe use snippet groups?
-        var spr = new Granite.Widgets.SourceList.Item ("spr`");
-        root.add (spr);
-        var sprt = new Granite.Widgets.SourceList.Item ("sprt`");
-        root.add (sprt);
-
-        left_pane.add (snippet_list);
-
-        var right_pane = new Gtk.Grid ();
-        right_pane.orientation = Gtk.Orientation.VERTICAL;
-
-        var abbreviation_label = new Gtk.Label (_("Abbreviation"));
-        right_pane.add (abbreviation_label);
-        var body_label = new Gtk.Label (_("Body"));
-        right_pane.add (body_label);
-
-        welcome = new WelcomeView();
-//        right_pane.add (welcome);
-
-        main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
-        main_hpaned.pack1 (left_pane, false, false);
-        main_hpaned.pack2 (right_pane, true, false);
-        main_hpaned.position = 100; // TODO: Get from settings, enforce minimum.
-        main_hpaned.show_all ();
+        // Construct window's components.
+        main_view = new ViewStack ();
+        this.add (main_view);
         
-        view_stack = new Gtk.Stack ();
-        view_stack.transition_type = Gtk.StackTransitionType.CROSSFADE;
-        
-        view_stack.add_named (welcome, "welcome");
-        view_stack.add_named (main_hpaned, "snippets");
-        view_stack.show_all ();
-        
-        this.add (view_stack);
+        headerbar = new MainWindowHeader ();
         this.set_titlebar (headerbar);
-        
+
         // TODO: Depending on whether there are snippets or not, might set "snippets" visible.
-        view_stack.visible_child_name = "welcome";
+        main_view.visible_child_name = "welcome";
          
         // TODO: REMOVE_DEBUG
-        add_button.clicked.connect (() => {
-            view_stack.visible_child_name = "snippets";
+        headerbar.add_snippet.connect (() => {
+            main_view.visible_child_name = "snippets";
         });
         
         // TODO: REMOVE_DEBUG
-        import_button.clicked.connect (() => {
-            view_stack.visible_child_name = "welcome";
+        headerbar.import_snippets.connect (() => {
+            main_view.visible_child_name = "welcome";
+        });
+        
+        // TODO: REMOVE_DEBUG
+        headerbar.export_snippets.connect (() => {
+            main_view.visible_child_name = "snippets";
         });
    }
 }
