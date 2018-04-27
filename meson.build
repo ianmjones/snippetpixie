@@ -14,6 +14,7 @@ asresources = gnome.compile_resources(
 executable(
     meson.project_name(),
     'src/Application.vala',
+    'src/FramedTextView.vala',
     'src/MainWindow.vala',
     'src/MainWindowHeader.vala',
     'src/ViewStack.vala',

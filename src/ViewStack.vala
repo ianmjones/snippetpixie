@@ -62,14 +62,8 @@ public class ViewStack : Gtk.Stack {
         body_label.xalign = 0;
         right_pane.add (body_label);
 
-        var textview = new Gtk.TextView ();
-        textview.wrap_mode = Gtk.WrapMode.WORD_CHAR;
-        var scroll = new Gtk.ScrolledWindow (null, null);
-        scroll.set_policy (Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.AUTOMATIC);
-        scroll.add (textview);
-        var body_entry = new Gtk.Frame (null);
+        var body_entry = new FramedTextView ();
         body_entry.expand = true;
-        body_entry.add (scroll);
         right_pane.add (body_entry);
 
         main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
