@@ -7,7 +7,9 @@ Save your often used snippets and then expand them whenever you type their abbre
 
 For example:- "spr`" expands to "Snippet Pixie rules!"
 
-![Snippet Pixie Screenshot](data/screenshot.png?raw=true)
+![Snippet Pixie Welcome Screen](data/screenshot.png?raw=true)
+
+![Snippet Pixie Edit Screen](data/screenshot-2.png?raw=true)
 
 ## Building, Testing, and Installation
 
