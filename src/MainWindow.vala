@@ -21,7 +21,25 @@ public class MainWindow : Gtk.ApplicationWindow {
     private Settings settings;
     private MainWindowHeader headerbar;
     private ViewStack main_view;
-    
+
+    public SimpleActionGroup actions { get; construct; }
+
+    public const string ACTION_PREFIX = "win.";
+    public const string ACTION_ADD = "action_add";
+    public const string ACTION_EDIT = "action_edit";
+    public const string ACTION_DELETE = "action_delete";
+    public const string ACTION_IMPORT = "action_import";
+    public const string ACTION_EXPORT = "action_export";
+    public const string ACTION_PREFS = "action_prefs";
+
+    private const ActionEntry[] action_entries = {
+        { ACTION_ADD, action_add },
+//        { ACTION_EDIT, action_edit, null, 0 },
+//        { ACTION_DELETE, action_delete, null, 0 },
+        { ACTION_IMPORT, action_import },
+        { ACTION_EXPORT, action_export }
+    };
+
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
@@ -34,31 +52,32 @@ public class MainWindow : Gtk.ApplicationWindow {
     }
 
     construct {
+        actions = new SimpleActionGroup ();
+        actions.add_action_entries (action_entries, this);
+        insert_action_group ("win", actions);
+
         settings = new Settings ("com.bytepixie.snippet-pixie");
 
         // Construct window's components.
         main_view = new ViewStack ();
         this.add (main_view);
-        
+
         headerbar = new MainWindowHeader ();
         this.set_titlebar (headerbar);
 
         // TODO: Depending on whether there are snippets or not, might set "snippets" visible.
         main_view.visible_child_name = "welcome";
-         
-        // TODO: REMOVE_DEBUG
-        headerbar.add_snippet.connect (() => {
-            main_view.visible_child_name = "snippets";
-        });
-        
-        // TODO: REMOVE_DEBUG
-        headerbar.import_snippets.connect (() => {
-            main_view.visible_child_name = "welcome";
-        });
-        
-        // TODO: REMOVE_DEBUG
-        headerbar.export_snippets.connect (() => {
-            main_view.visible_child_name = "snippets";
-        });
    }
+
+    private void action_add () {
+        main_view.visible_child_name = "snippets";
+    }
+
+    private void action_import () {
+        main_view.visible_child_name = "welcome";
+    }
+
+    private void action_export () {
+        main_view.visible_child_name = "snippets";
+    }
 }

@@ -19,6 +19,8 @@
 */
 
 public class SnippetPixie : Gtk.Application {
+    public static MainWindow app_window { get; private set; }
+
     public SnippetPixie () {
         Object (
             application_id: "com.bytepixie.snippet-pixie",
@@ -32,7 +34,7 @@ public class SnippetPixie : Gtk.Application {
             return;
         }
 
-        var app_window = new MainWindow (this);
+        app_window = new MainWindow (this);
 
         var settings = new Settings ("com.bytepixie.snippet-pixie");
 

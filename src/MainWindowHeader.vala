@@ -19,48 +19,31 @@
 
 public class MainWindowHeader : Gtk.HeaderBar {
     public Gtk.SearchEntry search_entry { get; private set; }
-    
-    public signal void add_snippet ();
-    public signal void import_snippets ();
-    public signal void export_snippets ();
-    public signal void show_preferences ();
 
     construct {
         var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
+        add_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ADD;
         add_button.tooltip_text = _("Add snippet");
-        add_button.clicked.connect (() => {
-            add_snippet ();
-        });
 
         var import_button = new Gtk.Button.from_icon_name ("document-import", Gtk.IconSize.LARGE_TOOLBAR);
+        import_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
         import_button.tooltip_text = _("Import snippets…");
-        import_button.clicked.connect (() => {
-            import_snippets ();
-        });
 
         var export_button = new Gtk.Button.from_icon_name ("document-export", Gtk.IconSize.LARGE_TOOLBAR);
+        export_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
         export_button.tooltip_text = _("Export snippets…");
-        export_button.clicked.connect (() => {
-            export_snippets ();
-        });
 
         search_entry = new Gtk.SearchEntry ();
         search_entry.valign = Gtk.Align.CENTER;
         search_entry.placeholder_text = _("Search Snippets");
- 
+
         // Preferences menu etc.
         var import_menuitem = new Gtk.MenuItem.with_label (_("Import snippets…"));
-        import_menuitem.activate.connect (() => {
-            import_snippets ();
-        });
+        import_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
         var export_menuitem = new Gtk.MenuItem.with_label (_("Export snippets…"));
-        export_menuitem.activate.connect (() => {
-            export_snippets ();
-        });
+        export_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
         var preferences_menuitem = new Gtk.MenuItem.with_label (_("Preferences"));
-        preferences_menuitem.activate.connect (() => {
-            show_preferences ();
-        });
+        preferences_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_PREFS;
 
         var menu = new Gtk.Menu ();
         menu.append (import_menuitem);
@@ -73,7 +56,7 @@ public class MainWindowHeader : Gtk.HeaderBar {
         menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
         menu_button.popup = menu;
         menu_button.valign = Gtk.Align.CENTER;
-       
+
         show_close_button = true;
         pack_start (add_button);
         pack_start (import_button);
