@@ -40,9 +40,15 @@ public class SnippetPixie : Gtk.Application {
 
         var window_x = settings.get_int ("window-x");
         var window_y = settings.get_int ("window-y");
+        var window_width = settings.get_int ("window-width");
+        var window_height = settings.get_int ("window-height");
 
         if (window_x != -1 ||  window_y != -1) {
             app_window.move (window_x, window_y);
+        }
+
+        if (window_width != -1 ||  window_width != -1) {
+            app_window.set_default_size (window_width, window_height);
         }
 
         app_window.show_all ();
@@ -67,6 +73,11 @@ public class SnippetPixie : Gtk.Application {
             app_window.get_position (out root_x, out root_y);
             settings.set_int ("window-x", root_x);
             settings.set_int ("window-y", root_y);
+
+            int root_width, root_height;
+            app_window.get_size (out root_width, out root_height);
+            settings.set_int ("window-width", root_width);
+            settings.set_int ("window-height", root_height);
         });
     }
 

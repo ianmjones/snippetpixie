@@ -13,6 +13,16 @@
       <summary>Most recent y position of Snippet Pixie</summary>
       <description>Most recent y position of Snippet Pixie</description>
     </key>
+    <key name="window-width" type="i">
+      <default>-1</default>
+      <summary>Most recent width of Snippet Pixie</summary>
+      <description>Most recent width of Snippet Pixie</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>-1</default>
+      <summary>Most recent height of Snippet Pixie</summary>
+      <description>Most recent height of Snippet Pixie</description>
+    </key>
   </schema>
 </schemalist>
 
