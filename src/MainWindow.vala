@@ -17,10 +17,12 @@
 * Boston, MA 02110-1301 USA
 */
 
-public class MainWindow : Gtk.ApplicationWindow {
+public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     private Settings settings;
     private MainWindowHeader headerbar;
     private ViewStack main_view;
+
+    private Gee.Collection<Snippet> snippets;
 
     public SimpleActionGroup actions { get; construct; }
 
@@ -60,6 +62,7 @@ public class MainWindow : Gtk.ApplicationWindow {
 
         // Construct window's components.
         main_view = new ViewStack ();
+        main_view.request_snippets.connect (request_snippets);
         this.add (main_view);
 
         headerbar = new MainWindowHeader ();
@@ -67,7 +70,8 @@ public class MainWindow : Gtk.ApplicationWindow {
 
         // TODO: Depending on whether there are snippets or not, might set "snippets" visible.
         main_view.visible_child_name = "welcome";
-   }
+        main_view.init ();
+    }
 
     private void action_add () {
         main_view.visible_child_name = "snippets";
@@ -79,5 +83,14 @@ public class MainWindow : Gtk.ApplicationWindow {
 
     private void action_export () {
         main_view.visible_child_name = "snippets";
+    }
+
+    private Gee.Collection<Snippet> request_snippets () {
+        snippets = new Gee.ArrayList<Snippet> ();
+
+        var snippet = new Snippet (1);
+        snippets.add (snippet);
+
+        return snippets;
     }
 }

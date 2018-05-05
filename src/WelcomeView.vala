@@ -17,7 +17,7 @@
 * Boston, MA 02110-1301 USA
 */
 
-public class WelcomeView : Gtk.Grid {
+public class SnippetPixie.WelcomeView : Gtk.Grid {
     construct {
         var welcome = new Granite.Widgets.Welcome ( _("Snippet Pixie"), _("No snippets found."));
         welcome.append (_("document-new"), _("Add Snippet"), _("Create your first snippet."));
@@ -29,11 +29,11 @@ public class WelcomeView : Gtk.Grid {
         welcome.activated.connect ((index) => {
             switch (index) {
                 case 0:
-                    ((SimpleAction) SnippetPixie.app_window.actions.lookup_action (MainWindow.ACTION_ADD)).activate (null);
+                    SnippetPixie.Utils.action_from_group (MainWindow.ACTION_ADD, Application.app_window.actions).activate (null);
 
                     break;
                 case 1:
-                    ((SimpleAction) SnippetPixie.app_window.actions.lookup_action (MainWindow.ACTION_IMPORT)).activate (null);
+                    SnippetPixie.Utils.action_from_group (MainWindow.ACTION_IMPORT, Application.app_window.actions).activate (null);
 
                     break;
                 case 2:

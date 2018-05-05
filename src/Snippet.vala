@@ -17,25 +17,12 @@
 * Boston, MA 02110-1301 USA
 */
 
-public class SnippetPixie.FramedTextView : Gtk.Frame {
-    private Gtk.TextView textview;
+public class SnippetPixie.Snippet : Object {
+    public virtual int id { get; construct set; }
+    public virtual string abbreviation { get; set; default = "new`"; }
+    public virtual string body { get; set; default = "Something to be replaced"; }
 
-    construct {
-        textview = new Gtk.TextView ();
-        textview.wrap_mode = Gtk.WrapMode.WORD_CHAR;
-
-        var scroll = new Gtk.ScrolledWindow (null, null);
-        scroll.set_policy (Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.AUTOMATIC);
-        scroll.add (textview);
-
-        add (scroll);
-    }
-
-    public Gtk.TextBuffer get_buffer () {
-        return textview.buffer;
-    }
-
-    public void set_buffer (Gtk.TextBuffer buffer) {
-        textview.buffer = buffer;
+    public Snippet (int id) {
+        this.id = id;
     }
 }

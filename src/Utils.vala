@@ -17,25 +17,8 @@
 * Boston, MA 02110-1301 USA
 */
 
-public class SnippetPixie.FramedTextView : Gtk.Frame {
-    private Gtk.TextView textview;
-
-    construct {
-        textview = new Gtk.TextView ();
-        textview.wrap_mode = Gtk.WrapMode.WORD_CHAR;
-
-        var scroll = new Gtk.ScrolledWindow (null, null);
-        scroll.set_policy (Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.AUTOMATIC);
-        scroll.add (textview);
-
-        add (scroll);
-    }
-
-    public Gtk.TextBuffer get_buffer () {
-        return textview.buffer;
-    }
-
-    public void set_buffer (Gtk.TextBuffer buffer) {
-        textview.buffer = buffer;
+namespace SnippetPixie.Utils {
+    public SimpleAction action_from_group (string action_name, SimpleActionGroup action_group) {
+        return ((SimpleAction) action_group.lookup_action (action_name));
     }
 }

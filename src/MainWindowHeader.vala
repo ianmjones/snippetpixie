@@ -17,7 +17,7 @@
 * Boston, MA 02110-1301 USA
 */
 
-public class MainWindowHeader : Gtk.HeaderBar {
+public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
     public Gtk.SearchEntry search_entry { get; private set; }
 
     construct {

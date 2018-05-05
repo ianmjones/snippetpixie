@@ -17,10 +17,13 @@ executable(
     'src/FramedTextView.vala',
     'src/MainWindow.vala',
     'src/MainWindowHeader.vala',
+    'src/Snippet.vala',
+    'src/Utils.vala',
     'src/ViewStack.vala',
     'src/WelcomeView.vala',
     asresources,
     dependencies: [
+        dependency('gee-0.8'),
         dependency('glib-2.0'),
         dependency('gobject-2.0'),
         dependency('gtk+-3.0'),
