@@ -18,7 +18,7 @@
 */
 
 public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
-    public Gtk.SearchEntry search_entry { get; private set; }
+    //public Gtk.SearchEntry search_entry { get; private set; } // TODO: Add search.
 
     construct {
         var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
@@ -33,9 +33,12 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         export_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
         export_button.tooltip_text = _("Export snippets…");
 
+        /*
+         * TODO: Add search.
         search_entry = new Gtk.SearchEntry ();
         search_entry.valign = Gtk.Align.CENTER;
         search_entry.placeholder_text = _("Search Snippets");
+        */
 
         // Preferences menu etc.
         var import_menuitem = new Gtk.MenuItem.with_label (_("Import snippets…"));
@@ -62,7 +65,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         pack_start (import_button);
         pack_start (export_button);
         pack_end (menu_button);
-        pack_end (search_entry);
+        //pack_end (search_entry); // TODO: Add search.
         set_title (_("Snippet Pixie"));
         show_all ();
      }
