@@ -22,8 +22,6 @@ namespace SnippetPixie {
     public class Application : Gtk.Application {
         public static MainWindow app_window { get; private set; }
 
-        private Settings settings;
-
         public Application () {
             Object (
                 application_id: "com.bytepixie.snippet-pixie",
@@ -59,19 +57,27 @@ namespace SnippetPixie {
                 }
             });
 
-            settings = new Settings ("com.bytepixie.snippet-pixie");
+            app_window.state_flags_changed.connect (save_ui_settings);
+            app_window.delete_event.connect (save_ui_settings_on_delete);
+        }
 
-            app_window.state_changed.connect (() => {
-                int root_x, root_y;
-                app_window.get_position (out root_x, out root_y);
-                settings.set_int ("window-x", root_x);
-                settings.set_int ("window-y", root_y);
+        private void save_ui_settings () {
+            var settings = new Settings ("com.bytepixie.snippet-pixie");
 
-                int root_width, root_height;
-                app_window.get_size (out root_width, out root_height);
-                settings.set_int ("window-width", root_width);
-                settings.set_int ("window-height", root_height);
-            });
+            int window_x, window_y;
+            app_window.get_position (out window_x, out window_y);
+            settings.set_int ("window-x", window_x);
+            settings.set_int ("window-y", window_y);
+
+            int window_width, window_height;
+            app_window.get_size (out window_width, out window_height);
+            settings.set_int ("window-width", window_width);
+            settings.set_int ("window-height", window_height);
+        }
+
+        private bool save_ui_settings_on_delete () {
+            save_ui_settings ();
+            return false;
         }
 
         public static int main (string[] args) {
