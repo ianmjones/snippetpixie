@@ -18,12 +18,6 @@
 */
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
-    private Settings settings;
-    private MainWindowHeader headerbar;
-    private ViewStack main_view;
-
-    private Gee.Collection<Snippet> snippets;
-
     public SimpleActionGroup actions { get; construct; }
 
     public const string ACTION_PREFIX = "win.";
@@ -42,6 +36,12 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         { ACTION_EXPORT, action_export }
     };
 
+    private Settings settings;
+    private MainWindowHeader headerbar;
+    private ViewStack main_view;
+
+    private Gee.Collection<Snippet> snippets;
+
     public MainWindow (Gtk.Application application) {
         Object (
             application: application,
@@ -59,6 +59,19 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         insert_action_group ("win", actions);
 
         settings = new Settings ("com.bytepixie.snippet-pixie");
+
+        var window_x = settings.get_int ("window-x");
+        var window_y = settings.get_int ("window-y");
+        var window_width = settings.get_int ("window-width");
+        var window_height = settings.get_int ("window-height");
+
+        if (window_x != -1 ||  window_y != -1) {
+            this.move (window_x, window_y);
+        }
+
+        if (window_width != -1 ||  window_width != -1) {
+            this.set_default_size (window_width, window_height);
+        }
 
         // Construct window's components.
         main_view = new ViewStack ();

@@ -22,6 +22,8 @@ namespace SnippetPixie {
     public class Application : Gtk.Application {
         public static MainWindow app_window { get; private set; }
 
+        private Settings settings;
+
         public Application () {
             Object (
                 application_id: "com.bytepixie.snippet-pixie",
@@ -30,28 +32,20 @@ namespace SnippetPixie {
         }
 
         protected override void activate () {
+            build_ui ();
+        }
+
+        private void build_ui () {
             if (get_windows ().length () > 0) {
                 get_windows ().data.present ();
                 return;
             }
 
+            var provider = new Gtk.CssProvider ();
+            provider.load_from_resource ("com/bytepixie/snippet-pixie/Application.css");
+            Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
             app_window = new MainWindow (this);
-
-            var settings = new Settings ("com.bytepixie.snippet-pixie");
-
-            var window_x = settings.get_int ("window-x");
-            var window_y = settings.get_int ("window-y");
-            var window_width = settings.get_int ("window-width");
-            var window_height = settings.get_int ("window-height");
-
-            if (window_x != -1 ||  window_y != -1) {
-                app_window.move (window_x, window_y);
-            }
-
-            if (window_width != -1 ||  window_width != -1) {
-                app_window.set_default_size (window_width, window_height);
-            }
-
             app_window.show_all ();
 
             var quit_action = new SimpleAction ("quit", null);
@@ -59,15 +53,13 @@ namespace SnippetPixie {
             add_action (quit_action);
             set_accels_for_action ("app.quit", {"<Control>q"});
 
-            var provider = new Gtk.CssProvider ();
-            provider.load_from_resource ("com/bytepixie/snippet-pixie/Application.css");
-            Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-
             quit_action.activate.connect (() => {
                 if (app_window != null) {
                     app_window.destroy ();
                 }
             });
+
+            settings = new Settings ("com.bytepixie.snippet-pixie");
 
             app_window.state_changed.connect (() => {
                 int root_x, root_y;
