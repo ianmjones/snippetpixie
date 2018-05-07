@@ -19,8 +19,8 @@
 
 public class SnippetPixie.Snippet : Object {
     public virtual int id { get; construct set; }
-    public virtual string abbreviation { get; set; default = "new`"; }
-    public virtual string body { get; set; default = "Something to be replaced"; }
+    public virtual string abbreviation { get; set; default = _("new") + "`"; }
+    public virtual string body { get; set; default = _("Something to be replaced"); }
 
     public Snippet (int id) {
         this.id = id;
