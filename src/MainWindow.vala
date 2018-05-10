@@ -104,6 +104,21 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         var snippet = new Snippet (1);
         snippets.add (snippet);
 
+        snippet = new Snippet (2);
+        snippet.abbreviation = "@b`";
+        snippet.body = "hello@bytepixie.com";
+        snippets.add (snippet);
+
+        snippet = new Snippet (3);
+        snippet.abbreviation = "sp`";
+        snippet.body = "Snippet Pixie";
+        snippets.add (snippet);
+
+        snippet = new Snippet (4);
+        snippet.abbreviation = "spu`";
+        snippet.body = "https://www.snippetpixie.com";
+        snippets.add (snippet);
+
         return snippets;
     }
 }

@@ -18,11 +18,11 @@
 */
 
 public class SnippetPixie.ViewStack : Gtk.Stack {
+    public signal Gee.Collection<Snippet> request_snippets ();
+
     private WelcomeView welcome;
     private Gtk.Paned main_hpaned;
-    private Granite.Widgets.SourceList snippet_list;
-
-    public signal Gee.Collection<Snippet> request_snippets ();
+    private SnippetsList snippets_list;
 
     construct {
         this.transition_type = Gtk.StackTransitionType.CROSSFADE;
@@ -34,27 +34,9 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var left_pane = new Gtk.Grid ();
         left_pane.orientation = Gtk.Orientation.VERTICAL;
 
-        snippet_list = new Granite.Widgets.SourceList();
-        var root = snippet_list.root;
+        snippets_list = new SnippetsList();
 
-        // TODO: Get snippets from settings/database.
-        // TODO: Maybe use snippet groups?
-        /*
-        var spr = new Granite.Widgets.SourceList.Item ("spr`");
-        root.add (spr);
-        var sprt = new Granite.Widgets.SourceList.Item ("sprt`");
-        root.add (sprt);
-        */
-        var snippets = request_snippets ();
-
-        if ( null != snippets && ! snippets.is_empty ) {
-            foreach ( var snippet in snippets ) {
-                var item = new Granite.Widgets.SourceList.Item (snippet.abbreviation);
-                root.add (item);
-            }
-        }
-
-        left_pane.add (snippet_list);
+        left_pane.add (snippets_list);
 
         // Snippet details in right pane.
         var right_pane = new Gtk.Grid ();
@@ -90,23 +72,6 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
     }
 
     public void init () {
-        var root = snippet_list.root;
-
-        // TODO: Get snippets from settings/database.
-        // TODO: Maybe use snippet groups?
-        /*
-        var spr = new Granite.Widgets.SourceList.Item ("spr`");
-        root.add (spr);
-        var sprt = new Granite.Widgets.SourceList.Item ("sprt`");
-        root.add (sprt);
-        */
-        var snippets = request_snippets ();
-
-        if ( null != snippets && ! snippets.is_empty ) {
-            foreach ( var snippet in snippets ) {
-                var item = new Granite.Widgets.SourceList.Item (snippet.abbreviation);
-                root.add (item);
-            }
-        }
+        snippets_list.set_snippets (request_snippets ());
     }
 }

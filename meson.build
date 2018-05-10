@@ -18,6 +18,8 @@ executable(
     'src/MainWindow.vala',
     'src/MainWindowHeader.vala',
     'src/Snippet.vala',
+    'src/SnippetsList.vala',
+    'src/SnippetsListItem.vala',
     'src/Utils.vala',
     'src/ViewStack.vala',
     'src/WelcomeView.vala',
