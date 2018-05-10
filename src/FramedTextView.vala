@@ -31,11 +31,8 @@ public class SnippetPixie.FramedTextView : Gtk.Frame {
         add (scroll);
     }
 
-    public Gtk.TextBuffer get_buffer () {
-        return textview.buffer;
-    }
-
-    public void set_buffer (Gtk.TextBuffer buffer) {
-        textview.buffer = buffer;
+    public Gtk.TextBuffer buffer {
+        get { return textview.buffer; }
+        set { textview.buffer = value; }
     }
 }

@@ -21,7 +21,8 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
     public signal Gee.Collection<Snippet> request_snippets ();
 
     private WelcomeView welcome;
-    private Gtk.Paned main_hpaned;
+    private Gtk.Entry abbreviation_entry;
+    private FramedTextView body_entry;
     private SnippetsList snippets_list;
 
     construct {
@@ -35,34 +36,37 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         left_pane.orientation = Gtk.Orientation.VERTICAL;
 
         snippets_list = new SnippetsList();
+        snippets_list.selection_changed.connect (update_form);
 
         left_pane.add (snippets_list);
 
         // Snippet details in right pane.
-        var right_pane = new Gtk.Grid ();
-        right_pane.orientation = Gtk.Orientation.VERTICAL;
-        right_pane.margin = 12;
-        right_pane.row_spacing = 6;
+        var snippet_form = new Gtk.Grid ();
+        snippet_form.orientation = Gtk.Orientation.VERTICAL;
+        snippet_form.margin = 12;
+        snippet_form.row_spacing = 6;
 
         var abbreviation_label = new Gtk.Label (_("Abbreviation"));
         abbreviation_label.xalign = 0;
-        right_pane.add (abbreviation_label);
+        snippet_form.add (abbreviation_label);
 
-        var abbreviation_entry = new Gtk.Entry ();
+        abbreviation_entry = new Gtk.Entry ();
         abbreviation_entry.hexpand = true;
-        right_pane.add (abbreviation_entry);
+        abbreviation_entry.changed.connect (abbreviation_updated);
+        snippet_form.add (abbreviation_entry);
 
         var body_label = new Gtk.Label (_("Body"));
         body_label.xalign = 0;
-        right_pane.add (body_label);
+        snippet_form.add (body_label);
 
-        var body_entry = new FramedTextView ();
+        body_entry = new FramedTextView ();
         body_entry.expand = true;
-        right_pane.add (body_entry);
+        body_entry.buffer.changed.connect (body_updated);
+        snippet_form.add (body_entry);
 
-        main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
+        var main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         main_hpaned.pack1 (left_pane, false, false);
-        main_hpaned.pack2 (right_pane, true, false);
+        main_hpaned.pack2 (snippet_form, true, false);
         main_hpaned.position = 100; // TODO: Get from settings, enforce minimum.
         main_hpaned.show_all ();
 
@@ -73,5 +77,22 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
     public void init () {
         snippets_list.set_snippets (request_snippets ());
+    }
+
+    private void update_form (Snippet snippet) {
+        abbreviation_entry.text = snippet.abbreviation;
+        body_entry.buffer.text = snippet.body;
+    }
+
+    private void abbreviation_updated () {
+        var item = snippets_list.selected as SnippetsListItem;
+
+        item.snippet.abbreviation = abbreviation_entry.text;
+    }
+
+    private void body_updated () {
+        var item = snippets_list.selected as SnippetsListItem;
+
+        item.snippet.body = body_entry.buffer.text;
     }
 }
