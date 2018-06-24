@@ -29,6 +29,10 @@ public class SnippetPixie.SnippetsListItem : Granite.Widgets.SourceList.Item {
         set {
             _snippet = value;
             name = _snippet.abbreviation;
+
+            _snippet.notify["abbreviation"].connect ((s, p) => {
+                name = _snippet.abbreviation;
+            });
         }
     }
 }
