@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Snippet Pixie
 Comment=Your little snippet helper
-Exec=com.bytepixie.snippet-pixie
-Icon=com.bytepixie.snippet-pixie
+Exec=com.bytepixie.snippetpixie
+Icon=com.bytepixie.snippetpixie
 Keywords=expand;text;snippet;
 Terminal=false
 Type=Application

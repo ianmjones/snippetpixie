@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema path="/com/bytepixie/snippet-pixie/"
-  id="com.bytepixie.snippet-pixie"
-  gettext-domain="com.bytepixie.snippet-pixie">
+  <schema path="/com/bytepixie/snippetpixie/"
+  id="com.bytepixie.snippetpixie"
+  gettext-domain="com.bytepixie.snippetpixie">
     <key name="window-x" type="i">
       <default>-1</default>
       <summary>Most recent x position of Snippet Pixie</summary>

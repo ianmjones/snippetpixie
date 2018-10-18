@@ -24,7 +24,7 @@ namespace SnippetPixie {
 
         public Application () {
             Object (
-                application_id: "com.bytepixie.snippet-pixie",
+                application_id: "com.bytepixie.snippetpixie",
                 flags: ApplicationFlags.FLAGS_NONE
             );
         }
@@ -53,7 +53,7 @@ namespace SnippetPixie {
             }
 
             var provider = new Gtk.CssProvider ();
-            provider.load_from_resource ("com/bytepixie/snippet-pixie/Application.css");
+            provider.load_from_resource ("com/bytepixie/snippetpixie/Application.css");
             Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
             app_window = new MainWindow (this);
@@ -75,7 +75,7 @@ namespace SnippetPixie {
         }
 
         private void save_ui_settings () {
-            var settings = new Settings ("com.bytepixie.snippet-pixie");
+            var settings = new Settings ("com.bytepixie.snippetpixie");
 
             int window_x, window_y;
             app_window.get_position (out window_x, out window_y);

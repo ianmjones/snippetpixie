@@ -1,11 +1,11 @@
-# Esperanto translations for com.bytepixie.snippet-pixie package.
-# Copyright (C) 2018 THE com.bytepixie.snippet-pixie'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the com.bytepixie.snippet-pixie package.
+# Esperanto translations for com.bytepixie.snippetpixie package.
+# Copyright (C) 2018 THE com.bytepixie.snippetpixie'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.bytepixie.snippetpixie package.
 # Automatically generated, 2018.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: com.bytepixie.snippet-pixie\n"
+"Project-Id-Version: com.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-24 00:44+0100\n"
 "PO-Revision-Date: 2018-04-24 00:44+0100\n"
@@ -17,37 +17,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: data/com.bytepixie.snippet-pixie.appdata.xml.in:7
-#: data/com.bytepixie.snippet-pixie.desktop.in:3 src/MainWindow.vala:29
+#: data/com.bytepixie.snippetpixie.appdata.xml.in:7
+#: data/com.bytepixie.snippetpixie.desktop.in:3 src/MainWindow.vala:29
 msgid "Snippet Pixie"
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.appdata.xml.in:8
+#: data/com.bytepixie.snippetpixie.appdata.xml.in:8
 msgid "Your little snippet helper."
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.appdata.xml.in:10
+#: data/com.bytepixie.snippetpixie.appdata.xml.in:10
 msgid ""
 "Save your often used snippets and then expand them whenever you type their "
 "abbreviation."
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.appdata.xml.in:11
+#: data/com.bytepixie.snippetpixie.appdata.xml.in:11
 msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.appdata.xml.in:57
+#: data/com.bytepixie.snippetpixie.appdata.xml.in:57
 msgid "Byte Pixie"
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.desktop.in:4
+#: data/com.bytepixie.snippetpixie.desktop.in:4
 msgid "Your little snippet helper"
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.desktop.in:6
-msgid "com.bytepixie.snippet-pixie"
+#: data/com.bytepixie.snippetpixie.desktop.in:6
+msgid "com.bytepixie.snippetpixie"
 msgstr ""
 
-#: data/com.bytepixie.snippet-pixie.desktop.in:7
+#: data/com.bytepixie.snippetpixie.desktop.in:7
 msgid "expand;text;snippet;"
 msgstr ""

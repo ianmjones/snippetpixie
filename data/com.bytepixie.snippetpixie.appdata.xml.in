@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2018 Byte Pixie Limited <hello@bytepixie.com> -->
 <component type="desktop">
-  <id>com.bytepixie.snippet-pixie.desktop</id>
+  <id>com.bytepixie.snippetpixie.desktop</id>
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-2.0+</project_license>
   <name>Snippet Pixie</name>
@@ -11,7 +11,7 @@
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
   </description>
   <provides>
-    <binary>com.bytepixie.snippet-pixie</binary>
+    <binary>com.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
     <release version="1.0" date="2018-06-01">
@@ -22,10 +22,10 @@
   </releases>
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/bytepixie/snippet-pixie/master/data/screenshot.png</image>
+      <image>https://raw.githubusercontent.com/bytepixie/snippetpixie/master/data/screenshot.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/bytepixie/snippet-pixie/master/data/screenshot-2.png</image>
+      <image>https://raw.githubusercontent.com/bytepixie/snippetpixie/master/data/screenshot-2.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1">
@@ -58,9 +58,9 @@
     <content_attribute id="money-gambling">none</content_attribute>
   </content_rating>
   <developer_name>Byte Pixie</developer_name>
-  <url type="homepage">https://www.bytepixie.com/snippet-pixie/</url>
-  <url type="bugtracker">https://github.com/bytepixie/snippet-pixie/issues</url>
-  <url type="translate">https://github.com/bytepixie/snippet-pixie/tree/master/po</url>
+  <url type="homepage">https://www.bytepixie.com/snippetpixie/</url>
+  <url type="bugtracker">https://github.com/bytepixie/snippetpixie/issues</url>
+  <url type="translate">https://github.com/bytepixie/snippetpixie/tree/master/po</url>
   <custom>
     <value key="x-appcenter-color-primary">#ffffff</value>
     <value key="x-appcenter-color-primary-text">#485a6c</value>

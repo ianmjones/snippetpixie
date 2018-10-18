@@ -1,5 +1,5 @@
 # Snippet Pixie
-[![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)](https://appcenter.elementary.io/com.bytepixie.snippet-pixie)
+[![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)](https://appcenter.elementary.io/com.bytepixie.snippetpixie)
 
 Your little snippet helper.
 
@@ -24,7 +24,7 @@ Run `meson build` to configure the build environment and then change to the buil
     cd build
     ninja test
 
-To install, use `ninja install`, then execute with `com.bytepixie.snippet-pixie`
+To install, use `ninja install`, then execute with `com.bytepixie.snippetpixie`
 
     sudo ninja install
-    com.bytepixie.snippet-pixie
+    com.bytepixie.snippetpixie

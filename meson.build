@@ -1,4 +1,4 @@
-project('com.bytepixie.snippet-pixie', 'vala', 'c')
+project('com.bytepixie.snippetpixie', 'vala', 'c')
 
 gnome = import('gnome')
 i18n = import('i18n')
