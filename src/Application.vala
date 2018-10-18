@@ -31,6 +31,19 @@ namespace SnippetPixie {
 
         protected override void activate () {
             build_ui ();
+            var display = Gdk.Display.get_default ();
+            var seat = display.get_default_seat ();
+            var kbd = seat.get_keyboard ();
+            message("Keyboard Name: " + kbd.name);
+            var windows = Gtk.Window.list_toplevels ();
+            windows.foreach ((window) => {
+                message("got 1");
+                window.key_release_event.connect ((event) => {
+                    message("EVENT");
+                    message("KeyVal: " + event.keyval.to_string ());
+                    return false;
+                });
+            });
         }
 
         private void build_ui () {

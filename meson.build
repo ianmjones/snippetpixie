@@ -38,9 +38,3 @@ subdir('data')
 subdir('po')
 
 meson.add_install_script('meson/post_install.py')
-
-test (
-    'Vala lint',
-    find_program('io.elementary.vala-lint'),
-    args: '$(find . -type f -name "*.vala")'
-)
