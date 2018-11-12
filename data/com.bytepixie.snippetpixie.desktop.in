@@ -8,3 +8,12 @@ Terminal=false
 Type=Application
 StartupNotify=true
 Categories=GTK;Utility;
+Actions=Show;Quit;
+
+[Desktop Action Show]
+Name=Show Snippet Pixie
+Exec=com.bytepixie.snippetpixie --show
+
+[Desktop Action Quit]
+Name=Quit Snippet Pixie
+Exec=com.bytepixie.snippetpixie --quit
