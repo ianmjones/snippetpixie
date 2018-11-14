@@ -18,6 +18,8 @@
 */
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
+    public signal Gee.Collection<Snippet> request_snippets ();
+
     public SimpleActionGroup actions { get; construct; }
 
     public const string ACTION_PREFIX = "win.";
@@ -39,8 +41,6 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     private Settings settings;
     private MainWindowHeader headerbar;
     private ViewStack main_view;
-
-    private Gee.Collection<Snippet> snippets;
 
     public MainWindow (Gtk.Application application) {
         Object (
@@ -75,7 +75,9 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         // Construct window's components.
         main_view = new ViewStack ();
-        main_view.request_snippets.connect (request_snippets);
+        main_view.request_snippets.connect ((_) => {
+            return request_snippets ();
+        });
         this.add (main_view);
 
         headerbar = new MainWindowHeader ();
@@ -83,6 +85,9 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         // TODO: Depending on whether there are snippets or not, might set "snippets" visible.
         main_view.visible_child_name = "welcome";
+    }
+
+    public void init () {
         main_view.init ();
     }
 
@@ -96,29 +101,5 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
     private void action_export () {
         main_view.visible_child_name = "snippets";
-    }
-
-    private Gee.Collection<Snippet> request_snippets () {
-        snippets = new Gee.ArrayList<Snippet> ();
-
-        var snippet = new Snippet (1);
-        snippets.add (snippet);
-
-        snippet = new Snippet (2);
-        snippet.abbreviation = "@b`";
-        snippet.body = "hello@bytepixie.com";
-        snippets.add (snippet);
-
-        snippet = new Snippet (3);
-        snippet.abbreviation = "sp`";
-        snippet.body = "Snippet Pixie";
-        snippets.add (snippet);
-
-        snippet = new Snippet (4);
-        snippet.abbreviation = "spu`";
-        snippet.body = "https://www.snippetpixie.com";
-        snippets.add (snippet);
-
-        return snippets;
     }
 }

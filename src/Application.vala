@@ -25,7 +25,7 @@ namespace SnippetPixie {
         private static Application? _app = null;
         private string version_string = "0.1-dev";
 
-        // private bool app_running = false;
+        private bool app_running = false;
         private bool show = false;
 
         // We need ATK to register all the things.
@@ -41,6 +41,9 @@ namespace SnippetPixie {
 
 //        private Atspi.EventListenerCB event_listener_cb;
 
+        // Current collection of snippets.
+        private Gee.Collection<Snippet> snippets;
+
         public Application () {
             Object (
                 application_id: "com.bytepixie.snippetpixie",
@@ -49,11 +52,19 @@ namespace SnippetPixie {
         }
 
         protected override void activate () {
+            if (show) {
+                build_ui ();
+            } 
+
+            // We only want the one listener process.            
+            if (app_running) {
+                return;
+            }
+
+            app_running = true;
             Atspi.init();
 
-            if ( show ) {
-                build_ui ();
-            } else if (Atspi.is_initialized () == false) {
+            if (Atspi.is_initialized () == false) {
                 message ("AT-SPI not initialized.");
                 quit ();
             }
@@ -174,6 +185,32 @@ namespace SnippetPixie {
         }
 */
 
+        private Gee.Collection<Snippet> get_snippets () {
+            if (snippets == null ) {
+                snippets = new Gee.ArrayList<Snippet> ();
+
+                var snippet = new Snippet (1);
+                snippets.add (snippet);
+
+                snippet = new Snippet (2);
+                snippet.abbreviation = "@b`";
+                snippet.body = "hello@bytepixie.com";
+                snippets.add (snippet);
+
+                snippet = new Snippet (3);
+                snippet.abbreviation = "sp`";
+                snippet.body = "Snippet Pixie";
+                snippets.add (snippet);
+
+                snippet = new Snippet (4);
+                snippet.abbreviation = "spu`";
+                snippet.body = "https://www.snippetpixie.com";
+                snippets.add (snippet);
+            }
+
+            return snippets;
+        }
+
         private void build_ui () {
             if (get_windows ().length () > 0) {
                 get_windows ().data.present ();
@@ -184,11 +221,18 @@ namespace SnippetPixie {
             provider.load_from_resource ("com/bytepixie/snippetpixie/Application.css");
             Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
+
             app_window = new MainWindow (this);
+            app_window.request_snippets.connect ((_) => {
+                return get_snippets ();
+            });
             app_window.show_all ();
             add_window (app_window);
-            var quit_action = new SimpleAction ("quit", null);
 
+            app_window.state_flags_changed.connect (save_ui_settings);
+            app_window.delete_event.connect (save_ui_settings_on_delete);
+
+            var quit_action = new SimpleAction ("quit", null);
             add_action (quit_action);
             set_accels_for_action ("app.quit", {"<Control>q"});
 
@@ -198,8 +242,7 @@ namespace SnippetPixie {
                 }
             });
 
-            app_window.state_flags_changed.connect (save_ui_settings);
-            app_window.delete_event.connect (save_ui_settings_on_delete);
+            app_window.init ();
         }
 
         private void save_ui_settings () {
@@ -258,16 +301,17 @@ namespace SnippetPixie {
 
 		    if (quit) {
 			    command_line.print ("Quitting...\n");
+                var app = get_default ();
+                app.quit ();
 			    return 0;
 		    }
 
             // If we get here we're either showing the window or running the background process.
-            // if ( show == false ) {
+            if ( show == false || ! app_running ) {
                 hold ();
-            // }
+            }
 
             activate ();
-            // app_running = true;
 
 		    return 0;
 	    }
