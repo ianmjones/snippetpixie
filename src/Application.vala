@@ -61,8 +61,20 @@ namespace SnippetPixie {
             listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
             listener = new Atspi.DeviceListener ((owned) listener_cb);
 
+/*
+            var triggers = new Gee.ArrayList<Atspi.KeyDefinition> ();
+
+            var trigger = new Atspi.KeyDefinition ();
+            trigger.keystring = "`";
+            triggers.add (trigger);
+*/
             try {
-                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS | Atspi.KeyListenerSyncType.CANCONSUME);
+//                Atspi.register_keystroke_listener (listener, (GLib.Array<Atspi.KeyDefinition>?) triggers.to_array (), 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS | Atspi.KeyListenerSyncType.CANCONSUME);
+//                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS | Atspi.KeyListenerSyncType.CANCONSUME);
+//                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                Atspi.register_keystroke_listener (listener, null, 1, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+//                Atspi.register_keystroke_listener (listener, null, Atspi.ModifierType.SHIFT, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
             } catch (Error e) {
                 message ("Could not register keystroke listener: %s", e.message);
                 Atspi.exit ();
@@ -120,7 +132,9 @@ namespace SnippetPixie {
         [CCode (instance_pos = -1)]
         private bool on_key_released_event (Atspi.DeviceEvent stroke) {
             if (stroke.is_text && stroke.event_string != null) {
-                message ("String Length: %d", stroke.event_string.length);
+                message ("ID: %u, Event String: %s, Modifiers: %d", stroke.id, stroke.event_string, stroke.modifiers);
+            } else {
+                message ("Another Event: %u", stroke.id);
             }
 
 /*
@@ -132,14 +146,20 @@ namespace SnippetPixie {
                     return false;
                 }
             }
-*/
 
-            //SnippetPixie.Application.active_application.set_cache_mask (Atspi.Cache.UNDEFINED);
-            //SnippetPixie.Application.active_application.clear_cache ();
             SnippetPixie.Application.last_device_event = stroke;
             SnippetPixie.Application.have_event = true;
 
             message ("id: %u, hw_code: %d, modifiers: %d, timestamp: %u, event_string: %s, is_text: %s", stroke.id, stroke.hw_code, stroke.modifiers, stroke.timestamp, stroke.event_string, stroke.is_text.to_string ());
+*/
+
+/*
+//            if (stroke.is_text && X.string_to_keysym ("`") == stroke.id) {
+            if (stroke.is_text && 96 == stroke.id) {
+                message ("YAY!!!");
+                message ("hmmmm: %f", Gdk.unicode_to_keyval ("`"));
+            }
+*/
 
             return false;
         }
