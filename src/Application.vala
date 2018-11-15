@@ -26,7 +26,7 @@ namespace SnippetPixie {
         private string version_string = "0.1-dev";
 
         private bool app_running = false;
-        private bool show = false;
+        private bool show = true;
 
         // We need ATK to register all the things.
         //private Atk.NoOpObject noopobj = new Atk.NoOpObject (new Object ());
@@ -56,7 +56,7 @@ namespace SnippetPixie {
                 build_ui ();
             } 
 
-            // We only want the one listener process.            
+            // We only want the one listener process.
             if (app_running) {
                 return;
             }
@@ -265,14 +265,18 @@ namespace SnippetPixie {
         }
 
 	    public override int command_line (ApplicationCommandLine command_line) {
-            show = false;
+            show = true;
+            bool start = false;
+            bool stop = false;
+            bool status = false;
 		    bool version = false;
-            bool quit = false;
 
-		    OptionEntry[] options = new OptionEntry[3];
-            options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Display window", null };
-            options[1] = { "quit", 0, 0, OptionArg.NONE, ref quit, "Fully quit the application, including the background process", null };
-		    options[2] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
+		    OptionEntry[] options = new OptionEntry[5];
+            options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
+            options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start in the background", null };
+            options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
+            options[3] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
+		    options[4] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
 
 		    // We have to make an extra copy of the array, since .parse assumes
 		    // that it can remove strings from the array without freeing them.
@@ -299,11 +303,25 @@ namespace SnippetPixie {
 			    return 0;
 		    }
 
-		    if (quit) {
+		    if (stop) {
 			    command_line.print ("Quitting...\n");
                 var app = get_default ();
                 app.quit ();
 			    return 0;
+		    }
+
+            if (start) {
+                show = false;
+            }
+
+		    if (status) {
+		        if (app_running) {
+			        command_line.print ("Running.\n");
+			        return 0;
+		        } else {
+			        command_line.print ("Not Running.\n");
+			        return 1;
+		        }
 		    }
 
             // If we get here we're either showing the window or running the background process.
