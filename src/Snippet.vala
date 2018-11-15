@@ -25,4 +25,8 @@ public class SnippetPixie.Snippet : Object {
     public Snippet (int id) {
         this.id = id;
     }
+
+    public string trigger () {
+        return abbreviation.reverse ().get_char (0).to_string ();
+    }
 }

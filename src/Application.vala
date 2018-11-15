@@ -43,6 +43,8 @@ namespace SnippetPixie {
 
         // Current collection of snippets.
         private Gee.Collection<Snippet> snippets;
+        private Gee.HashMap<string,string> abbreviations;
+        private Gee.HashMap<string,bool> triggers;
 
         public Application () {
             Object (
@@ -148,6 +150,9 @@ namespace SnippetPixie {
                 message ("Another Event: %u", stroke.id);
             }
 
+            if (stroke.is_text && stroke.event_string != null && "`" == stroke.event_string) {
+                message ("!!! GOT A MATCH !!!");
+            }
 /*
             if (SnippetPixie.Application.have_event) {
                 var last_device_event = SnippetPixie.Application.last_device_event;
@@ -188,23 +193,33 @@ namespace SnippetPixie {
         private Gee.Collection<Snippet> get_snippets () {
             if (snippets == null ) {
                 snippets = new Gee.ArrayList<Snippet> ();
+                abbreviations = new Gee.HashMap<string,string> ();
+                triggers = new Gee.HashMap<string,bool> ();
 
                 var snippet = new Snippet (1);
+                abbreviations.set (snippet.abbreviation, snippet.body);
+                triggers.set (snippet.trigger (), true);
                 snippets.add (snippet);
 
                 snippet = new Snippet (2);
                 snippet.abbreviation = "@b`";
                 snippet.body = "hello@bytepixie.com";
+                abbreviations.set (snippet.abbreviation, snippet.body);
+                triggers.set (snippet.trigger (), true);
                 snippets.add (snippet);
 
                 snippet = new Snippet (3);
                 snippet.abbreviation = "sp`";
                 snippet.body = "Snippet Pixie";
+                abbreviations.set (snippet.abbreviation, snippet.body);
+                triggers.set (snippet.trigger (), true);
                 snippets.add (snippet);
 
                 snippet = new Snippet (4);
                 snippet.abbreviation = "spu`";
                 snippet.body = "https://www.snippetpixie.com";
+                abbreviations.set (snippet.abbreviation, snippet.body);
+                triggers.set (snippet.trigger (), true);
                 snippets.add (snippet);
             }
 
