@@ -31,15 +31,15 @@ namespace SnippetPixie {
         // We need ATK to register all the things.
         //private Atk.NoOpObject noopobj = new Atk.NoOpObject (new Object ());
 
-//        private Atspi.Accessible desktop;
+        // For tracking keystrokes.
         private Atspi.DeviceListenerCB listener_cb;
         private Atspi.DeviceListener listener;
 
+        // FOr tracking currently active application.
+        private Atspi.Accessible desktop;
+        private Atspi.EventListenerCB event_listener_cb;
         public static Atspi.Accessible active_application;
-        public static Atspi.DeviceEvent last_device_event;
-        public static bool have_event = false;
-
-//        private Atspi.EventListenerCB event_listener_cb;
+        public static Atspi.EditableText focussed_control;
 
         // Current collection of snippets.
         private Gee.Collection<Snippet> snippets;
@@ -74,35 +74,25 @@ namespace SnippetPixie {
             listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
             listener = new Atspi.DeviceListener ((owned) listener_cb);
 
-/*
-            var triggers = new Gee.ArrayList<Atspi.KeyDefinition> ();
-
-            var trigger = new Atspi.KeyDefinition ();
-            trigger.keystring = "`";
-            triggers.add (trigger);
-*/
             try {
-//                Atspi.register_keystroke_listener (listener, (GLib.Array<Atspi.KeyDefinition>?) triggers.to_array (), 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS | Atspi.KeyListenerSyncType.CANCONSUME);
-//                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS | Atspi.KeyListenerSyncType.CANCONSUME);
-//                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                // Single keystrokes.
                 Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                // Shift+Key.
                 Atspi.register_keystroke_listener (listener, null, 1, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
-//                Atspi.register_keystroke_listener (listener, null, Atspi.ModifierType.SHIFT, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
             } catch (Error e) {
                 message ("Could not register keystroke listener: %s", e.message);
                 Atspi.exit ();
                 quit ();
             }
 
-/*
-            event_listener_cb = (Atspi.EventListenerCB) on_text_change_insert;
-            Atspi.EventListener.register_from_callback (event_listener_cb, "object:text-changed:insert");
+            event_listener_cb = (Atspi.EventListenerCB) on_focus;
+            Atspi.EventListener.register_from_callback (event_listener_cb, "focus:");
 
             desktop = Atspi.get_desktop (0);
 
             // Clear desktop's cache.
-            desktop.set_cache_mask (Atspi.Cache.UNDEFINED);
-            desktop.clear_cache ();
+            // desktop.set_cache_mask (Atspi.Cache.UNDEFINED);
+            // desktop.clear_cache ();
 
             var children = 0;
 
@@ -118,8 +108,8 @@ namespace SnippetPixie {
 
             for (int i = 0; i < children; i++) {
                 var child = desktop.get_child_at_index(i);
-                child.set_cache_mask (Atspi.Cache.UNDEFINED);
-                child.clear_cache ();
+                // child.set_cache_mask (Atspi.Cache.UNDEFINED);
+                // child.clear_cache ();
                 message ("Child's name %s", child.get_name ());
 
                 if (child.role == Atspi.Role.APPLICATION) {
@@ -138,7 +128,6 @@ namespace SnippetPixie {
                 }
 
             }
-*/
         }
 
         // It's working, just need to figure out what data we have!
@@ -152,43 +141,25 @@ namespace SnippetPixie {
 
             if (stroke.is_text && stroke.event_string != null && "`" == stroke.event_string) {
                 message ("!!! GOT A MATCH !!!");
-            }
-/*
-            if (SnippetPixie.Application.have_event) {
-                var last_device_event = SnippetPixie.Application.last_device_event;
-                if (stroke.type == last_device_event.type && stroke.hw_code == last_device_event.hw_code && stroke.modifiers == last_device_event.modifiers) {
-                    message ("Duplicate Event");
 
-                    return false;
+                if (SnippetPixie.Application.focussed_control != null) {
+                    message ("And in an editable.");
+                    SnippetPixie.Application.focussed_control.set_text_contents ("YABADABADOO!!!");
                 }
             }
 
-            SnippetPixie.Application.last_device_event = stroke;
-            SnippetPixie.Application.have_event = true;
-
-            message ("id: %u, hw_code: %d, modifiers: %d, timestamp: %u, event_string: %s, is_text: %s", stroke.id, stroke.hw_code, stroke.modifiers, stroke.timestamp, stroke.event_string, stroke.is_text.to_string ());
-*/
-
-/*
-//            if (stroke.is_text && X.string_to_keysym ("`") == stroke.id) {
-            if (stroke.is_text && 96 == stroke.id) {
-                message ("YAY!!!");
-                message ("hmmmm: %f", Gdk.unicode_to_keyval ("`"));
-            }
-*/
-
             return false;
         }
 
-/*
-        private bool on_text_change_insert (Atspi.Event event) {
-            if (event.any_data.type () == Type.STRING) {
-                message ("Got text change insert! Type ='%s', detail1 ='%d', detail2 = '%d', any_data = '%s'", event.type, event.detail1, event.detail2, event.any_data.get_string ());
-            }
+        [CCode (instance_pos = -1)]
+        private bool on_focus (Atspi.Event event) {
+            message ("Got focus event! Type ='%s', detail1 ='%d', detail2 = '%d', any_data = '%s'", event.type, event.detail1, event.detail2, event.any_data.get_string ());
+            message ("Source: '%s', Role: '%s'", event.source.name, event.source.role.get_name ());
+
+            SnippetPixie.Application.focussed_control = event.source.get_editable_text_iface ();
 
             return false;
         }
-*/
 
         private Gee.Collection<Snippet> get_snippets () {
             if (snippets == null ) {
