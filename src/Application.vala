@@ -28,18 +28,15 @@ namespace SnippetPixie {
         private bool app_running = false;
         private bool show = true;
 
-        // We need ATK to register all the things.
-        //private Atk.NoOpObject noopobj = new Atk.NoOpObject (new Object ());
-
         // For tracking keystrokes.
         private Atspi.DeviceListenerCB listener_cb;
         private Atspi.DeviceListener listener;
 
-        // FOr tracking currently active application.
-        private Atspi.Accessible desktop;
-        private Atspi.EventListenerCB event_listener_cb;
-        public static Atspi.Accessible active_application;
-        public static Atspi.EditableText focussed_control;
+        // For tracking currently focused editable text controls.
+        private Atspi.EventListenerCB focused_event_listener_cb;
+        private Atspi.EventListenerCB window_activated_event_listener_cb;
+        private Atspi.EventListenerCB window_deactivated_event_listener_cb;
+        public static Atspi.EditableText focused_control;
 
         // Current collection of snippets.
         private Gee.Collection<Snippet> snippets;
@@ -85,54 +82,37 @@ namespace SnippetPixie {
                 quit ();
             }
 
-            event_listener_cb = (Atspi.EventListenerCB) on_focus;
-            Atspi.EventListener.register_from_callback (event_listener_cb, "focus:");
-
-            desktop = Atspi.get_desktop (0);
-
-            // Clear desktop's cache.
-            // desktop.set_cache_mask (Atspi.Cache.UNDEFINED);
-            // desktop.clear_cache ();
-
-            var children = 0;
-
             try {
-                children = desktop.get_child_count ();
+                focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
+                Atspi.EventListener.register_from_callback (focused_event_listener_cb, "focus:");
             } catch (Error e) {
-                message ("Could not get Desktop's child count: %s", e.message);
+                message ("Could not register focus event listener: %s", e.message);
                 Atspi.exit ();
                 quit ();
             }
 
-            message ("Desktop has %d children.", children);
+            try {
+                window_activated_event_listener_cb = (Atspi.EventListenerCB) on_window_activate;
+                Atspi.EventListener.register_from_callback (window_activated_event_listener_cb, "window:activate");
+            } catch (Error e) {
+                message ("Could not register window activated event listener: %s", e.message);
+                Atspi.exit ();
+                quit ();
+            }
 
-            for (int i = 0; i < children; i++) {
-                var child = desktop.get_child_at_index(i);
-                // child.set_cache_mask (Atspi.Cache.UNDEFINED);
-                // child.clear_cache ();
-                message ("Child's name %s", child.get_name ());
-
-                if (child.role == Atspi.Role.APPLICATION) {
-                    message ("It's an application.");
-
-                    var app_children = child.get_child_count ();
-
-                    for (int j = 0; j < app_children; j++) {
-                        var frame = child.get_child_at_index (j);
-
-                        if (frame.role == Atspi.Role.FRAME && frame.states.contains(Atspi.StateType.ACTIVE)) {
-                            message ("!!! THE ACTIVE ONE TOO !!!");
-                            SnippetPixie.Application.active_application = (Atspi.Accessible) child;
-                        }
-                    }
-                }
-
+            try {
+                window_deactivated_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback (window_deactivated_event_listener_cb, "window:deactivate");
+            } catch (Error e) {
+                message ("Could not register window deactivated event listener: %s", e.message);
+                Atspi.exit ();
+                quit ();
             }
         }
 
-        // It's working, just need to figure out what data we have!
         [CCode (instance_pos = -1)]
         private bool on_key_released_event (Atspi.DeviceEvent stroke) {
+             // TODO: REMOVE_DEBUG
             if (stroke.is_text && stroke.event_string != null) {
                 message ("ID: %u, Event String: %s, Modifiers: %d", stroke.id, stroke.event_string, stroke.modifiers);
             } else {
@@ -140,11 +120,15 @@ namespace SnippetPixie {
             }
 
             if (stroke.is_text && stroke.event_string != null && "`" == stroke.event_string) {
-                message ("!!! GOT A MATCH !!!");
+                message ("!!! GOT A MATCH !!!"); // TODO: REMOVE_DEBUG
 
-                if (SnippetPixie.Application.focussed_control != null) {
-                    message ("And in an editable.");
-                    SnippetPixie.Application.focussed_control.set_text_contents ("YABADABADOO!!!");
+                if (SnippetPixie.Application.focused_control != null) {
+                    message ("And in an editable."); // TODO: REMOVE_DEBUG
+                    try {
+                        SnippetPixie.Application.focused_control.set_text_contents ("YABADABADOO!!!");
+                    } catch (Error e) {
+                        message ("Could not expand text: %s", e.message);
+                    }
                 }
             }
 
@@ -153,12 +137,73 @@ namespace SnippetPixie {
 
         [CCode (instance_pos = -1)]
         private bool on_focus (Atspi.Event event) {
-            message ("Got focus event! Type ='%s', detail1 ='%d', detail2 = '%d', any_data = '%s'", event.type, event.detail1, event.detail2, event.any_data.get_string ());
-            message ("Source: '%s', Role: '%s'", event.source.name, event.source.role.get_name ());
+            message ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name); // TODO: REMOVE_DEBUG
 
-            SnippetPixie.Application.focussed_control = event.source.get_editable_text_iface ();
+            SnippetPixie.Application.focused_control = event.source.get_editable_text_iface ();
 
             return false;
+        }
+
+        [CCode (instance_pos = -1)]
+        private bool on_window_activate (Atspi.Event event) {
+            message (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name); // TODO: REMOVE_DEBUG
+
+            // If a window is being returned to one way or another, then check whether an editable text is already focused.
+            SnippetPixie.Application.focused_control = get_focused_control (event.source);
+
+            return false;
+        }
+
+        [CCode (instance_pos = -1)]
+        private bool on_window_deactivate (Atspi.Event event) {
+            message ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name); // TODO: REMOVE_DEBUG
+
+            // Make sure previously focused control doesn't accidently get results of expansion.
+            SnippetPixie.Application.focused_control = null;
+
+            return false;
+        }
+
+        private Atspi.EditableText? get_focused_control (owned Atspi.Accessible? parent) {
+            if (parent == null) {
+                parent = Atspi.get_desktop (0);
+            }
+
+            var children = 0;
+
+            try {
+                children = parent.get_child_count ();
+            } catch (Error e) {
+                message ("Could not get parent control's child count: %s", e.message);
+                Atspi.exit ();
+                quit ();
+            }
+
+            for (int i = 0; i < children; i++) {
+                Atspi.Accessible child = null;
+
+                try {
+                    child = parent.get_child_at_index(i);
+                } catch (Error e) {
+                    message ("Could not get child control: %s", e.message);
+                    Atspi.exit ();
+                    quit ();
+                }
+
+                if (child.states.contains(Atspi.StateType.FOCUSED) && (child is Atspi.EditableText)) {
+                    message ("$$$ Found focsed child control."); // TODO: REMOVE_DEBUG
+                    return child;
+                }
+
+                var control = get_focused_control (child);
+
+                // Woo hoo, found it buried down here somewhere.
+                if (control != null) {
+                    return control;
+                }
+            }
+
+            return null;
         }
 
         private Gee.Collection<Snippet> get_snippets () {
