@@ -112,24 +112,34 @@ namespace SnippetPixie {
 
         [CCode (instance_pos = -1)]
         private bool on_key_released_event (Atspi.DeviceEvent stroke) {
-             // TODO: REMOVE_DEBUG
-            if (stroke.is_text && stroke.event_string != null) {
-                message ("ID: %u, Event String: %s, Modifiers: %d", stroke.id, stroke.event_string, stroke.modifiers);
-            } else {
-                message ("Another Event: %u", stroke.id);
-            }
-
-            if (stroke.is_text && stroke.event_string != null && "`" == stroke.event_string) {
+            if (SnippetPixie.Application.focused_control != null && stroke.is_text && stroke.event_string != null && triggers.has_key (stroke.event_string)) {
                 message ("!!! GOT A MATCH !!!"); // TODO: REMOVE_DEBUG
 
-                if (SnippetPixie.Application.focused_control != null) {
-                    message ("And in an editable."); // TODO: REMOVE_DEBUG
+                var ctrl = (Atspi.Text) SnippetPixie.Application.focused_control;
+                var caret_offset = ctrl.get_caret_offset ();
+                message ("Caret Offset %d", caret_offset); // TODO: REMOVE_DEBUG
+
+                for (int pos = caret_offset; pos >= 0; pos--) {
+                    // At time of key capture the trigger isn't in the text yet so it's tacked onto search string.
+                    var str = ctrl.get_text (pos, caret_offset) + stroke.event_string;
+                    message ("Pos %d, Str %s", pos, str);
+
+                    // TODO: Compare against abbreviation.
+                    if (abbreviations.has_key (str)) {
+                        message ("IT'S AN ABBREVIATION!!!");
+
+                        // TODO: If match found, use delete_text and then insert_text on focused_control.
+                        break;
+                    }
+                }
+
+/*
                     try {
                         SnippetPixie.Application.focused_control.set_text_contents ("YABADABADOO!!!");
                     } catch (Error e) {
                         message ("Could not expand text: %s", e.message);
                     }
-                }
+*/
             }
 
             return false;
