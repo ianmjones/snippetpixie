@@ -73,9 +73,9 @@ namespace SnippetPixie {
 
             try {
                 // Single keystrokes.
-                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.CANCONSUME);
                 // Shift+Key.
-                Atspi.register_keystroke_listener (listener, null, 1, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                Atspi.register_keystroke_listener (listener, null, 1, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.CANCONSUME);
             } catch (Error e) {
                 message ("Could not register keystroke listener: %s", e.message);
                 Atspi.exit ();
@@ -112,6 +112,9 @@ namespace SnippetPixie {
 
         [CCode (instance_pos = -1)]
         private bool on_key_released_event (Atspi.DeviceEvent stroke) {
+            var expanded = false;
+            message ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string); // TODO: REMOVE_DEBUG
+
             if (SnippetPixie.Application.focused_control != null && stroke.is_text && stroke.event_string != null && triggers.has_key (stroke.event_string)) {
                 message ("!!! GOT A MATCH !!!"); // TODO: REMOVE_DEBUG
 
@@ -122,27 +125,31 @@ namespace SnippetPixie {
                 for (int pos = caret_offset; pos >= 0; pos--) {
                     // At time of key capture the trigger isn't in the text yet so it's tacked onto search string.
                     var str = ctrl.get_text (pos, caret_offset) + stroke.event_string;
-                    message ("Pos %d, Str %s", pos, str);
+                    message ("Pos %d, Str %s", pos, str); // TODO: REMOVE_DEBUG
 
                     // TODO: Compare against abbreviation.
                     if (abbreviations.has_key (str)) {
-                        message ("IT'S AN ABBREVIATION!!!");
+                        message ("IT'S AN ABBREVIATION!!!"); // TODO: REMOVE_DEBUG
 
                         // TODO: If match found, use delete_text and then insert_text on focused_control.
+                        if (! SnippetPixie.Application.focused_control.delete_text (pos, caret_offset)) {
+                            message ("Could not delete abbreviation string from text.");
+                            break;
+                        }
+
+                        var abbr = abbreviations.get (str);
+                        if (! SnippetPixie.Application.focused_control.insert_text (pos, abbr, abbr.length)) {
+                            message ("Could not insert expanded snippet into text.");
+                            break;
+                        }
+
+                        expanded = true;
                         break;
                     }
                 }
-
-/*
-                    try {
-                        SnippetPixie.Application.focused_control.set_text_contents ("YABADABADOO!!!");
-                    } catch (Error e) {
-                        message ("Could not expand text: %s", e.message);
-                    }
-*/
             }
 
-            return false;
+            return expanded;
         }
 
         [CCode (instance_pos = -1)]
