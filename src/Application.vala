@@ -62,6 +62,9 @@ namespace SnippetPixie {
             }
 
             app_running = true;
+
+            // Make sure everything is initialized.
+            get_snippets ();
             Atspi.init();
 
             if (Atspi.is_initialized () == false) {
@@ -116,7 +119,7 @@ namespace SnippetPixie {
             var expanded = false;
             message ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string); // TODO: REMOVE_DEBUG
 
-            if (SnippetPixie.Application.focused_control != null && stroke.is_text && stroke.event_string != null && triggers.has_key (stroke.event_string)) {
+            if (SnippetPixie.Application.focused_control != null && stroke.is_text && stroke.event_string != null && triggers != null && triggers.size > 0 && triggers.has_key (stroke.event_string)) {
                 message ("!!! GOT A MATCH !!!"); // TODO: REMOVE_DEBUG
 
                 var ctrl = (Atspi.Text) SnippetPixie.Application.focused_control;
