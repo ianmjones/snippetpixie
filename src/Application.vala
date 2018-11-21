@@ -42,6 +42,7 @@ namespace SnippetPixie {
         private Gee.Collection<Snippet> snippets;
         private Gee.HashMap<string,string> abbreviations;
         private Gee.HashMap<string,bool> triggers;
+        private int max_abbr_len = 0;
 
         public Application () {
             Object (
@@ -130,6 +131,11 @@ namespace SnippetPixie {
                 message ("Caret Offset %d", caret_offset); // TODO: REMOVE_DEBUG
 
                 for (int pos = caret_offset; pos >= 0; pos--) {
+                    // Stop checking if we're already checking against a larger character set than in any abbreviation.
+                    if ((caret_offset - pos) > max_abbr_len) {
+                        return expanded;
+                    }
+
                     var str = "";
 
                     try {
@@ -278,6 +284,16 @@ namespace SnippetPixie {
                 abbreviations.set (snippet.abbreviation, snippet.body);
                 triggers.set (snippet.trigger (), true);
                 snippets.add (snippet);
+
+                max_abbr_len = 0;
+                if ( null != snippets && ! snippets.is_empty ) {
+                    // TODO: Rename back to "snippet" when properly getting data from db?
+                    foreach ( var snippetX in snippets ) {
+                        if (snippetX.abbreviation.char_count () > max_abbr_len) {
+                            max_abbr_len = snippetX.abbreviation.char_count ();
+                        }
+                    }
+                }
             }
 
             return snippets;
