@@ -84,7 +84,7 @@ namespace SnippetPixie {
 
             try {
                 focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
-                Atspi.EventListener.register_from_callback (focused_event_listener_cb, "focus:");
+                Atspi.EventListener.register_from_callback ((owned) focused_event_listener_cb, "focus:");
             } catch (Error e) {
                 message ("Could not register focus event listener: %s", e.message);
                 Atspi.exit ();
@@ -93,7 +93,7 @@ namespace SnippetPixie {
 
             try {
                 window_activated_event_listener_cb = (Atspi.EventListenerCB) on_window_activate;
-                Atspi.EventListener.register_from_callback (window_activated_event_listener_cb, "window:activate");
+                Atspi.EventListener.register_from_callback ((owned) window_activated_event_listener_cb, "window:activate");
             } catch (Error e) {
                 message ("Could not register window activated event listener: %s", e.message);
                 Atspi.exit ();
@@ -102,7 +102,7 @@ namespace SnippetPixie {
 
             try {
                 window_deactivated_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
-                Atspi.EventListener.register_from_callback (window_deactivated_event_listener_cb, "window:deactivate");
+                Atspi.EventListener.register_from_callback ((owned) window_deactivated_event_listener_cb, "window:deactivate");
             } catch (Error e) {
                 message ("Could not register window deactivated event listener: %s", e.message);
                 Atspi.exit ();
@@ -119,28 +119,52 @@ namespace SnippetPixie {
                 message ("!!! GOT A MATCH !!!"); // TODO: REMOVE_DEBUG
 
                 var ctrl = (Atspi.Text) SnippetPixie.Application.focused_control;
-                var caret_offset = ctrl.get_caret_offset ();
+                var caret_offset = 0;
+
+                try {
+                    caret_offset = ctrl.get_caret_offset ();
+                } catch (Error e) {
+                    message ("Could not get caret offset: %s", e.message);
+                    return expanded;
+                }
                 message ("Caret Offset %d", caret_offset); // TODO: REMOVE_DEBUG
 
                 for (int pos = caret_offset; pos >= 0; pos--) {
-                    // At time of key capture the trigger isn't in the text yet so it's tacked onto search string.
-                    var str = ctrl.get_text (pos, caret_offset) + stroke.event_string;
+                    var str = "";
+
+                    try {
+                        // At time of key capture the trigger isn't in the text yet so it's tacked onto search string.
+                        str = ctrl.get_text (pos, caret_offset) + stroke.event_string;
+                    } catch (Error e) {
+                        message ("Could not get text between positions %d and %d: %s", pos, caret_offset, e.message);
+                        return expanded;
+                    }
                     message ("Pos %d, Str %s", pos, str); // TODO: REMOVE_DEBUG
 
                     // TODO: Compare against abbreviation.
                     if (abbreviations.has_key (str)) {
                         message ("IT'S AN ABBREVIATION!!!"); // TODO: REMOVE_DEBUG
 
-                        // TODO: If match found, use delete_text and then insert_text on focused_control.
-                        if (! SnippetPixie.Application.focused_control.delete_text (pos, caret_offset)) {
-                            message ("Could not delete abbreviation string from text.");
-                            break;
+                        try {
+                            if (! SnippetPixie.Application.focused_control.delete_text (pos, caret_offset)) {
+                                message ("Could not delete abbreviation string from text.");
+                                break;
+                            }
+                        } catch (Error e) {
+                            message ("Could not delete abbreviation string from text between positions %d and %d: %s", pos, caret_offset, e.message);
+                            return expanded;
                         }
 
                         var abbr = abbreviations.get (str);
-                        if (! SnippetPixie.Application.focused_control.insert_text (pos, abbr, abbr.length)) {
-                            message ("Could not insert expanded snippet into text.");
-                            break;
+
+                        try {
+                            if (! SnippetPixie.Application.focused_control.insert_text (pos, abbr, abbr.length)) {
+                                message ("Could not insert expanded snippet into text.");
+                                break;
+                            }
+                        } catch (Error e) {
+                            message ("Could not insert expanded snippet into text at position %d: %s", pos, e.message);
+                            return expanded;
                         }
 
                         expanded = true;
