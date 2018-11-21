@@ -63,8 +63,10 @@ namespace SnippetPixie {
 
             app_running = true;
 
-            // Make sure everything is initialized.
-            get_snippets ();
+            // Get snippets from settings and set up saving back on change.
+            var snippets = get_snippets ();
+
+            // Set up AT-SPI listeners.
             Atspi.init();
 
             if (Atspi.is_initialized () == false) {
@@ -117,10 +119,10 @@ namespace SnippetPixie {
         [CCode (instance_pos = -1)]
         private bool on_key_released_event (Atspi.DeviceEvent stroke) {
             var expanded = false;
-            message ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string); // TODO: REMOVE_DEBUG
+            debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
 
             if (SnippetPixie.Application.focused_control != null && stroke.is_text && stroke.event_string != null && triggers != null && triggers.size > 0 && triggers.has_key (stroke.event_string)) {
-                message ("!!! GOT A MATCH !!!"); // TODO: REMOVE_DEBUG
+                debug ("!!! GOT A TRIGGER KEY MATCH !!!");
 
                 var ctrl = (Atspi.Text) SnippetPixie.Application.focused_control;
                 var caret_offset = 0;
@@ -131,7 +133,7 @@ namespace SnippetPixie {
                     message ("Could not get caret offset: %s", e.message);
                     return expanded;
                 }
-                message ("Caret Offset %d", caret_offset); // TODO: REMOVE_DEBUG
+                debug ("Caret Offset %d", caret_offset);
 
                 for (int pos = caret_offset; pos >= 0; pos--) {
                     // Stop checking if we're already checking against a larger character set than in any abbreviation.
@@ -148,11 +150,10 @@ namespace SnippetPixie {
                         message ("Could not get text between positions %d and %d: %s", pos, caret_offset, e.message);
                         return expanded;
                     }
-                    message ("Pos %d, Str %s", pos, str); // TODO: REMOVE_DEBUG
+                    debug ("Pos %d, Str %s", pos, str);
 
-                    // TODO: Compare against abbreviation.
                     if (abbreviations.has_key (str)) {
-                        message ("IT'S AN ABBREVIATION!!!"); // TODO: REMOVE_DEBUG
+                        debug ("IT'S AN ABBREVIATION!!!");
 
                         try {
                             if (! SnippetPixie.Application.focused_control.delete_text (pos, caret_offset)) {
@@ -187,7 +188,7 @@ namespace SnippetPixie {
 
         [CCode (instance_pos = -1)]
         private bool on_focus (Atspi.Event event) {
-            message ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name); // TODO: REMOVE_DEBUG
+            debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
             SnippetPixie.Application.focused_control = event.source.get_editable_text_iface ();
 
@@ -196,7 +197,7 @@ namespace SnippetPixie {
 
         [CCode (instance_pos = -1)]
         private bool on_window_activate (Atspi.Event event) {
-            message (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name); // TODO: REMOVE_DEBUG
+            debug (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
             // If a window is being returned to one way or another, then check whether an editable text is already focused.
             SnippetPixie.Application.focused_control = get_focused_control (event.source);
@@ -206,7 +207,7 @@ namespace SnippetPixie {
 
         [CCode (instance_pos = -1)]
         private bool on_window_deactivate (Atspi.Event event) {
-            message ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name); // TODO: REMOVE_DEBUG
+            debug ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
             // Make sure previously focused control doesn't accidently get results of expansion.
             SnippetPixie.Application.focused_control = null;
@@ -241,7 +242,7 @@ namespace SnippetPixie {
                 }
 
                 if (child.states.contains(Atspi.StateType.FOCUSED) && (child is Atspi.EditableText)) {
-                    message ("$$$ Found focsed child control."); // TODO: REMOVE_DEBUG
+                    debug ("$$$ Found focsed child control.");
                     return child;
                 }
 
