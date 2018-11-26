@@ -19,11 +19,15 @@
 
 public class SnippetPixie.ViewStack : Gtk.Stack {
     public signal Gee.Collection<Snippet> request_snippets ();
+    public signal void snippet_changed (Snippet snippet);
+    public signal void snippet_removed (Snippet snippet);
 
     private WelcomeView welcome;
     private Gtk.Entry abbreviation_entry;
     private FramedTextView body_entry;
+    private Gtk.Button remove_button;
     private SnippetsList snippets_list;
+    private bool form_updating = false;
 
     construct {
         this.transition_type = Gtk.StackTransitionType.CROSSFADE;
@@ -64,6 +68,12 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         body_entry.buffer.changed.connect (body_updated);
         snippet_form.add (body_entry);
 
+        remove_button = new Gtk.Button.with_label ("Remove Snippet");
+        remove_button.hexpand = true;
+        remove_button.get_style_context ().add_class (Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION);
+        remove_button.clicked.connect (remove_snippet);
+        snippet_form.add (remove_button);
+
         var main_hpaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         main_hpaned.pack1 (left_pane, false, false);
         main_hpaned.pack2 (snippet_form, true, false);
@@ -80,19 +90,42 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
     }
 
     private void update_form (Snippet snippet) {
+        form_updating = true;
         abbreviation_entry.text = snippet.abbreviation;
         body_entry.buffer.text = snippet.body;
+        form_updating = false;
     }
 
     private void abbreviation_updated () {
+        if (form_updating) {
+            return;
+        }
+
         var item = snippets_list.selected as SnippetsListItem;
 
-        item.snippet.abbreviation = abbreviation_entry.text;
+        if (item.snippet.abbreviation != abbreviation_entry.text) {
+            item.snippet.abbreviation = abbreviation_entry.text;
+            snippet_changed (item.snippet);
+        }
     }
 
     private void body_updated () {
+        if (form_updating) {
+            return;
+        }
+
         var item = snippets_list.selected as SnippetsListItem;
 
-        item.snippet.body = body_entry.buffer.text;
+        if (item.snippet.body != body_entry.buffer.text) {
+            item.snippet.body = body_entry.buffer.text;
+            snippet_changed (item.snippet);
+        }
+    }
+
+    private void remove_snippet () {
+        var item = snippets_list.selected as SnippetsListItem;
+
+        snippet_removed (item.snippet);
+        snippets_list.root.remove (item);
     }
 }

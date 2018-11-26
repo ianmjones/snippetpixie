@@ -335,6 +335,22 @@ namespace SnippetPixie {
             });
 
             app_window.init ();
+
+            app_window.snippet_changed.connect ((snippet) => {
+                save_snippet (snippet);
+            });
+
+            app_window.snippet_removed.connect ((snippet) => {
+                remove_snippet (snippet);
+            });
+        }
+
+        private void save_snippet (Snippet snippet) {
+            message ("Save Snippet %d - %s", snippet.id, snippet.abbreviation);
+        }
+
+        private void remove_snippet (Snippet snippet) {
+            snippets.remove (snippet);
         }
 
         private void save_ui_settings () {

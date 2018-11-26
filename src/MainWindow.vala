@@ -19,6 +19,8 @@
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     public signal Gee.Collection<Snippet> request_snippets ();
+    public signal void snippet_changed (Snippet snippet);
+    public signal void snippet_removed (Snippet snippet);
 
     public SimpleActionGroup actions { get; construct; }
 
@@ -77,6 +79,12 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         main_view = new ViewStack ();
         main_view.request_snippets.connect ((_) => {
             return request_snippets ();
+        });
+        main_view.snippet_changed.connect ((snippet) => {
+            snippet_changed (snippet);
+        });
+        main_view.snippet_removed.connect ((snippet) => {
+            snippet_removed (snippet);
         });
         this.add (main_view);
 
