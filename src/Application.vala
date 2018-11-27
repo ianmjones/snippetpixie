@@ -314,13 +314,15 @@ namespace SnippetPixie {
             bool stop = false;
             bool status = false;
             bool version = false;
+            bool help = false;
 
-            OptionEntry[] options = new OptionEntry[5];
+            OptionEntry[] options = new OptionEntry[6];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
             options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start in the background", null };
             options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
             options[3] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
             options[4] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
+            options[5] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
 
             // We have to make an extra copy of the array, since .parse assumes
             // that it can remove strings from the array without freeing them.
@@ -330,15 +332,22 @@ namespace SnippetPixie {
                 _args[i] = args[i];
             }
 
+            OptionContext opt_context;
+
             try {
-                var opt_context = new OptionContext ();
-                opt_context.set_help_enabled (true);
+                opt_context = new OptionContext ();
+                opt_context.set_help_enabled (false);
                 opt_context.add_main_entries (options, null);
                 unowned string[] tmp = _args;
                 opt_context.parse (ref tmp);
             } catch (OptionError e) {
                 command_line.print ("error: %s\n", e.message);
                 command_line.print ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
+                return 0;
+            }
+
+            if (help) {
+                command_line.print ("%s\n", opt_context.get_help (true, null));
                 return 0;
             }
 
