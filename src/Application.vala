@@ -308,65 +308,65 @@ namespace SnippetPixie {
             return false;
         }
 
-	    public override int command_line (ApplicationCommandLine command_line) {
+        public override int command_line (ApplicationCommandLine command_line) {
             show = true;
             bool start = false;
             bool stop = false;
             bool status = false;
-		    bool version = false;
+            bool version = false;
 
-		    OptionEntry[] options = new OptionEntry[5];
+            OptionEntry[] options = new OptionEntry[5];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
             options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start in the background", null };
             options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
             options[3] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
-		    options[4] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
+            options[4] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
 
-		    // We have to make an extra copy of the array, since .parse assumes
-		    // that it can remove strings from the array without freeing them.
-		    string[] args = command_line.get_arguments ();
-		    string[] _args = new string[args.length];
-		    for (int i = 0; i < args.length; i++) {
-			    _args[i] = args[i];
-		    }
+            // We have to make an extra copy of the array, since .parse assumes
+            // that it can remove strings from the array without freeing them.
+            string[] args = command_line.get_arguments ();
+            string[] _args = new string[args.length];
+            for (int i = 0; i < args.length; i++) {
+                _args[i] = args[i];
+            }
 
-		    try {
-			    var opt_context = new OptionContext ();
-			    opt_context.set_help_enabled (true);
-			    opt_context.add_main_entries (options, null);
-			    unowned string[] tmp = _args;
-			    opt_context.parse (ref tmp);
-		    } catch (OptionError e) {
-			    command_line.print ("error: %s\n", e.message);
-			    command_line.print ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
-			    return 0;
-		    }
+            try {
+                var opt_context = new OptionContext ();
+                opt_context.set_help_enabled (true);
+                opt_context.add_main_entries (options, null);
+                unowned string[] tmp = _args;
+                opt_context.parse (ref tmp);
+            } catch (OptionError e) {
+                command_line.print ("error: %s\n", e.message);
+                command_line.print ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
+                return 0;
+            }
 
-		    if (version) {
-			    command_line.print ("%s\n", version_string);
-			    return 0;
-		    }
+            if (version) {
+                command_line.print ("%s\n", version_string);
+                return 0;
+            }
 
-		    if (stop) {
-			    command_line.print ("Quitting...\n");
+            if (stop) {
+                command_line.print ("Quitting...\n");
                 var app = get_default ();
                 app.quit ();
-			    return 0;
-		    }
+                return 0;
+            }
 
             if (start) {
                 show = false;
             }
 
-		    if (status) {
-		        if (app_running) {
-			        command_line.print ("Running.\n");
-			        return 0;
-		        } else {
-			        command_line.print ("Not Running.\n");
-			        return 1;
-		        }
-		    }
+            if (status) {
+                if (app_running) {
+                    command_line.print ("Running.\n");
+                    return 0;
+                } else {
+                    command_line.print ("Not Running.\n");
+                    return 1;
+                }
+            }
 
             // If we get here we're either showing the window or running the background process.
             if ( show == false || ! app_running ) {
@@ -375,8 +375,8 @@ namespace SnippetPixie {
 
             activate ();
 
-		    return 0;
-	    }
+            return 0;
+        }
 
         public static new Application get_default () {
             if (_app == null) {
