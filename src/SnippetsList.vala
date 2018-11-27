@@ -32,7 +32,7 @@ public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
     }
 
     public override void item_selected (Granite.Widgets.SourceList.Item? item) {
-        if (item is SnippetPixie.SnippetsListItem) {
+        if (item is SnippetsListItem) {
             var list_item = item as SnippetsListItem;
             selection_changed (list_item.snippet);
         }

@@ -29,11 +29,11 @@ public class SnippetPixie.WelcomeView : Gtk.Grid {
         welcome.activated.connect ((index) => {
             switch (index) {
                 case 0:
-                    SnippetPixie.Utils.action_from_group (MainWindow.ACTION_ADD, Application.app_window.actions).activate (null);
+                    Utils.action_from_group (MainWindow.ACTION_ADD, Application.get_default ().app_window.actions).activate (null);
 
                     break;
                 case 1:
-                    SnippetPixie.Utils.action_from_group (MainWindow.ACTION_IMPORT, Application.app_window.actions).activate (null);
+                    Utils.action_from_group (MainWindow.ACTION_IMPORT, Application.get_default ().app_window.actions).activate (null);
 
                     break;
                 case 2:

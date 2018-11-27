@@ -18,10 +18,6 @@
 */
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
-    public signal Gee.Collection<Snippet> request_snippets ();
-    public signal void snippet_changed (Snippet snippet);
-    public signal void snippet_removed (Snippet snippet);
-
     public SimpleActionGroup actions { get; construct; }
 
     public const string ACTION_PREFIX = "win.";
@@ -77,26 +73,17 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         // Construct window's components.
         main_view = new ViewStack ();
-        main_view.request_snippets.connect ((_) => {
-            return request_snippets ();
-        });
-        main_view.snippet_changed.connect ((snippet) => {
-            snippet_changed (snippet);
-        });
-        main_view.snippet_removed.connect ((snippet) => {
-            snippet_removed (snippet);
-        });
         this.add (main_view);
 
         headerbar = new MainWindowHeader ();
         this.set_titlebar (headerbar);
 
-        // TODO: Depending on whether there are snippets or not, might set "snippets" visible.
-        main_view.visible_child_name = "welcome";
-    }
-
-    public void init () {
-        main_view.init ();
+        // Depending on whether there are snippets or not, might set "snippets" visible.
+        if (Application.get_default ().snippets_manager.snippets.size > 0) {
+            main_view.visible_child_name = "snippets";
+        } else {
+            main_view.visible_child_name = "welcome";
+        }
     }
 
     private void action_add () {

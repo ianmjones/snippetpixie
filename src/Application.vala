@@ -20,13 +20,12 @@
 
 namespace SnippetPixie {
     public class Application : Gtk.Application {
-        public static MainWindow app_window { get; private set; }
-
         private static Application? _app = null;
         private string version_string = "0.1-dev";
 
         private bool app_running = false;
         private bool show = true;
+        public MainWindow app_window { get; private set; }
 
         // For tracking keystrokes.
         private Atspi.DeviceListenerCB listener_cb;
@@ -38,11 +37,7 @@ namespace SnippetPixie {
         private Atspi.EventListenerCB window_deactivated_event_listener_cb;
         public static Atspi.EditableText focused_control;
 
-        // Current collection of snippets.
-        private Gee.Collection<Snippet> snippets;
-        private Gee.HashMap<string,string> abbreviations;
-        private Gee.HashMap<string,bool> triggers;
-        private int max_abbr_len = 0;
+        public SnippetsManager snippets_manager;
 
         public Application () {
             Object (
@@ -52,6 +47,10 @@ namespace SnippetPixie {
         }
 
         protected override void activate () {
+            if (snippets_manager == null) {
+                snippets_manager = new SnippetsManager ();
+            }
+
             if (show) {
                 build_ui ();
             } 
@@ -62,9 +61,6 @@ namespace SnippetPixie {
             }
 
             app_running = true;
-
-            // Get snippets from settings and set up saving back on change.
-            var snippets = get_snippets ();
 
             // Set up AT-SPI listeners.
             Atspi.init();
@@ -121,10 +117,17 @@ namespace SnippetPixie {
             var expanded = false;
             debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
 
-            if (SnippetPixie.Application.focused_control != null && stroke.is_text && stroke.event_string != null && triggers != null && triggers.size > 0 && triggers.has_key (stroke.event_string)) {
+            if (
+                SnippetPixie.Application.focused_control != null && 
+                stroke.is_text && 
+                stroke.event_string != null && 
+                snippets_manager.triggers != null && 
+                snippets_manager.triggers.size > 0 && 
+                snippets_manager.triggers.has_key (stroke.event_string)
+                ) {
                 debug ("!!! GOT A TRIGGER KEY MATCH !!!");
 
-                var ctrl = (Atspi.Text) SnippetPixie.Application.focused_control;
+                var ctrl = (Atspi.Text) focused_control;
                 var caret_offset = 0;
 
                 try {
@@ -137,7 +140,7 @@ namespace SnippetPixie {
 
                 for (int pos = caret_offset; pos >= 0; pos--) {
                     // Stop checking if we're already checking against a larger character set than in any abbreviation.
-                    if ((caret_offset - pos) > max_abbr_len) {
+                    if ((caret_offset - pos) > snippets_manager.max_abbr_len) {
                         return expanded;
                     }
 
@@ -152,11 +155,11 @@ namespace SnippetPixie {
                     }
                     debug ("Pos %d, Str %s", pos, str);
 
-                    if (abbreviations.has_key (str)) {
+                    if (snippets_manager.abbreviations.has_key (str)) {
                         debug ("IT'S AN ABBREVIATION!!!");
 
                         try {
-                            if (! SnippetPixie.Application.focused_control.delete_text (pos, caret_offset)) {
+                            if (! focused_control.delete_text (pos, caret_offset)) {
                                 message ("Could not delete abbreviation string from text.");
                                 break;
                             }
@@ -165,10 +168,10 @@ namespace SnippetPixie {
                             return expanded;
                         }
 
-                        var abbr = abbreviations.get (str);
+                        var abbr = snippets_manager.abbreviations.get (str);
 
                         try {
-                            if (! SnippetPixie.Application.focused_control.insert_text (pos, abbr, abbr.length)) {
+                            if (! focused_control.insert_text (pos, abbr, abbr.length)) {
                                 message ("Could not insert expanded snippet into text.");
                                 break;
                             }
@@ -190,7 +193,7 @@ namespace SnippetPixie {
         private bool on_focus (Atspi.Event event) {
             debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
-            SnippetPixie.Application.focused_control = event.source.get_editable_text_iface ();
+            focused_control = event.source.get_editable_text_iface ();
 
             return false;
         }
@@ -200,7 +203,7 @@ namespace SnippetPixie {
             debug (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
             // If a window is being returned to one way or another, then check whether an editable text is already focused.
-            SnippetPixie.Application.focused_control = get_focused_control (event.source);
+            focused_control = get_focused_control (event.source);
 
             return false;
         }
@@ -210,7 +213,7 @@ namespace SnippetPixie {
             debug ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
             // Make sure previously focused control doesn't accidently get results of expansion.
-            SnippetPixie.Application.focused_control = null;
+            focused_control = null;
 
             return false;
         }
@@ -257,52 +260,6 @@ namespace SnippetPixie {
             return null;
         }
 
-        private Gee.Collection<Snippet> get_snippets () {
-            if (snippets == null ) {
-                snippets = new Gee.ArrayList<Snippet> ();
-                abbreviations = new Gee.HashMap<string,string> ();
-                triggers = new Gee.HashMap<string,bool> ();
-
-                var snippet = new Snippet (1);
-                abbreviations.set (snippet.abbreviation, snippet.body);
-                triggers.set (snippet.trigger (), true);
-                snippets.add (snippet);
-
-                snippet = new Snippet (2);
-                snippet.abbreviation = "@b`";
-                snippet.body = "hello@bytepixie.com";
-                abbreviations.set (snippet.abbreviation, snippet.body);
-                triggers.set (snippet.trigger (), true);
-                snippets.add (snippet);
-
-                snippet = new Snippet (3);
-                snippet.abbreviation = "sp`";
-                snippet.body = "Snippet Pixie";
-                abbreviations.set (snippet.abbreviation, snippet.body);
-                triggers.set (snippet.trigger (), true);
-                snippets.add (snippet);
-
-                snippet = new Snippet (4);
-                snippet.abbreviation = "spu`";
-                snippet.body = "https://www.snippetpixie.com";
-                abbreviations.set (snippet.abbreviation, snippet.body);
-                triggers.set (snippet.trigger (), true);
-                snippets.add (snippet);
-
-                max_abbr_len = 0;
-                if ( null != snippets && ! snippets.is_empty ) {
-                    // TODO: Rename back to "snippet" when properly getting data from db?
-                    foreach ( var snippetX in snippets ) {
-                        if (snippetX.abbreviation.char_count () > max_abbr_len) {
-                            max_abbr_len = snippetX.abbreviation.char_count ();
-                        }
-                    }
-                }
-            }
-
-            return snippets;
-        }
-
         private void build_ui () {
             if (get_windows ().length () > 0) {
                 get_windows ().data.present ();
@@ -315,9 +272,6 @@ namespace SnippetPixie {
 
 
             app_window = new MainWindow (this);
-            app_window.request_snippets.connect ((_) => {
-                return get_snippets ();
-            });
             app_window.show_all ();
             add_window (app_window);
 
@@ -333,24 +287,6 @@ namespace SnippetPixie {
                     app_window.destroy ();
                 }
             });
-
-            app_window.init ();
-
-            app_window.snippet_changed.connect ((snippet) => {
-                save_snippet (snippet);
-            });
-
-            app_window.snippet_removed.connect ((snippet) => {
-                remove_snippet (snippet);
-            });
-        }
-
-        private void save_snippet (Snippet snippet) {
-            message ("Save Snippet %d - %s", snippet.id, snippet.abbreviation);
-        }
-
-        private void remove_snippet (Snippet snippet) {
-            snippets.remove (snippet);
         }
 
         private void save_ui_settings () {

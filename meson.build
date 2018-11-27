@@ -20,6 +20,7 @@ executable(
     'src/Snippet.vala',
     'src/SnippetsList.vala',
     'src/SnippetsListItem.vala',
+    'src/SnippetsManager.vala',
     'src/Utils.vala',
     'src/ViewStack.vala',
     'src/WelcomeView.vala',

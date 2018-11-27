@@ -18,10 +18,6 @@
 */
 
 public class SnippetPixie.ViewStack : Gtk.Stack {
-    public signal Gee.Collection<Snippet> request_snippets ();
-    public signal void snippet_changed (Snippet snippet);
-    public signal void snippet_removed (Snippet snippet);
-
     private WelcomeView welcome;
     private Gtk.Entry abbreviation_entry;
     private FramedTextView body_entry;
@@ -41,6 +37,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         snippets_list = new SnippetsList();
         snippets_list.selection_changed.connect (update_form);
+        snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
 
         left_pane.add (snippets_list);
 
@@ -85,10 +82,6 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         this.show_all ();
     }
 
-    public void init () {
-        snippets_list.set_snippets (request_snippets ());
-    }
-
     private void update_form (Snippet snippet) {
         form_updating = true;
         abbreviation_entry.text = snippet.abbreviation;
@@ -105,7 +98,6 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         if (item.snippet.abbreviation != abbreviation_entry.text) {
             item.snippet.abbreviation = abbreviation_entry.text;
-            snippet_changed (item.snippet);
         }
     }
 
@@ -118,14 +110,13 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         if (item.snippet.body != body_entry.buffer.text) {
             item.snippet.body = body_entry.buffer.text;
-            snippet_changed (item.snippet);
         }
     }
 
     private void remove_snippet () {
         var item = snippets_list.selected as SnippetsListItem;
 
-        snippet_removed (item.snippet);
+        Application.get_default ().snippets_manager.remove (item.snippet);
         snippets_list.root.remove (item);
     }
 }
