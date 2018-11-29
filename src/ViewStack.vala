@@ -129,6 +129,10 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var item = snippets_list.selected as SnippetsListItem;
 
         Application.get_default ().snippets_manager.remove (item.snippet);
+
+        if (snippets_list.first_item != null) {
+            select_item (snippets_list.first_item);
+        }
     }
 
     public void select_item (SnippetsListItem item) {
