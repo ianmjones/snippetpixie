@@ -18,64 +18,194 @@
 */
 
 public class SnippetPixie.SnippetsManager : Object {
+    public signal void snippets_changed (Gee.ArrayList<Snippet>? snippets);
+
     // Current collection of snippets.
     public Gee.ArrayList<Snippet> snippets { get; private set; }
     public Gee.HashMap<string,string> abbreviations { get; private set; }
     public Gee.HashMap<string,bool> triggers { get; private set; }
     public int max_abbr_len = 0;
 
+    private Sqlite.Database db;
+
     public SnippetsManager () {
-        if (snippets == null ) {
-            snippets = new Gee.ArrayList<Snippet> ();
-            abbreviations = new Gee.HashMap<string,string> ();
+        init_database ();
+        refresh_snippets ();
+    }
 
-            var snippet = new Snippet (1);
-            abbreviations.set (snippet.abbreviation, snippet.body);
-            snippets.add (snippet);
+    private void init_database () {
+        var data_dir = Environment.get_user_data_dir ();
+        var dir_path = Path.build_path (Path.DIR_SEPARATOR_S, data_dir, Environment.get_prgname ());
+        var db_dir = File.new_for_path (dir_path);
 
-            snippet = new Snippet (2);
-            snippet.abbreviation = "@b`";
-            snippet.body = "hello@bytepixie.com";
-            abbreviations.set (snippet.abbreviation, snippet.body);
-            snippets.add (snippet);
-
-            snippet = new Snippet (3);
-            snippet.abbreviation = "sp`";
-            snippet.body = "Snippet Pixie";
-            abbreviations.set (snippet.abbreviation, snippet.body);
-            snippets.add (snippet);
-
-            snippet = new Snippet (4);
-            snippet.abbreviation = "spu`";
-            snippet.body = "https://www.snippetpixie.com";
-            abbreviations.set (snippet.abbreviation, snippet.body);
-            snippets.add (snippet);
-
-            refresh_triggers ();
-
-            max_abbr_len = 0;
-            if (null != snippets && ! snippets.is_empty) {
-                // TODO: Rename back to "snippet" when properly getting data from db?
-                foreach (var snippetX in snippets) {
-                    if (snippetX.abbreviation.char_count () > max_abbr_len) {
-                        max_abbr_len = snippetX.abbreviation.char_count ();
-                    }
-                }
+        try {
+            db_dir.make_directory_with_parents (null);
+        } catch (GLib.Error err) {
+            if (err is IOError.EXISTS == false) {
+                error ("Could not create data directory: %s", err.message);
             }
         }
+
+        var db_file = db_dir.get_child (Environment.get_prgname () + ".db");
+        bool new_db = !db_file.query_exists ();
+
+        open_database (db_file);
+
+        if (new_db) {
+            upgrade_database ();
+        }
+    }
+
+    private void open_database (File db_file) {
+        int ec = Sqlite.Database.open(db_file.get_path (), out db);
+        if (ec != Sqlite.OK) {
+            critical ("Unable to open database at %s", db_file.get_path ());
+        }
+    }
+
+    private void upgrade_database () {
+        string query = """
+            CREATE TABLE IF NOT EXISTS snippets (
+                id INTEGER PRIMARY KEY NOT NULL,
+                abbreviation TEXT NOT NULL UNIQUE,
+                body TEXT NOT NULL
+            );
+            """;
+        string error_message;
+        int ec = db.exec (query, null, out error_message);
+        if(ec != Sqlite.OK) {
+            critical ("Unable to create snippets table in database. Error: %s", error_message);
+        }
+    }
+
+    private void insert_snippet (Snippet snippet) {
+        Sqlite.Statement stmt;
+
+        const string query = "INSERT INTO snippets (abbreviation, body) VALUES ($ABBR, $BODY);";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to insert snippet: %s\n", db.errmsg ());
+            return;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$ABBR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, snippet.abbreviation);
+
+        param_position = stmt.bind_parameter_index ("$BODY");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, snippet.body);
+
+        ec = stmt.step();
+        if (ec != Sqlite.DONE) {
+            warning ("Error inserting snippet: %s\n", db.errmsg ());
+        }
+    }
+
+    private void update_snippet (Snippet snippet) {
+        Sqlite.Statement stmt;
+
+        const string query = "UPDATE snippets SET (abbreviation, body) = ($ABBR, $BODY) WHERE id = $ID;";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to update snippet: %s\n", db.errmsg ());
+            return;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$ABBR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, snippet.abbreviation);
+
+        param_position = stmt.bind_parameter_index ("$BODY");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, snippet.body);
+
+        param_position = stmt.bind_parameter_index ("$ID");
+        assert (param_position > 0);
+        stmt.bind_int (param_position, snippet.id);
+
+        ec = stmt.step();
+        if (ec != Sqlite.DONE) {
+            warning ("Error update snippet: %s\n", db.errmsg ());
+        }
+    }
+
+    private void delete_snippet (Snippet snippet) {
+        Sqlite.Statement stmt;
+
+        const string query = "DELETE FROM snippets WHERE id = $ID;";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to delete snippet: %s\n", db.errmsg ());
+            return;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$ID");
+        assert (param_position > 0);
+        stmt.bind_int (param_position, snippet.id);
+
+        ec = stmt.step();
+        if (ec != Sqlite.DONE) {
+            warning ("Error deleting snippet: %s\n", db.errmsg ());
+        }
+    }
+
+    private Gee.ArrayList<Snippet>? select_snippets () {
+        Sqlite.Statement stmt;
+
+        const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation;";
+	    int ec = db.prepare_v2 (query, query.length, out stmt);
+	    if (ec != Sqlite.OK) {
+		    warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
+		    return null;
+	    }
+
+        var snippets = new Gee.ArrayList<Snippet?> ();
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            Snippet snippet = new Snippet ();
+            snippet.id = stmt.column_int (0);
+            snippet.abbreviation = stmt.column_text (1);
+            snippet.body = stmt.column_text (2);
+            snippets.add (snippet);
+		}
+		if (ec != Sqlite.DONE) {
+			warning ("Error fetching snippets: %s\n", db.errmsg ());
+            return null;
+        }
+
+        return snippets;
+    }
+
+    public void add (Snippet snippet) {
+        insert_snippet (snippet);
+        refresh_snippets ();
+    }
+
+    public void update (Snippet snippet) {
+        update_snippet (snippet);
+        refresh_snippets ();
     }
 
     public void remove (Snippet snippet) {
-        snippets.remove (snippet);
-        abbreviations.unset (snippet.abbreviation);
-        refresh_triggers ();
+        delete_snippet (snippet);
+        refresh_snippets ();
     }
 
-    private void refresh_triggers () {
+    public void refresh_snippets () {
+        snippets = select_snippets ();
+        abbreviations = new Gee.HashMap<string,string> ();
         triggers = new Gee.HashMap<string,bool> ();
+        max_abbr_len = 0;
 
         foreach (var snippet in snippets) {
+            abbreviations.set (snippet.abbreviation, snippet.body);
             triggers.set (snippet.trigger (), true);
+
+            if (snippet.abbreviation.char_count () > max_abbr_len) {
+                max_abbr_len = snippet.abbreviation.char_count ();
+            }
         }
+
+        snippets_changed (snippets);
     }
 }

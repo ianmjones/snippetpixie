@@ -37,7 +37,9 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         snippets_list = new SnippetsList();
         snippets_list.selection_changed.connect (update_form);
-        snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
+        Application.get_default ().snippets_manager.snippets_changed.connect ((snippets) => {
+            snippets_list.set_snippets (snippets);
+        });
 
         left_pane.add (snippets_list);
 
@@ -80,12 +82,20 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         this.add_named (welcome, "welcome");
         this.add_named (main_hpaned, "snippets");
         this.show_all ();
+
+        // Grab the current snippets.
+        snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
     }
 
-    private void update_form (Snippet snippet) {
+    private void update_form (Snippet? snippet) {
         form_updating = true;
-        abbreviation_entry.text = snippet.abbreviation;
-        body_entry.buffer.text = snippet.body;
+        if (snippet == null) {
+            abbreviation_entry.text = "";
+            body_entry.buffer.text = "";
+        } else {
+            abbreviation_entry.text = snippet.abbreviation;
+            body_entry.buffer.text = snippet.body;
+        }
         form_updating = false;
     }
 
@@ -98,6 +108,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         if (item.snippet.abbreviation != abbreviation_entry.text) {
             item.snippet.abbreviation = abbreviation_entry.text;
+            Application.get_default ().snippets_manager.update (item.snippet);
         }
     }
 
@@ -110,6 +121,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         if (item.snippet.body != body_entry.buffer.text) {
             item.snippet.body = body_entry.buffer.text;
+            Application.get_default ().snippets_manager.update (item.snippet);
         }
     }
 
@@ -117,6 +129,5 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var item = snippets_list.selected as SnippetsListItem;
 
         Application.get_default ().snippets_manager.remove (item.snippet);
-        snippets_list.root.remove (item);
     }
 }

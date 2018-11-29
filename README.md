@@ -15,6 +15,8 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 You'll need the following dependencies to build:
 * libgtk-3-dev
+* libgee-0.8-dev
+* libsqlite3-dev
 * meson
 * valac
 

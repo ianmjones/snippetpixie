@@ -18,16 +18,35 @@
 */
 
 public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
-    public signal void selection_changed (Snippet snippet);
+    public signal void selection_changed (Snippet? snippet);
 
-    public void set_snippets (Gee.Collection<Snippet> snippets) {
+    public void set_snippets (Gee.Collection<Snippet>? snippets) {
+        int snippet_id = 0;
+
+        if (this.selected != null) {
+            var current_item = this.selected as SnippetsListItem;
+            snippet_id = current_item.snippet.id;
+        }
+
         root.clear ();
 
         if ( null != snippets && ! snippets.is_empty ) {
+            SnippetsListItem item = null;
+
             foreach ( var snippet in snippets ) {
-                var item = new SnippetsListItem.from_snippet (snippet);
+                item = new SnippetsListItem.from_snippet (snippet);
                 root.add (item);
+
+                if (snippet_id != 0 && snippet_id == snippet.id) {
+                    this.selected = item;
+                }
             }
+
+            // If nothing selected, select last item.
+            // if (this.selected == null && item != null) {
+            // message ("HEY HEY HEY");
+            //     this.selected = item;
+            // }
         }
     }
 
@@ -35,6 +54,8 @@ public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
         if (item is SnippetsListItem) {
             var list_item = item as SnippetsListItem;
             selection_changed (list_item.snippet);
+        // } else {
+            // selection_changed (null);
         }
     }
 }

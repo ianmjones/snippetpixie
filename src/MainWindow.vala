@@ -84,10 +84,18 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         } else {
             main_view.visible_child_name = "welcome";
         }
+        Application.get_default ().snippets_manager.snippets_changed.connect ((snippets) => {
+            if (snippets.size > 0) {
+                main_view.visible_child_name = "snippets";
+            } else {
+                main_view.visible_child_name = "welcome";
+            }
+        });
     }
 
     private void action_add () {
-        main_view.visible_child_name = "snippets";
+//        main_view.visible_child_name = "snippets";
+        Application.get_default ().snippets_manager.add (new Snippet ());
     }
 
     private void action_import () {
