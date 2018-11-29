@@ -18,7 +18,7 @@
 */
 
 public class SnippetPixie.SnippetsManager : Object {
-    public signal void snippets_changed (Gee.ArrayList<Snippet>? snippets);
+    public signal void snippets_changed (Gee.ArrayList<Snippet> snippets);
 
     // Current collection of snippets.
     public Gee.ArrayList<Snippet> snippets { get; private set; }

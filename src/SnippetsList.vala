@@ -18,7 +18,7 @@
 */
 
 public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
-    public signal void selection_changed (Snippet? snippet);
+    public signal void selection_changed (Snippet snippet);
 
     public SnippetsListItem first_item { get; private set; default = null; }
     public SnippetsListItem last_item { get; private set; default = null; }
@@ -65,8 +65,6 @@ public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
         if (item is SnippetsListItem) {
             var list_item = item as SnippetsListItem;
             selection_changed (list_item.snippet);
-        // } else {
-            // selection_changed (null);
         }
     }
 }

@@ -24,6 +24,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
     private Gtk.Button remove_button;
     private SnippetsList snippets_list;
     private bool form_updating = false;
+    private bool abbr_updating = false;
 
     construct {
         this.transition_type = Gtk.StackTransitionType.CROSSFADE;
@@ -87,14 +88,13 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
     }
 
-    private void update_form (Snippet? snippet) {
+    private void update_form (Snippet snippet) {
         form_updating = true;
-        if (snippet == null) {
-            abbreviation_entry.text = "";
-            body_entry.buffer.text = "";
-        } else {
-            abbreviation_entry.text = snippet.abbreviation;
-            body_entry.buffer.text = snippet.body;
+        abbreviation_entry.text = snippet.abbreviation;
+        body_entry.buffer.text = snippet.body;
+
+        if (! abbr_updating) {
+            abbreviation_entry.grab_focus ();
         }
         form_updating = false;
     }
@@ -107,8 +107,10 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var item = snippets_list.selected as SnippetsListItem;
 
         if (item.snippet.abbreviation != abbreviation_entry.text) {
+            abbr_updating = true;
             item.snippet.abbreviation = abbreviation_entry.text;
             Application.get_default ().snippets_manager.update (item.snippet);
+            abbr_updating = false;
         }
     }
 
@@ -120,8 +122,10 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var item = snippets_list.selected as SnippetsListItem;
 
         if (item.snippet.body != body_entry.buffer.text) {
+            abbr_updating = true;
             item.snippet.body = body_entry.buffer.text;
             Application.get_default ().snippets_manager.update (item.snippet);
+            abbr_updating = false;
         }
     }
 
