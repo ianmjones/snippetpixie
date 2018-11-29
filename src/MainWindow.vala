@@ -94,8 +94,8 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     }
 
     private void action_add () {
-//        main_view.visible_child_name = "snippets";
         Application.get_default ().snippets_manager.add (new Snippet ());
+        main_view.select_latest_item ();
     }
 
     private void action_import () {

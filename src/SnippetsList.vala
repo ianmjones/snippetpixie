@@ -20,6 +20,8 @@
 public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
     public signal void selection_changed (Snippet? snippet);
 
+    public SnippetsListItem latest_item = null;
+
     public void set_snippets (Gee.Collection<Snippet>? snippets) {
         int snippet_id = 0;
 
@@ -28,6 +30,7 @@ public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
             snippet_id = current_item.snippet.id;
         }
 
+        latest_item = null;
         root.clear ();
 
         if ( null != snippets && ! snippets.is_empty ) {
@@ -40,13 +43,11 @@ public class SnippetPixie.SnippetsList : Granite.Widgets.SourceList {
                 if (snippet_id != 0 && snippet_id == snippet.id) {
                     this.selected = item;
                 }
-            }
 
-            // If nothing selected, select last item.
-            // if (this.selected == null && item != null) {
-            // message ("HEY HEY HEY");
-            //     this.selected = item;
-            // }
+                if (latest_item == null || snippet.id > latest_item.snippet.id) {
+                    latest_item = item;
+                }
+            }
         }
     }
 
