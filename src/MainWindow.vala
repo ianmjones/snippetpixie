@@ -24,6 +24,8 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     public const string ACTION_ADD = "action_add";
     public const string ACTION_EDIT = "action_edit";
     public const string ACTION_DELETE = "action_delete";
+    public const string ACTION_UNDO = "action_undo";
+    public const string ACTION_REDO = "action_redo";
     public const string ACTION_IMPORT = "action_import";
     public const string ACTION_EXPORT = "action_export";
     public const string ACTION_PREFS = "action_prefs";
@@ -32,6 +34,8 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         { ACTION_ADD, action_add },
 //        { ACTION_EDIT, action_edit, null, 0 },
 //        { ACTION_DELETE, action_delete, null, 0 },
+//        { ACTION_UNDO, action_undo, null, 0 },
+//        { ACTION_REDO, action_redo, null, 0 },
         { ACTION_IMPORT, action_import },
         { ACTION_EXPORT, action_export }
     };

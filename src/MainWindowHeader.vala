@@ -25,6 +25,14 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         add_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ADD;
         add_button.tooltip_text = _("Add snippet");
 
+        var undo_button = new Gtk.Button.from_icon_name ("edit-undo", Gtk.IconSize.LARGE_TOOLBAR);
+        undo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_UNDO;
+        undo_button.tooltip_text = _("Undo last edit");
+
+        var redo_button = new Gtk.Button.from_icon_name ("edit-redo", Gtk.IconSize.LARGE_TOOLBAR);
+        redo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REDO;
+        redo_button.tooltip_text = _("Redo last undo");
+
         var import_button = new Gtk.Button.from_icon_name ("document-import", Gtk.IconSize.LARGE_TOOLBAR);
         import_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
         import_button.tooltip_text = _("Import snippets…");
@@ -62,9 +70,11 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         show_close_button = true;
         pack_start (add_button);
-        pack_start (import_button);
-        pack_start (export_button);
+        pack_start (undo_button);
+        pack_start (redo_button);
         pack_end (menu_button);
+        pack_end (export_button);
+        pack_end (import_button);
         //pack_end (search_entry); // TODO: Add search.
         set_title (_("Snippet Pixie"));
         show_all ();
