@@ -118,7 +118,7 @@ namespace SnippetPixie {
             debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
 
             if (
-                SnippetPixie.Application.focused_control != null && 
+                focused_control != null && 
                 stroke.is_text && 
                 stroke.event_string != null && 
                 snippets_manager.triggers != null && 
@@ -193,7 +193,18 @@ namespace SnippetPixie {
         private bool on_focus (Atspi.Event event) {
             debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
-            focused_control = event.source.get_editable_text_iface ();
+            try {
+                var app = event.source.get_application ();
+                if (app.get_name () == this.application_id) {
+                    focused_control = null;
+                } else {
+                    focused_control = event.source.get_editable_text_iface ();
+                }
+            } catch (Error e) {
+                message ("Could not get focused control: %s", e.message);
+                Atspi.exit ();
+                quit ();
+            }
 
             return false;
         }
@@ -219,8 +230,19 @@ namespace SnippetPixie {
         }
 
         private Atspi.EditableText? get_focused_control (owned Atspi.Accessible? parent) {
-            if (parent == null) {
-                parent = Atspi.get_desktop (0);
+            try {
+                if (parent == null) {
+                    parent = Atspi.get_desktop (0);
+                } else {
+                    var app = parent.get_application ();
+                    if (app.get_name () == this.application_id) {
+                        return null;
+                    }
+                }
+            } catch (Error e) {
+                message ("Could not get check current app: %s", e.message);
+                Atspi.exit ();
+                quit ();
             }
 
             var children = 0;
