@@ -1,15 +1,33 @@
 # Snippet Pixie
 [![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)](https://appcenter.elementary.io/com.bytepixie.snippetpixie)
 
-Your little snippet helper.
+Your little expandable snippet helper.
 
 Save your often used snippets and then expand them whenever you type their abbreviation.
 
 For example:- "spr`" expands to "Snippet Pixie rules!"
 
-![Snippet Pixie Welcome Screen](data/screenshot.png?raw=true)
+![Snippet Pixie Edit Screen](data/screenshot.png?raw=true)
 
-![Snippet Pixie Edit Screen](data/screenshot-2.png?raw=true)
+![Snippet Pixie Welcome Screen](data/screenshot-2.png?raw=true)
+
+## Knonw Issues
+
+* Only works on Elementary OS
+* Only works with accessible applications with simple(ish) text entry
+* Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)
+* Have to add `com.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login
+* Kinda a bit flakey (BETA BETA BETA)
+
+## Roadmap
+
+* Automatically add to Startup apps
+* Undo/Redo of snippet edits
+* Export/Import snippets
+* Date/Time placeholders
+* Snippet search
+* Group snippets?
+* Rich text?
 
 ## Building, Testing, and Installation
 

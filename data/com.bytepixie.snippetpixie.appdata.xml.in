@@ -5,16 +5,34 @@
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-2.0+</project_license>
   <name>Snippet Pixie</name>
-  <summary>Your little snippet helper</summary>
+  <summary>Your little expandable snippet helper</summary>
   <description>
     <p>Save your often used snippets and then expand them whenever you type their abbreviation.</p>
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
+    <p>Knonw Issues:</p>
+    <ul>
+        <li>Only works on Elementary OS</li>
+        <li>Only works with accessible applications with simple(ish) text entry</li>
+        <li>Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)</li>
+        <li>Have to add `com.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login</li>
+        <li>Kinda a bit flakey (BETA BETA BETA)</li>
+    </ul>
+    <p>Roadmap:</p>
+    <ul>
+        <li>Automatically add to Startup apps</li>
+        <li>Undo/Redo of snippet edits</li>
+        <li>Export/Import snippets</li>
+        <li>Date/Time placeholders</li>
+        <li>Snippet search</li>
+        <li>Group snippets?</li>
+        <li>Rich text?</li>
+    </ul>
   </description>
   <provides>
     <binary>com.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
-    <release version="1.0" date="2018-06-01">
+    <release version="1.0b1" date="2018-12-01">
       <description>
         <p>Initial release</p>
       </description>
@@ -58,12 +76,12 @@
     <content_attribute id="money-gambling">none</content_attribute>
   </content_rating>
   <developer_name>Byte Pixie</developer_name>
-  <url type="homepage">https://www.bytepixie.com/snippetpixie/</url>
+  <url type="homepage">https://www.snippetpixie.com</url>
   <url type="bugtracker">https://github.com/bytepixie/snippetpixie/issues</url>
   <url type="translate">https://github.com/bytepixie/snippetpixie/tree/master/po</url>
   <custom>
     <value key="x-appcenter-color-primary">#ffffff</value>
     <value key="x-appcenter-color-primary-text">#485a6c</value>
-    <value key="x-appcenter-suggested-price">5</value>
+    <value key="x-appcenter-suggested-price">10</value>
   </custom>
 </component>

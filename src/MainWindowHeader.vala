@@ -70,11 +70,11 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         show_close_button = true;
         pack_start (add_button);
-        pack_start (undo_button);
-        pack_start (redo_button);
-        pack_end (menu_button);
-        pack_end (export_button);
-        pack_end (import_button);
+        //pack_start (undo_button); // TODO: Add undo.
+        //pack_start (redo_button); // TODO: Add redo.
+        //pack_end (menu_button); // TODO: Add preferences/import/export.
+        //pack_end (export_button); // TODO: Add export.
+        //pack_end (import_button); // TODO: Add import.
         //pack_end (search_entry); // TODO: Add search.
         set_title (_("Snippet Pixie"));
         show_all ();
