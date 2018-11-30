@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2018 Byte Pixie Limited <hello@bytepixie.com> -->
 <component type="desktop">
-  <id>com.bytepixie.snippetpixie.desktop</id>
+  <id>com.github.bytepixie.snippetpixie.desktop</id>
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-2.0+</project_license>
   <name>Snippet Pixie</name>
@@ -14,7 +14,7 @@
         <li>Only works on Elementary OS</li>
         <li>Only works with accessible applications with simple(ish) text entry</li>
         <li>Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)</li>
-        <li>Have to add `com.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login</li>
+        <li>Have to add `com.github.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login</li>
         <li>Kinda a bit flakey (BETA BETA BETA)</li>
     </ul>
     <p>Roadmap:</p>
@@ -29,10 +29,10 @@
     </ul>
   </description>
   <provides>
-    <binary>com.bytepixie.snippetpixie</binary>
+    <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
-    <release version="1.0-beta1" date="2018-11-30">
+    <release version="0.9.0" date="2018-11-30">
       <description>
         <p>Initial release</p>
       </description>

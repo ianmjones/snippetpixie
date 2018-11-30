@@ -1,5 +1,5 @@
 # Snippet Pixie
-[![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)](https://appcenter.elementary.io/com.bytepixie.snippetpixie)
+[![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)](https://appcenter.elementary.io/com.github.bytepixie.snippetpixie)
 
 Your little expandable snippet helper.
 
@@ -16,7 +16,7 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 * Only works on Elementary OS
 * Only works with accessible applications with simple(ish) text entry
 * Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)
-* Have to add `com.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login
+* Have to add `com.github.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login
 * Kinda a bit flakey (BETA BETA BETA)
 
 ## Roadmap
@@ -44,7 +44,7 @@ Run `meson build` to configure the build environment and then change to the buil
     cd build
     ninja test
 
-To install, use `ninja install`, then execute with `com.bytepixie.snippetpixie`
+To install, use `ninja install`, then execute with `com.github.bytepixie.snippetpixie`
 
     sudo ninja install
-    com.bytepixie.snippetpixie
+    com.github.bytepixie.snippetpixie

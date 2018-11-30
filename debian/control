@@ -1,4 +1,4 @@
-Source: com.bytepixie.snippetpixie
+Source: com.github.bytepixie.snippetpixie
 Section: x11
 Priority: extra
 Maintainer: Byte Pixie <hello@bytepixie.com>
@@ -10,7 +10,7 @@ Build-Depends: appstream,
                valac
 Standards-Version: 3.9.3
 
-Package: com.bytepixie.snippetpixie
+Package: com.github.bytepixie.snippetpixie
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Your little snippet helper.

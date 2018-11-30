@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         private static Application? _app = null;
-        private string version_string = "1.0-beta1";
+        private string version_string = "0.9.0";
 
         private bool app_running = false;
         private bool show = true;
@@ -41,7 +41,7 @@ namespace SnippetPixie {
 
         public Application () {
             Object (
-                application_id: "com.bytepixie.snippetpixie",
+                application_id: "com.github.bytepixie.snippetpixie",
                 flags: ApplicationFlags.HANDLES_COMMAND_LINE
             );
         }
@@ -312,7 +312,7 @@ namespace SnippetPixie {
         }
 
         private void save_ui_settings () {
-            var settings = new Settings ("com.bytepixie.snippetpixie");
+            var settings = new Settings ("com.github.bytepixie.snippetpixie");
 
             int window_x, window_y;
             app_window.get_position (out window_x, out window_y);

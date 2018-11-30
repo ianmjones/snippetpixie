@@ -1,4 +1,4 @@
-data/com.bytepixie.snippetpixie.appdata.xml.in
-data/com.bytepixie.snippetpixie.desktop.in
+data/com.github.bytepixie.snippetpixie.appdata.xml.in
+data/com.github.bytepixie.snippetpixie.desktop.in
 src/Application.vala
 src/MainWindow.vala
