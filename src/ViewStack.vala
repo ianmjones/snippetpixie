@@ -39,7 +39,9 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         snippets_list = new SnippetsList();
         snippets_list.selection_changed.connect (update_form);
         Application.get_default ().snippets_manager.snippets_changed.connect ((snippets) => {
-            snippets_list.set_snippets (snippets);
+            if (! abbr_updating) {
+                snippets_list.set_snippets (snippets);
+            }
         });
 
         left_pane.add (snippets_list);
