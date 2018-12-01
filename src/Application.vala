@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         private static Application? _app = null;
-        private string version_string = "0.9.0";
+        private string version_string = "0.9.2";
 
         private bool app_running = false;
         private bool show = true;

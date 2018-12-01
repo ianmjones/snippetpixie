@@ -32,7 +32,7 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
-    <release version="0.9.0" date="2018-12-01">
+    <release version="0.9.2" date="2018-12-01">
       <description>
         <p>Initial release</p>
       </description>

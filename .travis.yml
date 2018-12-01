@@ -25,6 +25,10 @@ matrix:
   include:
     - env: DIST=juno
 
+before_install:
+  - sudo apt-get update -q
+  - sudo apt install libgee-0.8-dev -y
+
 install:
   - npm i -g @elementaryos/houston
 
