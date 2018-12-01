@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Snippet Pixie
-Comment=Your little snippet helper
+Comment=Your little expandable snippet helper
 Exec=com.github.bytepixie.snippetpixie
 Icon=com.github.bytepixie.snippetpixie
 Keywords=expand;text;snippet;

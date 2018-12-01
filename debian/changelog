@@ -1,6 +1,5 @@
-com.github.bytepixie.snippetpixie (1.0) xenial; urgency=medium
+com.github.bytepixie.snippetpixie (0.9.0) xenial; urgency=medium
 
   * Initial Release.
 
- -- Byte Pixie <hello@bytepixie.com>  Fri, 1 June 2018 09:30:00 +0100
-
+ -- Byte Pixie <hello@bytepixie.com>  Sat, 01 Dec 2018 12:34:56 +0000

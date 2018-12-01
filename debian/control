@@ -13,6 +13,6 @@ Standards-Version: 3.9.3
 Package: com.github.bytepixie.snippetpixie
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Description: Your little snippet helper.
+Description: Your expandable little snippet helper.
  Save your often used snippets and then expand them whenever you type their abbreviation.
  For example:- "spr`" expands to "Snippet Pixie rules!"
