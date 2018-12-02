@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img src="data/icons/128/com.github.bytepixie.snippetpixie.svg" alt="Icon" />
+  <img src="data/icons/128/com.github.bytepixie.snippetpixie.svg" alt="Icon" width="128" height="128" />
 </p>
 <h1 align="center">Snippet Pixie</h1>
 <p align="center">
