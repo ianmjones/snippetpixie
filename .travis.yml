@@ -27,7 +27,7 @@ matrix:
 
 before_install:
   - sudo apt-get update -q
-  - sudo apt install libgee-0.8-dev -y
+  - sudo apt install libgee-0.8-dev libsqlite3-dev -y
 
 install:
   - npm i -g @elementaryos/houston

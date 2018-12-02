@@ -1,5 +1,13 @@
-# Snippet Pixie
-[![Get it on AppCenter](https://appcenter.elementary.io/badge.svg)](https://appcenter.elementary.io/com.github.bytepixie.snippetpixie)
+[![Build Status](https://travis-ci.com/bytepixie/snippetpixie.svg?branch=master)](https://travis-ci.com/bytepixie/snippetpixie)
+
+
+<p align="center">
+  <img src="data/icons/128/com.github.bytepixie.snippetpixie.svg" alt="Icon" />
+</p>
+<h1 align="center">Snippet Pixie</h1>
+<p align="center">
+    <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie><img src="https://appcenter.elementary.io/badge.svg?new" alt="Get it on AppCenter" /></a>
+</p>
 
 Your little expandable snippet helper.
 
