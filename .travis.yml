@@ -31,3 +31,4 @@ install:
 script:
   - houston ci
     --distribution $DIST
+    --name-domain com.github.bytepixie.snippetpixie
