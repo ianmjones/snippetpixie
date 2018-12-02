@@ -29,6 +29,7 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 ## Roadmap
 
+* Proper icon!
 * Automatically add to Startup apps
 * Undo/Redo of snippet edits
 * Export/Import snippets

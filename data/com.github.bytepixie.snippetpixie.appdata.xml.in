@@ -19,6 +19,7 @@
     </ul>
     <p>Roadmap:</p>
     <ul>
+        <li>Proper icon!</li>
         <li>Automatically add to Startup apps</li>
         <li>Undo/Redo of snippet edits</li>
         <li>Export/Import snippets</li>
