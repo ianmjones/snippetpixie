@@ -38,6 +38,7 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 * Date/Time placeholders
 * Snippet search
 * Group snippets?
+* Right To Left (RTL) language support
 * Rich text?
 
 ## Building, Testing, and Installation
