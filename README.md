@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie"><img src="https://img.shields.io/badge/platform-elementary-64BAFF.svg?logo=elementary&style=flat&logoColor=white"alt="Platform - Elementary"></a> <a href="https://travis-ci.com/bytepixie/snippetpixie"><img src="https://travis-ci.com/bytepixie/snippetpixie.svg?branch=master" alt="Build Status"></a> <a href="https://github.com/bytepixie/snippetpixie/releases"><img src="https://img.shields.io/github/tag/bytepixie/snippetpixie.svg" alt="GitHub tag (latest SemVer)"></a> <a href="https://github.com/bytepixie/snippetpixie/issues"><img src="https://img.shields.io/github/issues/bytepixie/snippetpixie.svg" alt="GitHub issues"></a> <a href="https://github.com/bytepixie/snippetpixie/pulls"><img src="https://img.shields.io/github/issues-pr/bytepixie/snippetpixie.svg" alt="GitHub pull requests"></a> <a href="https://github.com/bytepixie/snippetpixie/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/bytepixie/snippetpixie.svg" alt="License GPLv2"></a>
+  <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie"><img src="https://img.shields.io/badge/platform-elementary-64BAFF.svg?logo=elementary&style=flat&logoColor=white"alt="Platform - elementary OS"></a> <a href="https://travis-ci.com/bytepixie/snippetpixie"><img src="https://travis-ci.com/bytepixie/snippetpixie.svg?branch=master" alt="Build Status"></a> <a href="https://github.com/bytepixie/snippetpixie/releases"><img src="https://img.shields.io/github/tag/bytepixie/snippetpixie.svg" alt="GitHub tag (latest SemVer)"></a> <a href="https://github.com/bytepixie/snippetpixie/issues"><img src="https://img.shields.io/github/issues/bytepixie/snippetpixie.svg" alt="GitHub issues"></a> <a href="https://github.com/bytepixie/snippetpixie/pulls"><img src="https://img.shields.io/github/issues-pr/bytepixie/snippetpixie.svg" alt="GitHub pull requests"></a> <a href="https://github.com/bytepixie/snippetpixie/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/bytepixie/snippetpixie.svg" alt="License GPLv2"></a>
 </p>
 
 
@@ -23,7 +23,6 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 ## Knonw Issues
 
-* Only works on Elementary OS
 * Only works with accessible applications with simple(ish) text entry
 * Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)
 * Have to add `com.github.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login

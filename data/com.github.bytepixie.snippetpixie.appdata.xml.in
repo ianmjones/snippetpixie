@@ -11,7 +11,6 @@
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
     <p>Knonw Issues:</p>
     <ul>
-        <li>Only works on Elementary OS</li>
         <li>Only works with accessible applications with simple(ish) text entry</li>
         <li>Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)</li>
         <li>Have to add `com.github.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login</li>
