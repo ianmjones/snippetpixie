@@ -213,6 +213,11 @@ namespace SnippetPixie {
         private bool on_window_activate (Atspi.Event event) {
             debug (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
+            if (event.source != null) {
+                event.source.clear_cache ();
+                debug ("Cleared the cache for '%s'", event.source.name);
+            }
+
             // If a window is being returned to one way or another, then check whether an editable text is already focused.
             focused_control = get_focused_control (event.source);
 
