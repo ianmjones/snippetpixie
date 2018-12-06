@@ -238,6 +238,7 @@ namespace SnippetPixie {
             try {
                 if (parent == null) {
                     parent = Atspi.get_desktop (0);
+                    debug ("Hmmm, had to go to desktop to try and find focused control, seems suspicious.");
                 } else {
                     var app = parent.get_application ();
                     if (app.get_name () == this.application_id) {
@@ -245,7 +246,7 @@ namespace SnippetPixie {
                     }
                 }
             } catch (Error e) {
-                message ("Could not get check current app: %s", e.message);
+                message ("Could not get/check current app: %s", e.message);
                 Atspi.exit ();
                 quit ();
             }
@@ -260,27 +261,32 @@ namespace SnippetPixie {
                 quit ();
             }
 
-            for (int i = 0; i < children; i++) {
-                Atspi.Accessible child = null;
+            if (children > 0) {
+                for (int i = 0; i < children; i++) {
+                    Atspi.Accessible child = null;
 
-                try {
-                    child = parent.get_child_at_index(i);
-                } catch (Error e) {
-                    message ("Could not get child control: %s", e.message);
-                    Atspi.exit ();
-                    quit ();
-                }
+                    try {
+                        child = parent.get_child_at_index(i);
+                    } catch (Error e) {
+                        message ("Could not get child control: %s", e.message);
+                        Atspi.exit ();
+                        quit ();
+                    }
 
-                if (child.states.contains(Atspi.StateType.FOCUSED) && (child is Atspi.EditableText)) {
-                    debug ("$$$ Found focsed child control.");
-                    return child;
-                }
+                    if (child.states.contains(Atspi.StateType.FOCUSED) && (child is Atspi.EditableText)) {
+                        debug ("$$$ Found focsed child control.");
+                        return child;
+                    }
 
-                var control = get_focused_control (child);
+                    // If the child control is visible and showing it's worth looking at its children.
+                    if (child.states.contains(Atspi.StateType.VISIBLE) && child.states.contains(Atspi.StateType.SHOWING)) {
+                        var control = get_focused_control (child);
 
-                // Woo hoo, found it buried down here somewhere.
-                if (control != null) {
-                    return control;
+                        // Woo hoo, found it buried down here somewhere.
+                        if (control != null) {
+                            return control;
+                        }
+                    }
                 }
             }
 
