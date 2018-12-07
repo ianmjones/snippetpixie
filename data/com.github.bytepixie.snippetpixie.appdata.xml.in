@@ -81,8 +81,8 @@
   <url type="bugtracker">https://github.com/bytepixie/snippetpixie/issues</url>
   <url type="translate">https://github.com/bytepixie/snippetpixie/tree/master/po</url>
   <custom>
-    <value key="x-appcenter-color-primary">#ffffff</value>
-    <value key="x-appcenter-color-primary-text">#485a6c</value>
+    <value key="x-appcenter-color-primary">#52658d</value>
+    <value key="x-appcenter-color-primary-text">#fafafa</value>
     <value key="x-appcenter-suggested-price">10</value>
   </custom>
 </component>
