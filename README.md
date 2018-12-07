@@ -46,6 +46,7 @@ You'll need the following dependencies to build:
 * libgtk-3-dev
 * libgee-0.8-dev
 * libsqlite3-dev
+* libibus-1.0-dev
 * meson
 * valac
 
