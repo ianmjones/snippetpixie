@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         private static Application? _app = null;
-        private string version_string = "0.9.3";
+        private string version_string = "0.9.4";
 
         private bool app_running = false;
         private bool show = true;
@@ -393,21 +393,86 @@ namespace SnippetPixie {
             return false;
         }
 
+        /**
+         * Mostly "Borrowed" from Clipped by David Hewitt.
+         * https://github.com/davidmhewitt/clipped/blob/edac68890c2a78357910f05bf44060c2aba5958e/src/Application.vala#L153
+         */
+        private void update_autostart (bool autostart) {
+            var desktop_file_name = application_id + ".desktop";
+            var desktop_file_path = new DesktopAppInfo (desktop_file_name).filename;
+            var desktop_file = File.new_for_path (desktop_file_path);
+            var dest_path = Path.build_path (
+                Path.DIR_SEPARATOR_S,
+                Environment.get_user_config_dir (),
+                "autostart",
+                desktop_file_name
+            );
+            var dest_file = File.new_for_path (dest_path);
+
+            try {
+                desktop_file.copy (dest_file, FileCopyFlags.OVERWRITE);
+            } catch (Error e) {
+                warning ("Error making copy of desktop file for autostart: %s", e.message);
+            }
+
+            var keyfile = new KeyFile ();
+
+            try {
+                keyfile.load_from_file (dest_path, KeyFileFlags.NONE);
+                keyfile.set_string ("Desktop Entry", "Exec", "com.github.bytepixie.snippetpixie --start");
+                keyfile.set_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled", autostart);
+                keyfile.save_to_file (dest_path);
+            } catch (Error e) {
+                warning ("Error enabling autostart: %s", e.message);
+            }
+        }
+
+        private bool get_autostart () {
+            var desktop_file_name = application_id + ".desktop";
+            var dest_path = Path.build_path (
+                Path.DIR_SEPARATOR_S,
+                Environment.get_user_config_dir (),
+                "autostart",
+                desktop_file_name
+            );
+            var dest_file = File.new_for_path (dest_path);
+
+            if (! dest_file.query_exists ()) {
+                // By default we want to autostart.
+                update_autostart (true);
+                return true;
+            }
+
+            var autostart = false;
+            var keyfile = new KeyFile ();
+
+            try {
+                keyfile.load_from_file (dest_path, KeyFileFlags.NONE);
+                autostart = keyfile.get_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled");
+            } catch (Error e) {
+                warning ("Error enabling autostart: %s", e.message);
+            }
+
+            return autostart;
+        }
+
         public override int command_line (ApplicationCommandLine command_line) {
             show = true;
             bool start = false;
             bool stop = false;
+            string autostart = null;
             bool status = false;
             bool version = false;
             bool help = false;
 
-            OptionEntry[] options = new OptionEntry[6];
+            OptionEntry[] options = new OptionEntry[7];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
             options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start in the background", null };
             options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
-            options[3] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
-            options[4] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
-            options[5] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
+            options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, "Turn auto start of Snippet Pixie on login, on, off, or show status of setting", "{on|off|status}" };
+            options[4] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
+            options[5] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
+            options[6] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
 
             // We have to make an extra copy of the array, since .parse assumes
             // that it can remove strings from the array without freeing them.
@@ -429,6 +494,28 @@ namespace SnippetPixie {
                 command_line.print ("error: %s\n", e.message);
                 command_line.print ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
                 return 0;
+            }
+
+            switch (autostart) {
+                case null:
+                    break;
+                case "on":
+                    update_autostart (true);
+                    return 0;
+                case "off":
+                    update_autostart (false);
+                    return 0;
+                case "status":
+                    if (get_autostart ()) {
+                        command_line.print ("on\n");
+                    } else {
+                        command_line.print ("off\n");
+                    }
+                    return 0;
+                default:
+                    command_line.print ("Invalid autostart value \"%s\".\n", autostart);
+                    help = true;
+                    break;
             }
 
             if (help) {

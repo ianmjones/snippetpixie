@@ -7,8 +7,8 @@ Keywords=expand;text;snippet;
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=GTK;Utility;
-Actions=Start;Stop;
+Categories=GTK;Office;TextTools;Utility;
+Actions=Start;Stop;ToggleAutoStart;
 
 [Desktop Action Start]
 Name=Start Snippet Pixie
