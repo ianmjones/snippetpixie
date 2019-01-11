@@ -438,9 +438,10 @@ namespace SnippetPixie {
             var dest_file = File.new_for_path (dest_path);
 
             if (! dest_file.query_exists ()) {
-                // By default we want to autostart.
-                update_autostart (true);
-                return true;
+                // By default we do not want to autostart.
+                // But we do want the Startup entry.
+                update_autostart (false);
+                return false;
             }
 
             var autostart = false;
