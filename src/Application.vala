@@ -438,10 +438,9 @@ namespace SnippetPixie {
             var dest_file = File.new_for_path (dest_path);
 
             if (! dest_file.query_exists ()) {
-                // By default we do not want to autostart.
-                // But we do want the Startup entry.
-                update_autostart (false);
-                return false;
+                // By default we want to autostart.
+                update_autostart (true);
+                return true;
             }
 
             var autostart = false;
@@ -468,7 +467,7 @@ namespace SnippetPixie {
 
             OptionEntry[] options = new OptionEntry[7];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
-            options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start in the background", null };
+            options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start with no window", null };
             options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
             options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, "Turn auto start of Snippet Pixie on login, on, off, or show status of setting", "{on|off|status}" };
             options[4] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
@@ -552,6 +551,7 @@ namespace SnippetPixie {
 
             // If we get here we're either showing the window or running the background process.
             if ( show == false || ! app_running ) {
+                get_autostart ();
                 hold ();
             }
 
