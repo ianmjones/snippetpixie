@@ -7,7 +7,7 @@ Keywords=expand;text;snippet;
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=GTK;Utility;
+Categories=GTK;Office;TextTools;Utility;
 Actions=Start;Stop;
 
 [Desktop Action Start]
