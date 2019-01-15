@@ -9,29 +9,21 @@
   <description>
     <p>Save your often used snippets and then expand them whenever you type their abbreviation.</p>
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
-    <p>Knonw Issues:</p>
-    <ul>
-        <li>Only works with accessible applications with simple(ish) text entry</li>
-        <li>Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)</li>
-        <li>Have to add `com.github.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login</li>
-        <li>Kinda a bit flakey (BETA BETA BETA)</li>
-    </ul>
-    <p>Roadmap:</p>
-    <ul>
-        <li>Automatically add to Startup apps</li>
-        <li>Undo/Redo of snippet edits</li>
-        <li>Export/Import snippets</li>
-        <li>Date/Time placeholders</li>
-        <li>Snippet search</li>
-        <li>Group snippets?</li>
-        <li>Right To Left (RTL) language support</li>
-        <li>Rich text?</li>
-    </ul>
   </description>
   <provides>
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.0" date="2019-01-15">
+      <description>
+        <ul>
+            <li>1.0 Release!</li>
+            <li>Added Snippet Pixie to login startup items by default.</li>
+            <li>Added --autostart={on|off|status} option to CLI for turning autostart on, off, or getting settings status.</li>
+            <li>Changed body field to select all text when tabbed into.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.3" date="2018-12-08">
       <description>
         <ul>

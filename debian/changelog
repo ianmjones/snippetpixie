@@ -1,3 +1,12 @@
+com.github.bytepixie.snippetpixie (1.0) xenial; urgency=medium
+
+  * 1.0 Release!
+  * Added Snippet Pixie to login startup items by default.
+  * Added --autostart={on|off|status} option to CLI for turning autostart on, off, or getting settings status.
+  * Changed body field to select all text when tabbed into.
+
+ -- Byte Pixie <hello@bytepixie.com>  Tue, 15 Jan 2019 12:34:56 +0000
+
 com.github.bytepixie.snippetpixie (0.9.3) xenial; urgency=medium
 
   * Fixed crash when an application with a large number of controls was activated.

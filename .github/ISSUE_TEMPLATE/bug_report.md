@@ -22,7 +22,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. elementary OS 5.0 Juno]
- - Snippet Pixie Version [e.g. 0.9.4]
+ - Snippet Pixie Version [e.g. 1.0]
  - Related Application [e.g. Chrome, Firefox, Mail, Quilter]
 
 **Additional context**
