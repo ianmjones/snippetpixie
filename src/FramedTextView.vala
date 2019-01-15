@@ -23,6 +23,11 @@ public class SnippetPixie.FramedTextView : Gtk.Frame {
     construct {
         textview = new Gtk.TextView ();
         textview.wrap_mode = Gtk.WrapMode.WORD_CHAR;
+        textview.focus.connect ((direction) => {
+            if (direction == Gtk.DirectionType.TAB_FORWARD || direction == Gtk.DirectionType.TAB_BACKWARD) {
+                textview.select_all (true);
+            }
+        });
 
         var scroll = new Gtk.ScrolledWindow (null, null);
         scroll.set_policy (Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.AUTOMATIC);
