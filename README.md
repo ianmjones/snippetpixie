@@ -25,12 +25,10 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 * Only works with accessible applications with simple(ish) text entry
 * Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)
-* Have to add `com.github.bytepixie.snippetpixie --start` to System Settings -> Startup to enable on login
-* Kinda a bit flakey (BETA BETA BETA)
 
 ## Roadmap
 
-* Automatically add to Startup apps
+* ~~Automatically add to Startup apps~~
 * Undo/Redo of snippet edits
 * Export/Import snippets
 * Date/Time placeholders
