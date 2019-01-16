@@ -1,4 +1,4 @@
-com.github.bytepixie.snippetpixie (1.0) xenial; urgency=medium
+com.github.bytepixie.snippetpixie (1.0.0) xenial; urgency=medium
 
   * 1.0 Release!
   * Added Snippet Pixie to login startup items by default.

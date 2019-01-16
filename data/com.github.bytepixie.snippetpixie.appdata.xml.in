@@ -14,7 +14,7 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
-    <release version="1.0" date="2019-01-15">
+    <release version="1.0.0" date="2019-01-15">
       <description>
         <ul>
             <li>1.0 Release!</li>
