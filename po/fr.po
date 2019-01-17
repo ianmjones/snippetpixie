@@ -40,7 +40,7 @@ msgstr "Par exemple : - « spr` » s'étendra en « Snippet Pixie rules ! »"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:57
 msgid "Byte Pixie"
-msgstr "Octet Pixie"
+msgstr "Byte Pixie"
 
 #: data/com.github.bytepixie.snippetpixie.desktop.in:4
 msgid "Your little snippet helper"
