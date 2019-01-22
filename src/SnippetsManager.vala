@@ -153,7 +153,7 @@ public class SnippetPixie.SnippetsManager : Object {
     private Gee.ArrayList<Snippet>? select_snippets () {
         Sqlite.Statement stmt;
 
-        const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation;";
+        const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation, id;";
 	    int ec = db.prepare_v2 (query, query.length, out stmt);
 	    if (ec != Sqlite.OK) {
 		    warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
@@ -207,5 +207,48 @@ public class SnippetPixie.SnippetsManager : Object {
         }
 
         snippets_changed (snippets);
+    }
+
+    public void export_to_file (string filepath) {
+        debug ("Export File Path: %s", filepath);
+
+        try {
+            var builder = new Json.Builder ();
+            builder.begin_object ();
+            builder.set_member_name ("generator");
+            builder.add_string_value (Application.ID);
+            builder.set_member_name ("version");
+            builder.add_int_value (101);
+
+            builder.set_member_name ("data");
+            builder.begin_array ();
+            builder.begin_object ();
+            builder.set_member_name ("snippets");
+            builder.begin_array ();
+
+            Gee.ArrayList<Snippet> snippets = select_snippets ();
+            foreach (var snippet in snippets) {
+                builder.begin_object ();
+                builder.set_member_name ("abbreviation");
+                builder.add_string_value (snippet.abbreviation);
+                builder.set_member_name ("body");
+                builder.add_string_value (snippet.body);
+                builder.end_object ();
+            }
+
+            builder.end_array (); // snippets array
+            builder.end_object (); // snippets object
+            builder.end_array (); // data array
+
+            builder.end_object ();
+
+            var root = builder.get_root ();
+            var generator = new Json.Generator ();
+            generator.set_root (root);
+            generator.set_pretty (true);
+            generator.to_file (filepath);
+        } catch (Error e) {
+            error ("%s\n", e.message);
+        }
     }
 }

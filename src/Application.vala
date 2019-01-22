@@ -20,8 +20,10 @@
 
 namespace SnippetPixie {
     public class Application : Gtk.Application {
+        public const string ID = "com.github.bytepixie.snippetpixie";
+
         private static Application? _app = null;
-        private string version_string = "1.0.0";
+        private string version_string = "1.1.0";
 
         private bool app_running = false;
         private bool show = true;
@@ -41,7 +43,7 @@ namespace SnippetPixie {
 
         public Application () {
             Object (
-                application_id: "com.github.bytepixie.snippetpixie",
+                application_id: ID,
                 flags: ApplicationFlags.HANDLES_COMMAND_LINE
             );
         }
@@ -462,17 +464,21 @@ namespace SnippetPixie {
             bool stop = false;
             string autostart = null;
             bool status = false;
+            string export_file = null;
+            string import_file = null;
             bool version = false;
             bool help = false;
 
-            OptionEntry[] options = new OptionEntry[7];
+            OptionEntry[] options = new OptionEntry[9];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
             options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start with no window", null };
             options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
             options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, "Turn auto start of Snippet Pixie on login, on, off, or show status of setting", "{on|off|status}" };
             options[4] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
-            options[5] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
-            options[6] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
+            options[5] = { "export", 'e', 0, OptionArg.FILENAME, ref export_file, "Export snippets to file", "filename" };
+            options[6] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, "Import snippets from file", "filename" };
+            options[7] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
+            options[8] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
 
             // We have to make an extra copy of the array, since .parse assumes
             // that it can remove strings from the array without freeing them.
@@ -494,6 +500,33 @@ namespace SnippetPixie {
                 command_line.print ("error: %s\n", e.message);
                 command_line.print ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
                 return 0;
+            }
+
+            if (help) {
+                command_line.print ("%s\n", opt_context.get_help (true, null));
+                return 0;
+            }
+
+            if (version) {
+                command_line.print ("%s\n", version_string);
+                return 0;
+            }
+
+            if (stop) {
+                command_line.print ("Quitting...\n");
+                var app = get_default ();
+                app.quit ();
+                return 0;
+            }
+
+            if (status) {
+                if (app_running) {
+                    command_line.print ("Running.\n");
+                    return 0;
+                } else {
+                    command_line.print ("Not Running.\n");
+                    return 1;
+                }
             }
 
             switch (autostart) {
@@ -518,35 +551,22 @@ namespace SnippetPixie {
                     break;
             }
 
-            if (help) {
-                command_line.print ("%s\n", opt_context.get_help (true, null));
+            if (export_file != null) {
+                if (snippets_manager == null) {
+                    snippets_manager = new SnippetsManager ();
+                }
+
+                snippets_manager.export_to_file (export_file);
                 return 0;
             }
 
-            if (version) {
-                command_line.print ("%s\n", version_string);
-                return 0;
-            }
-
-            if (stop) {
-                command_line.print ("Quitting...\n");
-                var app = get_default ();
-                app.quit ();
+            if (import_file != null) {
+                debug ("Import File: %s", import_file);
                 return 0;
             }
 
             if (start) {
                 show = false;
-            }
-
-            if (status) {
-                if (app_running) {
-                    command_line.print ("Running.\n");
-                    return 0;
-                } else {
-                    command_line.print ("Not Running.\n");
-                    return 1;
-                }
             }
 
             // If we get here we're either showing the window or running the background process.

@@ -14,7 +14,8 @@ Build-Depends: appstream,
                libgranite-dev,
                libx11-dev,
                libatspi2.0-dev,
-               libibus-1.0-dev
+               libibus-1.0-dev,
+               libjson-glib-dev
 Standards-Version: 3.9.3
 
 Package: com.github.bytepixie.snippetpixie
