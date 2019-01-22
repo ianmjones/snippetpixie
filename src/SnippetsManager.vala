@@ -17,6 +17,10 @@
 * Boston, MA 02110-1301 USA
 */
 
+public errordomain SnippetPixieError {
+    INVALID_FORMAT
+}
+
 public class SnippetPixie.SnippetsManager : Object {
     public signal void snippets_changed (Gee.ArrayList<Snippet> snippets);
 
@@ -253,5 +257,116 @@ public class SnippetPixie.SnippetsManager : Object {
         }
 
         return 0;
+    }
+
+    public int import_from_file (string filepath) {
+        // Currently only support JSON file (as per export).
+        var parser = new Json.Parser ();
+
+        try {
+            parser.load_from_file (filepath);
+
+            var node = parser.get_root ();
+            import_json (node);
+        } catch (Error e) {
+            print ("Unable to load '%s': %s\n", filepath, e.message);
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public void import_json (Json.Node node) throws Error {
+        // Root is JSON Object.
+        if (node.get_node_type () != Json.NodeType.OBJECT) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Unexpected element type %s", node.type_name ());
+        }
+
+        unowned Json.Object obj = node.get_object ();
+
+        if (!obj.has_member ("generator")) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'genenerator' element.");
+        }
+
+        var generator = obj.get_string_member ("generator");
+        print ("Generator: '%s'\n", generator);
+
+        if (generator != Application.ID) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Invalid 'genenerator' element value.");
+        }
+
+        if (!obj.has_member ("version")) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'version' element.");
+        }
+
+        var version = obj.get_int_member ("version");
+        print ("Version: '%s'\n", version.to_string ());
+
+        // TODO: Change test if new export file format versions created.
+        if (version != 101) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Invalid 'version' element value.");
+        }
+
+        if (!obj.has_member ("data")) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'data' element.");
+        }
+
+        var data = obj.get_member ("data");
+
+        process_data_array (data, version);
+    }
+
+    public void process_data_array (Json.Node node, int64 version) throws Error {
+        if (node.get_node_type () != Json.NodeType.ARRAY) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Unexpected 'data' element type %s", node.type_name ());
+        }
+
+        unowned Json.Array array = node.get_array ();
+
+        // Tables.
+        Json.Array snippets = null;
+
+        // Each array element in data is a Table object, with array of objects.
+        foreach (unowned Json.Node item in array.get_elements ()) {
+            var obj = item.get_object ();
+
+            foreach (unowned string name in obj.get_members ()) {
+                switch (name) {
+                case "snippets":
+                    snippets = obj.get_array_member ("snippets");
+                    break;
+                default:
+                    throw new SnippetPixieError.INVALID_FORMAT ("Unexpected 'data' element '%s'", name);
+                }
+            }
+        }
+
+        // We expect at least an empty array of snippets.
+        if (snippets == null) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'snippets' element within 'data' element.");
+        }
+
+        process_snippets_array (snippets, version);
+    }
+
+    public void process_snippets_array (Json.Array array, int64 version) throws Error {
+        var count = array.get_length ();
+
+        print ("Snippets to process: %u\n", count);
+
+        if (count < 1) {
+            return;
+        }
+
+        foreach (unowned Json.Node item in array.get_elements ()) {
+            var obj = item.get_object ();
+
+            // TODO: Check if abbreviation already exists, then either overwrite or abort item.
+
+            Snippet snippet = new Snippet ();
+            snippet.abbreviation = obj.get_string_member ("abbreviation");
+            snippet.body = obj.get_string_member ("body");
+            insert_snippet (snippet);
+        }
     }
 }

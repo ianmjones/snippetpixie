@@ -560,8 +560,11 @@ namespace SnippetPixie {
             }
 
             if (import_file != null) {
-                debug ("Import File: %s", import_file);
-                return 0;
+                if (snippets_manager == null) {
+                    snippets_manager = new SnippetsManager ();
+                }
+
+                return snippets_manager.import_from_file (import_file);
             }
 
             if (start) {
