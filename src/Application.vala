@@ -556,8 +556,7 @@ namespace SnippetPixie {
                     snippets_manager = new SnippetsManager ();
                 }
 
-                snippets_manager.export_to_file (export_file);
-                return 0;
+                return snippets_manager.export_to_file (export_file);
             }
 
             if (import_file != null) {

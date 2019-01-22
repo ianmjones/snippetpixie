@@ -209,7 +209,7 @@ public class SnippetPixie.SnippetsManager : Object {
         snippets_changed (snippets);
     }
 
-    public void export_to_file (string filepath) {
+    public int export_to_file (string filepath) {
         debug ("Export File Path: %s", filepath);
 
         try {
@@ -248,7 +248,10 @@ public class SnippetPixie.SnippetsManager : Object {
             generator.set_pretty (true);
             generator.to_file (filepath);
         } catch (Error e) {
-            error ("%s\n", e.message);
+            print ("%s\n", e.message);
+            return 1;
         }
+
+        return 0;
     }
 }
