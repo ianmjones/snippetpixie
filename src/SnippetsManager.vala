@@ -180,6 +180,38 @@ public class SnippetPixie.SnippetsManager : Object {
         return snippets;
     }
 
+    private Snippet? select_snippet (string abbreviation) {
+        Sqlite.Statement stmt;
+
+        const string query = "SELECT id, abbreviation, body FROM snippets WHERE abbreviation = $ABR ORDER BY id;";
+	    int ec = db.prepare_v2 (query, query.length, out stmt);
+	    if (ec != Sqlite.OK) {
+		    warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+		    return null;
+	    }
+
+        int param_position = stmt.bind_parameter_index ("$ABR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, abbreviation);
+
+        Snippet snippet = null;
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            snippet = new Snippet ();
+            snippet.id = stmt.column_int (0);
+            snippet.abbreviation = stmt.column_text (1);
+            snippet.body = stmt.column_text (2);
+
+            // Return the first found, duplicates are ignored.
+            return snippet;
+		}
+		if (ec != Sqlite.DONE) {
+			warning ("Error fetching snippet: %s\n", db.errmsg ());
+            return null;
+        }
+
+        return snippet;
+    }
+
     public void add (Snippet snippet) {
         insert_snippet (snippet);
         refresh_snippets ();
@@ -259,7 +291,7 @@ public class SnippetPixie.SnippetsManager : Object {
         return 0;
     }
 
-    public int import_from_file (string filepath) {
+    public int import_from_file (string filepath, bool overwrite) {
         // Currently only support JSON file (as per export).
         var parser = new Json.Parser ();
 
@@ -267,7 +299,9 @@ public class SnippetPixie.SnippetsManager : Object {
             parser.load_from_file (filepath);
 
             var node = parser.get_root ();
-            import_json (node);
+            print ("Importing: '%s'\n", filepath);
+
+            import_json (node, overwrite);
         } catch (Error e) {
             print ("Unable to load '%s': %s\n", filepath, e.message);
             return 1;
@@ -276,7 +310,7 @@ public class SnippetPixie.SnippetsManager : Object {
         return 0;
     }
 
-    public void import_json (Json.Node node) throws Error {
+    private void import_json (Json.Node node, bool overwrite) throws Error {
         // Root is JSON Object.
         if (node.get_node_type () != Json.NodeType.OBJECT) {
             throw new SnippetPixieError.INVALID_FORMAT ("Unexpected element type %s", node.type_name ());
@@ -313,10 +347,10 @@ public class SnippetPixie.SnippetsManager : Object {
 
         var data = obj.get_member ("data");
 
-        process_data_array (data, version);
+        process_data_array (data, version, overwrite);
     }
 
-    public void process_data_array (Json.Node node, int64 version) throws Error {
+    private void process_data_array (Json.Node node, int64 version, bool overwrite) throws Error {
         if (node.get_node_type () != Json.NodeType.ARRAY) {
             throw new SnippetPixieError.INVALID_FORMAT ("Unexpected 'data' element type %s", node.type_name ());
         }
@@ -346,10 +380,10 @@ public class SnippetPixie.SnippetsManager : Object {
             throw new SnippetPixieError.INVALID_FORMAT ("Missing 'snippets' element within 'data' element.");
         }
 
-        process_snippets_array (snippets, version);
+        process_snippets_array (snippets, version, overwrite);
     }
 
-    public void process_snippets_array (Json.Array array, int64 version) throws Error {
+    private void process_snippets_array (Json.Array array, int64 version, bool overwrite) throws Error {
         var count = array.get_length ();
 
         print ("Snippets to process: %u\n", count);
@@ -358,15 +392,36 @@ public class SnippetPixie.SnippetsManager : Object {
             return;
         }
 
+        var created = 0;
+        var updated = 0;
+        var skipped = 0;
+
         foreach (unowned Json.Node item in array.get_elements ()) {
             var obj = item.get_object ();
+            var abr = obj.get_string_member ("abbreviation");
 
-            // TODO: Check if abbreviation already exists, then either overwrite or abort item.
+            Snippet snippet = select_snippet (abr);
 
-            Snippet snippet = new Snippet ();
-            snippet.abbreviation = obj.get_string_member ("abbreviation");
-            snippet.body = obj.get_string_member ("body");
-            insert_snippet (snippet);
+            if (snippet != null && ! overwrite) {
+                skipped++;
+                continue;
+            }
+
+            if (snippet != null) {
+                snippet.body = obj.get_string_member ("body");
+                update_snippet (snippet);
+                updated++;
+            } else {
+                snippet = new Snippet ();
+                snippet.abbreviation = abr;
+                snippet.body = obj.get_string_member ("body");
+                insert_snippet (snippet);
+                created++;
+            }
         }
-    }
+
+        print ("Created: %u\n", created);
+        print ("Updated: %u\n", updated);
+        print ("Skipped: %u\n", skipped);
+     }
 }

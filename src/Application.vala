@@ -466,19 +466,21 @@ namespace SnippetPixie {
             bool status = false;
             string export_file = null;
             string import_file = null;
+            bool force = false;
             bool version = false;
             bool help = false;
 
-            OptionEntry[] options = new OptionEntry[9];
+            OptionEntry[] options = new OptionEntry[10];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
             options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start with no window", null };
             options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
             options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, "Turn auto start of Snippet Pixie on login, on, off, or show status of setting", "{on|off|status}" };
             options[4] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
             options[5] = { "export", 'e', 0, OptionArg.FILENAME, ref export_file, "Export snippets to file", "filename" };
-            options[6] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, "Import snippets from file", "filename" };
-            options[7] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
-            options[8] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
+            options[6] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, "Import snippets from file, skips snippets where abbreviation already exists", "filename" };
+            options[7] = { "force", 0, 0, OptionArg.NONE, ref force, "If used in conjunction with import, existing snippets with same abbreviation are updated", null };
+            options[8] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
+            options[9] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
 
             // We have to make an extra copy of the array, since .parse assumes
             // that it can remove strings from the array without freeing them.
@@ -564,7 +566,7 @@ namespace SnippetPixie {
                     snippets_manager = new SnippetsManager ();
                 }
 
-                return snippets_manager.import_from_file (import_file);
+                return snippets_manager.import_from_file (import_file, force);
             }
 
             if (start) {
