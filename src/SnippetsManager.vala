@@ -423,5 +423,7 @@ public class SnippetPixie.SnippetsManager : Object {
         print ("Created: %u\n", created);
         print ("Updated: %u\n", updated);
         print ("Skipped: %u\n", skipped);
+
+        refresh_snippets ();
      }
 }

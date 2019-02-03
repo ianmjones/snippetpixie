@@ -22,22 +22,19 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
     public const string ACTION_PREFIX = "win.";
     public const string ACTION_ADD = "action_add";
-    public const string ACTION_EDIT = "action_edit";
-    public const string ACTION_DELETE = "action_delete";
-    public const string ACTION_UNDO = "action_undo";
-    public const string ACTION_REDO = "action_redo";
+    // public const string ACTION_UNDO = "action_undo";
+    // public const string ACTION_REDO = "action_redo";
     public const string ACTION_IMPORT = "action_import";
     public const string ACTION_EXPORT = "action_export";
-    public const string ACTION_PREFS = "action_prefs";
+    public const string ACTION_ABOUT = "action_about";
 
     private const ActionEntry[] action_entries = {
         { ACTION_ADD, action_add },
-//        { ACTION_EDIT, action_edit, null, 0 },
-//        { ACTION_DELETE, action_delete, null, 0 },
-//        { ACTION_UNDO, action_undo, null, 0 },
-//        { ACTION_REDO, action_redo, null, 0 },
+        // { ACTION_UNDO, action_undo, null, 0 },
+        // { ACTION_REDO, action_redo, null, 0 },
         { ACTION_IMPORT, action_import },
-        { ACTION_EXPORT, action_export }
+        { ACTION_EXPORT, action_export },
+        { ACTION_ABOUT, action_about }
     };
 
     private Settings settings;
@@ -103,10 +100,70 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     }
 
     private void action_import () {
-        main_view.visible_child_name = "welcome";
+        var diag = new Gtk.FileChooserNative (_("Import Snippets"), this, Gtk.FileChooserAction.OPEN, _("Import"), null);
+        var response =  diag.run ();
+
+        if (response == Gtk.ResponseType.ACCEPT) {
+            var filepath  = diag.get_filename ();
+            var result = Application.get_default ().snippets_manager.import_from_file (filepath, false);
+
+            if (result == 0) {
+                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Imported Snippets"), _("Snippet Pixie successfully imported the file, any existing snippets were not updated. To update existing snippets during import, please use the command line option."), "process-completed", Gtk.ButtonsType.CLOSE);
+                cheer.run ();
+                cheer.destroy ();
+            } else {
+                var boo = new Granite.MessageDialog.with_image_from_icon_name (_("Failed to import selected file"), _("Snippet Pixie can currently only import the JSON format files that it also exports."), "dialog-error", Gtk.ButtonsType.CLOSE);
+                boo.run ();
+                boo.destroy ();
+            }
+        }
     }
 
     private void action_export () {
-        main_view.visible_child_name = "snippets";
+        var diag = new Gtk.FileChooserNative (_("Export Snippets"), this, Gtk.FileChooserAction.SAVE, null, null);
+        var response =  diag.run ();
+
+        if (response == Gtk.ResponseType.ACCEPT) {
+            var filepath  = diag.get_filename ();
+            var result = Application.get_default ().snippets_manager.export_to_file (filepath);
+
+            if (result == 0) {
+                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Exported Snippets"), _("Your snippets were successfully exported to file."), "process-completed", Gtk.ButtonsType.CLOSE);
+                cheer.run ();
+                cheer.destroy ();
+            } else {
+                var boo = new Granite.MessageDialog.with_image_from_icon_name (_("Failed to export to file"), _("Something went wrong, sorry."), "dialog-error", Gtk.ButtonsType.CLOSE);
+                boo.run ();
+                boo.destroy ();
+            }
+        }
+    }
+
+    private void action_about () {
+        Gtk.AboutDialog dialog = new Gtk.AboutDialog ();
+        dialog.set_destroy_with_parent (true);
+        dialog.set_transient_for (this);
+        dialog.set_modal (true);
+
+        dialog.authors = {"Ian M. Jones"};
+
+        dialog.program_name = "Snippet Pixie";
+        dialog.copyright = "Copyright © Byte Pixie Limited";
+        dialog.logo_icon_name = Application.ID;
+        dialog.version = Application.VERSION;
+
+        dialog.license_type = Gtk.License.GPL_2_0;
+
+        dialog.website = "https://www.snippetpixie.com/";
+        dialog.website_label = "www.snippetpixie.com";
+
+        dialog.response.connect ((response_id) => {
+            if (response_id == Gtk.ResponseType.CANCEL || response_id == Gtk.ResponseType.DELETE_EVENT) {
+                dialog.hide_on_delete ();
+            }
+        });
+
+        // Show the dialog:
+        dialog.present ();
     }
 }

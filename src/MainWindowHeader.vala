@@ -25,21 +25,13 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         add_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ADD;
         add_button.tooltip_text = _("Add snippet");
 
-        var undo_button = new Gtk.Button.from_icon_name ("edit-undo", Gtk.IconSize.LARGE_TOOLBAR);
-        undo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_UNDO;
-        undo_button.tooltip_text = _("Undo last edit");
+        // var undo_button = new Gtk.Button.from_icon_name ("edit-undo", Gtk.IconSize.LARGE_TOOLBAR);
+        // undo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_UNDO;
+        // undo_button.tooltip_text = _("Undo last edit");
 
-        var redo_button = new Gtk.Button.from_icon_name ("edit-redo", Gtk.IconSize.LARGE_TOOLBAR);
-        redo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REDO;
-        redo_button.tooltip_text = _("Redo last undo");
-
-        var import_button = new Gtk.Button.from_icon_name ("document-import", Gtk.IconSize.LARGE_TOOLBAR);
-        import_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
-        import_button.tooltip_text = _("Import snippets…");
-
-        var export_button = new Gtk.Button.from_icon_name ("document-export", Gtk.IconSize.LARGE_TOOLBAR);
-        export_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
-        export_button.tooltip_text = _("Export snippets…");
+        // var redo_button = new Gtk.Button.from_icon_name ("edit-redo", Gtk.IconSize.LARGE_TOOLBAR);
+        // redo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REDO;
+        // redo_button.tooltip_text = _("Redo last undo");
 
         /*
          * TODO: Add search.
@@ -53,14 +45,14 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         import_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
         var export_menuitem = new Gtk.MenuItem.with_label (_("Export snippets…"));
         export_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
-        var preferences_menuitem = new Gtk.MenuItem.with_label (_("Preferences"));
-        preferences_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_PREFS;
+        var about_menuitem = new Gtk.MenuItem.with_label (_("About…"));
+        about_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ABOUT;
 
         var menu = new Gtk.Menu ();
         menu.append (import_menuitem);
         menu.append (export_menuitem);
         menu.append (new Gtk.SeparatorMenuItem ());
-        menu.append (preferences_menuitem);
+        menu.append (about_menuitem);
         menu.show_all ();
 
         var menu_button = new Gtk.MenuButton ();
@@ -70,12 +62,10 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         show_close_button = true;
         pack_start (add_button);
-        //pack_start (undo_button); // TODO: Add undo.
-        //pack_start (redo_button); // TODO: Add redo.
-        //pack_end (menu_button); // TODO: Add preferences/import/export.
-        //pack_end (export_button); // TODO: Add export.
-        //pack_end (import_button); // TODO: Add import.
-        //pack_end (search_entry); // TODO: Add search.
+        // pack_start (undo_button); // TODO: Add undo.
+        // pack_start (redo_button); // TODO: Add redo.
+        pack_end (menu_button);
+        // pack_end (search_entry); // TODO: Add search.
         set_title (_("Snippet Pixie"));
         show_all ();
      }
