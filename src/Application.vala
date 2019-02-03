@@ -21,9 +21,9 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
+        public const string VERSION = "1.1.0";
 
         private static Application? _app = null;
-        private string version_string = "1.1.0";
 
         private bool app_running = false;
         private bool show = true;
@@ -510,7 +510,7 @@ namespace SnippetPixie {
             }
 
             if (version) {
-                command_line.print ("%s\n", version_string);
+                command_line.print ("%s\n", VERSION);
                 return 0;
             }
 
