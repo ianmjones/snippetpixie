@@ -33,7 +33,6 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         // { ACTION_UNDO, action_undo, null, 0 },
         // { ACTION_REDO, action_redo, null, 0 },
         { ACTION_IMPORT, action_import },
-        { ACTION_EXPORT, action_export },
         { ACTION_ABOUT, action_about }
     };
 
@@ -79,19 +78,29 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         headerbar = new MainWindowHeader ();
         this.set_titlebar (headerbar);
 
-        // Depending on whether there are snippets or not, might set "snippets" visible.
-        if (Application.get_default ().snippets_manager.snippets.size > 0) {
+        // Depending on whether there are snippets or not, might set "snippets" visible etc.
+        update_ui (Application.get_default ().snippets_manager.snippets);
+        Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
+    }
+
+    private void update_ui (Gee.ArrayList<Snippet> snippets) {
+        SimpleAction export_action = (SimpleAction) actions.lookup_action (ACTION_EXPORT);
+
+        if (snippets.size > 0) {
             main_view.visible_child_name = "snippets";
+
+            if (export_action == null) {
+                export_action = new SimpleAction (ACTION_EXPORT, null);
+                export_action.activate.connect (action_export);
+                actions.add_action (export_action);
+            }
         } else {
             main_view.visible_child_name = "welcome";
-        }
-        Application.get_default ().snippets_manager.snippets_changed.connect ((snippets) => {
-            if (snippets.size > 0) {
-                main_view.visible_child_name = "snippets";
-            } else {
-                main_view.visible_child_name = "welcome";
+
+            if (export_action != null) {
+                actions.remove_action (ACTION_EXPORT);
             }
-        });
+        }
     }
 
     private void action_add () {
