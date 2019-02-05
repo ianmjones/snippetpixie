@@ -17,6 +17,10 @@
 * Boston, MA 02110-1301 USA
 */
 
+public errordomain SnippetPixieError {
+    INVALID_FORMAT
+}
+
 public class SnippetPixie.SnippetsManager : Object {
     public signal void snippets_changed (Gee.ArrayList<Snippet> snippets);
 
@@ -153,7 +157,7 @@ public class SnippetPixie.SnippetsManager : Object {
     private Gee.ArrayList<Snippet>? select_snippets () {
         Sqlite.Statement stmt;
 
-        const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation;";
+        const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation, id;";
 	    int ec = db.prepare_v2 (query, query.length, out stmt);
 	    if (ec != Sqlite.OK) {
 		    warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
@@ -174,6 +178,38 @@ public class SnippetPixie.SnippetsManager : Object {
         }
 
         return snippets;
+    }
+
+    private Snippet? select_snippet (string abbreviation) {
+        Sqlite.Statement stmt;
+
+        const string query = "SELECT id, abbreviation, body FROM snippets WHERE abbreviation = $ABR ORDER BY id;";
+	    int ec = db.prepare_v2 (query, query.length, out stmt);
+	    if (ec != Sqlite.OK) {
+		    warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+		    return null;
+	    }
+
+        int param_position = stmt.bind_parameter_index ("$ABR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, abbreviation);
+
+        Snippet snippet = null;
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            snippet = new Snippet ();
+            snippet.id = stmt.column_int (0);
+            snippet.abbreviation = stmt.column_text (1);
+            snippet.body = stmt.column_text (2);
+
+            // Return the first found, duplicates are ignored.
+            return snippet;
+		}
+		if (ec != Sqlite.DONE) {
+			warning ("Error fetching snippet: %s\n", db.errmsg ());
+            return null;
+        }
+
+        return snippet;
     }
 
     public void add (Snippet snippet) {
@@ -208,4 +244,186 @@ public class SnippetPixie.SnippetsManager : Object {
 
         snippets_changed (snippets);
     }
+
+    public int export_to_file (string filepath) {
+        debug ("Export File Path: %s", filepath);
+
+        try {
+            var builder = new Json.Builder ();
+            builder.begin_object ();
+            builder.set_member_name ("generator");
+            builder.add_string_value (Application.ID);
+            builder.set_member_name ("version");
+            builder.add_int_value (101);
+
+            builder.set_member_name ("data");
+            builder.begin_array ();
+            builder.begin_object ();
+            builder.set_member_name ("snippets");
+            builder.begin_array ();
+
+            Gee.ArrayList<Snippet> snippets = select_snippets ();
+            foreach (var snippet in snippets) {
+                builder.begin_object ();
+                builder.set_member_name ("abbreviation");
+                builder.add_string_value (snippet.abbreviation);
+                builder.set_member_name ("body");
+                builder.add_string_value (snippet.body);
+                builder.end_object ();
+            }
+
+            builder.end_array (); // snippets array
+            builder.end_object (); // snippets object
+            builder.end_array (); // data array
+
+            builder.end_object ();
+
+            var root = builder.get_root ();
+            var generator = new Json.Generator ();
+            generator.set_root (root);
+            generator.set_pretty (true);
+            generator.to_file (filepath);
+        } catch (Error e) {
+            print ("%s\n", e.message);
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public int import_from_file (string filepath, bool overwrite) {
+        // Currently only support JSON file (as per export).
+        var parser = new Json.Parser ();
+
+        try {
+            parser.load_from_file (filepath);
+
+            var node = parser.get_root ();
+            print ("Importing: '%s'\n", filepath);
+
+            import_json (node, overwrite);
+        } catch (Error e) {
+            print ("Unable to load '%s': %s\n", filepath, e.message);
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private void import_json (Json.Node node, bool overwrite) throws Error {
+        // Root is JSON Object.
+        if (node.get_node_type () != Json.NodeType.OBJECT) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Unexpected element type %s", node.type_name ());
+        }
+
+        unowned Json.Object obj = node.get_object ();
+
+        if (!obj.has_member ("generator")) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'genenerator' element.");
+        }
+
+        var generator = obj.get_string_member ("generator");
+        print ("Generator: '%s'\n", generator);
+
+        if (generator != Application.ID) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Invalid 'genenerator' element value.");
+        }
+
+        if (!obj.has_member ("version")) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'version' element.");
+        }
+
+        var version = obj.get_int_member ("version");
+        print ("Version: '%s'\n", version.to_string ());
+
+        // TODO: Change test if new export file format versions created.
+        if (version != 101) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Invalid 'version' element value.");
+        }
+
+        if (!obj.has_member ("data")) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'data' element.");
+        }
+
+        var data = obj.get_member ("data");
+
+        process_data_array (data, version, overwrite);
+    }
+
+    private void process_data_array (Json.Node node, int64 version, bool overwrite) throws Error {
+        if (node.get_node_type () != Json.NodeType.ARRAY) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Unexpected 'data' element type %s", node.type_name ());
+        }
+
+        unowned Json.Array array = node.get_array ();
+
+        // Tables.
+        Json.Array snippets = null;
+
+        // Each array element in data is a Table object, with array of objects.
+        foreach (unowned Json.Node item in array.get_elements ()) {
+            var obj = item.get_object ();
+
+            foreach (unowned string name in obj.get_members ()) {
+                switch (name) {
+                case "snippets":
+                    snippets = obj.get_array_member ("snippets");
+                    break;
+                default:
+                    throw new SnippetPixieError.INVALID_FORMAT ("Unexpected 'data' element '%s'", name);
+                }
+            }
+        }
+
+        // We expect at least an empty array of snippets.
+        if (snippets == null) {
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'snippets' element within 'data' element.");
+        }
+
+        process_snippets_array (snippets, version, overwrite);
+    }
+
+    private void process_snippets_array (Json.Array array, int64 version, bool overwrite) throws Error {
+        var count = array.get_length ();
+
+        print ("Snippets to process: %u\n", count);
+
+        if (count < 1) {
+            return;
+        }
+
+        var created = 0;
+        var updated = 0;
+        var skipped = 0;
+
+        foreach (unowned Json.Node item in array.get_elements ()) {
+            var obj = item.get_object ();
+            var abr = obj.get_string_member ("abbreviation");
+
+            Snippet snippet = select_snippet (abr);
+
+            if (snippet != null && ! overwrite) {
+                skipped++;
+                continue;
+            }
+
+            if (snippet != null) {
+                snippet.body = obj.get_string_member ("body");
+                update_snippet (snippet);
+                updated++;
+            } else {
+                snippet = new Snippet ();
+                snippet.abbreviation = abr;
+                snippet.body = obj.get_string_member ("body");
+                insert_snippet (snippet);
+                created++;
+            }
+        }
+
+        print ("Created: %u\n", created);
+        print ("Updated: %u\n", updated);
+        print ("Skipped: %u\n", skipped);
+
+        refresh_snippets ();
+     }
 }
