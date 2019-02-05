@@ -1,6 +1,6 @@
 com.github.bytepixie.snippetpixie (1.1.0) xenial; urgency=medium
 
-  * Added ability to export snippets to a JSON file via menu button.
+  * Added ability to export snippets to a JSON file via menu button or welcome screen.
   * Added ability to export snippets to a JSON file via `--export` or `-e` CLI options.
   * Added ability to import snippets from an exported JSON file via menu button. Shocking! 😱
   * Added ability to import snippets from an exported JSON file via `--import` or `-i` CLI options. Bet you didn't see that coming! 😉
