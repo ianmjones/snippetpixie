@@ -113,11 +113,40 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         var response =  diag.run ();
 
         if (response == Gtk.ResponseType.ACCEPT) {
+            var overwrite = false;
+            if (Application.get_default ().snippets_manager.snippets.size > 0) {
+                var cancel = false;
+                var overwrite_diag = new Granite.MessageDialog.with_image_from_icon_name (_("Overwrite Duplicate Snippets?"), _("If any of the snippet abbreviations about to be imported already exist, do you want to skip importing them or update the existing snippet?"), "dialog-warning", Gtk.ButtonsType.NONE);
+                overwrite_diag.add_button (_("Update Existing"), 1);
+                overwrite_diag.add_button (_("Cancel"), 0);
+                overwrite_diag.add_button (_("Skip Duplicates"), 2);
+                overwrite_diag.set_default_response (2);
+                overwrite_diag.response.connect ((response_id) => {
+                    switch (response_id) {
+                        case 1:
+                            overwrite = true;
+                            break;
+                        case 2:
+                            overwrite = false;
+                            break;
+                        default:
+                            cancel = true;
+                            break;
+                    }
+                });
+                overwrite_diag.run ();
+                overwrite_diag.destroy ();
+
+                if (cancel) {
+                    return;
+                }
+            }
+
             var filepath  = diag.get_filename ();
-            var result = Application.get_default ().snippets_manager.import_from_file (filepath, false);
+            var result = Application.get_default ().snippets_manager.import_from_file (filepath, overwrite);
 
             if (result == 0) {
-                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Imported Snippets"), _("Snippet Pixie successfully imported the file, any existing snippets were not updated. To update existing snippets during import, please use the command line option."), "process-completed", Gtk.ButtonsType.CLOSE);
+                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Imported Snippets"), _("Your snippets were successfully imported."), "process-completed", Gtk.ButtonsType.CLOSE);
                 cheer.run ();
                 cheer.destroy ();
             } else {
@@ -137,7 +166,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
             var result = Application.get_default ().snippets_manager.export_to_file (filepath);
 
             if (result == 0) {
-                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Exported Snippets"), _("Your snippets were successfully exported to file."), "process-completed", Gtk.ButtonsType.CLOSE);
+                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Exported Snippets"), _("Your snippets were successfully exported."), "process-completed", Gtk.ButtonsType.CLOSE);
                 cheer.run ();
                 cheer.destroy ();
             } else {
