@@ -30,7 +30,7 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 * ~~Automatically add to Startup apps~~
 * Undo/Redo of snippet edits
-* Export/Import snippets
+* ~~Export/Import snippets~~
 * Date/Time placeholders
 * Snippet search
 * Group snippets?
@@ -44,6 +44,7 @@ You'll need the following dependencies to build:
 * libgee-0.8-dev
 * libsqlite3-dev
 * libibus-1.0-dev
+* libjson-glib-dev
 * meson
 * valac
 
