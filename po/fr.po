@@ -255,7 +255,7 @@ msgstr "Importez vos raccourcis précédemment exportés."
 
 #: src/WelcomeView.vala:25
 msgid "Quick Start Guide"
-msgstr "Guide de démarrage rapide
+msgstr "Guide de démarrage rapide"
 
 #: src/WelcomeView.vala:25
 msgid "Learn the basics of how to use Snippet Pixie."
