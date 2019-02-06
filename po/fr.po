@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-06 00:14+0000\n"
-"PO-Revision-Date: 2019-01-17 20:49+0100\n"
+"PO-Revision-Date: 2019-02-06 13:09+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
 "Language: fr\n"
@@ -45,67 +45,73 @@ msgstr "Par exemple : - « spr` » s'étendra en « Snippet Pixie rules ! »"
 msgid ""
 "Added ability to export snippets to a JSON file via menu button or welcome "
 "screen."
-msgstr ""
+msgstr "Ajout de la possibilité d'exporter des raccourcis vers un fichier JSON via un bouton de menu ou depuis "
+"l'écran de bienvenue."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
 msgid ""
 "Added ability to export snippets to a JSON file via `--export` or `-e` CLI "
 "options."
-msgstr ""
+msgstr "Ajouté la possibilité d'exporter des extraits vers un fichier JSON via les options en ligne de commande `--export' ou `-e'."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:22
 msgid ""
 "Added ability to import snippets from an exported JSON file via menu button. "
 "Shocking! 😱"
-msgstr ""
+msgstr "Ajout de la possibilité d'importer des extraits d'un fichier JSON exporté via un bouton de menu. "
+"Choquant ! 😱"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:23
 msgid ""
 "Added ability to import snippets from an exported JSON file via `--import` "
 "or `-i` CLI options. Bet you didn't see that coming! 😉"
-msgstr ""
+msgstr "Possibilité d'importer des extraits d'un fichier JSON exporté via les options en ligne de commande `--import` "
+"ou `-i`. Je parie que vous ne l'aviez pas vu venir ! 😉"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
 msgid "1.0 Release!"
-msgstr ""
+msgstr "Version 1.0 !"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:31
 msgid "Added Snippet Pixie to login startup items by default."
-msgstr ""
+msgstr "Ajout de Snippet Pixie aux éléments de démarrage par défaut à la connexion."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:32
 msgid ""
 "Added --autostart={on|off|status} option to CLI for turning autostart on, "
 "off, or getting settings status."
-msgstr ""
+msgstr "Ajout de l'option --autostart={on|off|status} aux lignes de commande pour activer, "
+"désactiver ou obtenir le statut des paramètres."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:33
 msgid "Changed body field to select all text when tabbed into."
-msgstr ""
+msgstr "Changement du champ de texte pour sélectionner tout le texte lorsqu'il est affiché sous forme d'onglets."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:40
 msgid ""
 "Fixed crash when an application with a large number of controls was "
 "activated."
-msgstr ""
+msgstr "Correction d'un plantage lorsqu'une application avec un grand nombre de contrôles était "
+"activée."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:41
 msgid ""
 "Fixed problem with snippets sometimes not expanding when returning to an "
 "application."
-msgstr ""
+msgstr "Correction d'un problème avec les raccourcis qui ne se développaient pas toujours lors du retour à une "
+"application."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:42
 msgid "Added a splash of colour to the window header."
-msgstr ""
+msgstr "Ajout d'une touche de couleur à l'en-tête de la fenêtre."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:43
 msgid "Added a new application icon."
-msgstr ""
+msgstr "Ajout d'une nouvelle icône d'application."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:49
 msgid "Initial pre-release."
-msgstr ""
+msgstr "Pré-version initiale."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:90
 msgid "Byte Pixie"
@@ -131,139 +137,129 @@ msgstr "Snippet Pixie"
 
 #: src/MainWindow.vala:112 src/WelcomeView.vala:24
 msgid "Import Snippets"
-msgstr ""
+msgstr "Importer des raccourcis"
 
 #: src/MainWindow.vala:112
 msgid "Import"
-msgstr ""
+msgstr "Importer"
 
 #: src/MainWindow.vala:119
 msgid "Overwrite Duplicate Snippets?"
-msgstr ""
+msgstr "Écraser les raccourcis en double ?"
 
 #: src/MainWindow.vala:119
 msgid ""
 "If any of the snippet abbreviations about to be imported already exist, do "
 "you want to skip importing them or update the existing snippet?"
-msgstr ""
+msgstr "Si l'un des raccourcis d'abréviation sur le point d'être importé existe déjà, voulez-vous "
+"sauter l'importation ou mettre à jour le raccourci existant ?"
 
 #: src/MainWindow.vala:120
 msgid "Update Existing"
-msgstr ""
+msgstr "Mettre à jour l'existant"
 
 #: src/MainWindow.vala:121
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: src/MainWindow.vala:122
 msgid "Skip Duplicates"
-msgstr ""
+msgstr "Ignorer les doublons"
 
 #: src/MainWindow.vala:149
 msgid "Imported Snippets"
-msgstr ""
+msgstr "Raccourcis importés"
 
 #: src/MainWindow.vala:149
 msgid "Your snippets were successfully imported."
-msgstr ""
+msgstr "Vos raccourcis ont été importés avec succès."
 
 #: src/MainWindow.vala:153
 msgid "Failed to import selected file"
-msgstr ""
+msgstr "Échec de l'importation du fichier sélectionné"
 
 #: src/MainWindow.vala:153
 msgid ""
 "Snippet Pixie can currently only import the JSON format files that it also "
 "exports."
-msgstr ""
+msgstr "Snippet Pixie ne peut actuellement importer que les fichiers au format JSON qu'il exporte "
+"également."
 
 #: src/MainWindow.vala:161
 msgid "Export Snippets"
-msgstr ""
+msgstr "Exporter les raccourcis"
 
 #: src/MainWindow.vala:169
 msgid "Exported Snippets"
-msgstr ""
+msgstr "Raccourcis exportés"
 
 #: src/MainWindow.vala:169
 msgid "Your snippets were successfully exported."
-msgstr ""
+msgstr "Vos raccourcis ont été exportés avec succès."
 
 #: src/MainWindow.vala:173
 msgid "Failed to export to file"
-msgstr ""
+msgstr "Échec de l'exportation du fichier"
 
 #: src/MainWindow.vala:173
 msgid "Something went wrong, sorry."
-msgstr ""
+msgstr "Une erreur s'est produite, désolé."
 
 #: src/MainWindowHeader.vala:26
 msgid "Add snippet"
-msgstr ""
+msgstr "Ajouter un raccourci"
 
 #: src/MainWindowHeader.vala:44
 msgid "Import snippets…"
-msgstr ""
+msgstr "Importer des raccourcis…"
 
 #: src/MainWindowHeader.vala:46
 msgid "Export snippets…"
-msgstr ""
+msgstr "Exporter des raccourcis…"
 
 #: src/MainWindowHeader.vala:48
 msgid "About…"
-msgstr ""
+msgstr "À propos…"
 
 #: src/Snippet.vala:22
 msgid "new"
-msgstr ""
+msgstr "Nouveau"
 
 #: src/Snippet.vala:23
 msgid "Something to be replaced"
-msgstr ""
+msgstr "Quelque chose à remplacer"
 
 #: src/ViewStack.vala:55
 msgid "Abbreviation"
-msgstr ""
+msgstr "Abbréviation"
 
 #: src/ViewStack.vala:64
 msgid "Body"
-msgstr ""
+msgstr "Corps"
 
 #: src/WelcomeView.vala:22
 msgid "No snippets found."
-msgstr ""
-
-#: src/WelcomeView.vala:23
-msgid "document-new"
-msgstr ""
+msgstr "Aucun raccourci trouvé."
 
 #: src/WelcomeView.vala:23
 msgid "Add Snippet"
-msgstr ""
+msgstr "Ajouter un raccourci"
 
 #: src/WelcomeView.vala:23
 msgid "Create your first snippet."
-msgstr ""
-
-#: src/WelcomeView.vala:24
-msgid "document-import"
-msgstr ""
+msgstr "Créez votre premier raccourci."
 
 #: src/WelcomeView.vala:24
 msgid "Import previously exported snippets."
-msgstr ""
-
-#: src/WelcomeView.vala:25
-msgid "help-contents"
-msgstr ""
+msgstr "Importez vos raccourcis précédemment exportés."
 
 #: src/WelcomeView.vala:25
 msgid "Quick Start Guide"
-msgstr ""
+msgstr "Guide de démarrage rapide"
 
 #: src/WelcomeView.vala:25
 msgid "Learn the basics of how to use Snippet Pixie."
-msgstr ""
+msgstr "Apprenez les bases de l'utilisation de Snippet Pixie."
 
 #~ msgid "Your little snippet helper."
 #~ msgstr "Votre petit assistant de raccourcis."
