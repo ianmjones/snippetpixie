@@ -70,7 +70,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         body_entry.buffer.changed.connect (body_updated);
         snippet_form.add (body_entry);
 
-        remove_button = new Gtk.Button.with_label ("Remove Snippet");
+        remove_button = new Gtk.Button.with_label (_("Remove Snippet"));
         remove_button.hexpand = true;
         remove_button.get_style_context ().add_class (Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION);
         remove_button.clicked.connect (remove_snippet);

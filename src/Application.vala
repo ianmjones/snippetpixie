@@ -471,16 +471,16 @@ namespace SnippetPixie {
             bool help = false;
 
             OptionEntry[] options = new OptionEntry[10];
-            options[0] = { "show", 0, 0, OptionArg.NONE, ref show, "Show Snippet Pixie's window (default action)", null };
-            options[1] = { "start", 0, 0, OptionArg.NONE, ref start, "Start with no window", null };
-            options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, "Fully quit the application, including the background process", null };
-            options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, "Turn auto start of Snippet Pixie on login, on, off, or show status of setting", "{on|off|status}" };
-            options[4] = { "status", 0, 0, OptionArg.NONE, ref status, "Shows status of the application, exits with status 0 if running, 1 if not", null };
-            options[5] = { "export", 'e', 0, OptionArg.FILENAME, ref export_file, "Export snippets to file", "filename" };
-            options[6] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, "Import snippets from file, skips snippets where abbreviation already exists", "filename" };
-            options[7] = { "force", 0, 0, OptionArg.NONE, ref force, "If used in conjunction with import, existing snippets with same abbreviation are updated", null };
-            options[8] = { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null };
-            options[9] = { "help", 'h', 0, OptionArg.NONE, ref help, "Display this help", null };
+            options[0] = { "show", 0, 0, OptionArg.NONE, ref show, _("Show Snippet Pixie's window (default action)"), null };
+            options[1] = { "start", 0, 0, OptionArg.NONE, ref start, _("Start with no window"), null };
+            options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, _("Fully quit the application, including the background process"), null };
+            options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, _("Turn auto start of Snippet Pixie on login, on, off, or show status of setting"), "{on|off|status}" };
+            options[4] = { "status", 0, 0, OptionArg.NONE, ref status, _("Shows status of the application, exits with status 0 if running, 1 if not"), null };
+            options[5] = { "export", 'e', 0, OptionArg.FILENAME, ref export_file, _("Export snippets to file"), "filename" };
+            options[6] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, _("Import snippets from file, skips snippets where abbreviation already exists"), _("filename") };
+            options[7] = { "force", 0, 0, OptionArg.NONE, ref force, _("If used in conjunction with import, existing snippets with same abbreviation are updated"), null };
+            options[8] = { "version", 0, 0, OptionArg.NONE, ref version, _("Display version number"), null };
+            options[9] = { "help", 'h', 0, OptionArg.NONE, ref help, _("Display this help"), null };
 
             // We have to make an extra copy of the array, since .parse assumes
             // that it can remove strings from the array without freeing them.
@@ -499,8 +499,8 @@ namespace SnippetPixie {
                 unowned string[] tmp = _args;
                 opt_context.parse (ref tmp);
             } catch (OptionError e) {
-                command_line.print ("error: %s\n", e.message);
-                command_line.print ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
+                command_line.print (_("error: %s\n"), e.message);
+                command_line.print (_("Run '%s --help' to see a full list of available command line options.\n"), args[0]);
                 return 0;
             }
 
@@ -515,7 +515,7 @@ namespace SnippetPixie {
             }
 
             if (stop) {
-                command_line.print ("Quitting...\n");
+                command_line.print (_("Quitting...\n"));
                 var app = get_default ();
                 app.quit ();
                 return 0;
@@ -523,10 +523,10 @@ namespace SnippetPixie {
 
             if (status) {
                 if (app_running) {
-                    command_line.print ("Running.\n");
+                    command_line.print (_("Running.\n"));
                     return 0;
                 } else {
-                    command_line.print ("Not Running.\n");
+                    command_line.print (_("Not Running.\n"));
                     return 1;
                 }
             }
@@ -548,7 +548,7 @@ namespace SnippetPixie {
                     }
                     return 0;
                 default:
-                    command_line.print ("Invalid autostart value \"%s\".\n", autostart);
+                    command_line.print (_("Invalid autostart value \"%s\".\n"), autostart);
                     help = true;
                     break;
             }

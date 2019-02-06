@@ -46,7 +46,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
             height_request: 600,
             icon_name: "com.github.bytepixie.snippetpixie",
             resizable: true,
-            title: _("Snippet Pixie"),
+            title: "Snippet Pixie",
             width_request: 800
         );
     }
@@ -186,7 +186,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         dialog.authors = {"Ian M. Jones"};
 
         dialog.program_name = "Snippet Pixie";
-        dialog.copyright = "Copyright © Byte Pixie Limited";
+        dialog.copyright = _("Copyright © Byte Pixie Limited");
         dialog.logo_icon_name = Application.ID;
         dialog.version = Application.VERSION;
 

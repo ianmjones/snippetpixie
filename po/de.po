@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-06 00:14+0000\n"
+"POT-Creation-Date: 2019-02-06 20:33+0000\n"
 "PO-Revision-Date: 2019-02-06 00:14+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,8 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:7
-#: data/com.github.bytepixie.snippetpixie.desktop.in:3 src/MainWindow.vala:49
-#: src/MainWindowHeader.vala:69 src/WelcomeView.vala:22
+#: data/com.github.bytepixie.snippetpixie.desktop.in:3
 msgid "Snippet Pixie"
 msgstr ""
 
@@ -39,9 +38,7 @@ msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
-msgid ""
-"Added ability to export snippets to a JSON file via menu button or welcome "
-"screen."
+msgid "Added ability to export snippets to a JSON file via menu button."
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
@@ -52,8 +49,8 @@ msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:22
 msgid ""
-"Added ability to import snippets from an exported JSON file via menu button. "
-"Shocking! 😱"
+"Added ability to import snippets from an exported JSON file via menu button "
+"or welcome screen. Shocking! 😱"
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:23
@@ -124,6 +121,82 @@ msgstr ""
 msgid "Stop Snippet Pixie"
 msgstr ""
 
+#: src/Application.vala:474
+msgid "Show Snippet Pixie's window (default action)"
+msgstr ""
+
+#: src/Application.vala:475
+msgid "Start with no window"
+msgstr ""
+
+#: src/Application.vala:476
+msgid "Fully quit the application, including the background process"
+msgstr ""
+
+#: src/Application.vala:477
+msgid ""
+"Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
+msgstr ""
+
+#: src/Application.vala:478
+msgid ""
+"Shows status of the application, exits with status 0 if running, 1 if not"
+msgstr ""
+
+#: src/Application.vala:479
+msgid "Export snippets to file"
+msgstr ""
+
+#: src/Application.vala:480
+msgid ""
+"Import snippets from file, skips snippets where abbreviation already exists"
+msgstr ""
+
+#: src/Application.vala:480
+msgid "filename"
+msgstr ""
+
+#: src/Application.vala:481
+msgid ""
+"If used in conjunction with import, existing snippets with same abbreviation "
+"are updated"
+msgstr ""
+
+#: src/Application.vala:482
+msgid "Display version number"
+msgstr ""
+
+#: src/Application.vala:483
+msgid "Display this help"
+msgstr ""
+
+#: src/Application.vala:502
+#, c-format
+msgid "error: %s\n"
+msgstr ""
+
+#: src/Application.vala:503
+#, c-format
+msgid "Run '%s --help' to see a full list of available command line options.\n"
+msgstr ""
+
+#: src/Application.vala:518
+msgid "Quitting...\n"
+msgstr ""
+
+#: src/Application.vala:526
+msgid "Running.\n"
+msgstr ""
+
+#: src/Application.vala:529
+msgid "Not Running.\n"
+msgstr ""
+
+#: src/Application.vala:551
+#, c-format
+msgid "Invalid autostart value \"%s\".\n"
+msgstr ""
+
 #: src/MainWindow.vala:112 src/WelcomeView.vala:24
 msgid "Import Snippets"
 msgstr ""
@@ -192,6 +265,10 @@ msgstr ""
 msgid "Something went wrong, sorry."
 msgstr ""
 
+#: src/MainWindow.vala:189
+msgid "Copyright © Byte Pixie Limited"
+msgstr ""
+
 #: src/MainWindowHeader.vala:26
 msgid "Add snippet"
 msgstr ""
@@ -224,12 +301,12 @@ msgstr ""
 msgid "Body"
 msgstr ""
 
-#: src/WelcomeView.vala:22
-msgid "No snippets found."
+#: src/ViewStack.vala:73
+msgid "Remove Snippet"
 msgstr ""
 
-#: src/WelcomeView.vala:23
-msgid "document-new"
+#: src/WelcomeView.vala:22
+msgid "No snippets found."
 msgstr ""
 
 #: src/WelcomeView.vala:23
@@ -241,15 +318,7 @@ msgid "Create your first snippet."
 msgstr ""
 
 #: src/WelcomeView.vala:24
-msgid "document-import"
-msgstr ""
-
-#: src/WelcomeView.vala:24
 msgid "Import previously exported snippets."
-msgstr ""
-
-#: src/WelcomeView.vala:25
-msgid "help-contents"
 msgstr ""
 
 #: src/WelcomeView.vala:25

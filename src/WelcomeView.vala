@@ -19,10 +19,10 @@
 
 public class SnippetPixie.WelcomeView : Gtk.Grid {
     construct {
-        var welcome = new Granite.Widgets.Welcome ( _("Snippet Pixie"), _("No snippets found."));
-        welcome.append (_("document-new"), _("Add Snippet"), _("Create your first snippet."));
-        welcome.append (_("document-import"), _("Import Snippets"), _("Import previously exported snippets."));
-        welcome.append (_("help-contents"), _("Quick Start Guide"), _("Learn the basics of how to use Snippet Pixie."));
+        var welcome = new Granite.Widgets.Welcome ( "Snippet Pixie", _("No snippets found."));
+        welcome.append ("document-new", _("Add Snippet"), _("Create your first snippet."));
+        welcome.append ("document-import", _("Import Snippets"), _("Import previously exported snippets."));
+        welcome.append ("help-contents", _("Quick Start Guide"), _("Learn the basics of how to use Snippet Pixie."));
 
         add (welcome);
 
