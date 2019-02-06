@@ -1,29 +1,31 @@
 # Spanish translations for com.github.bytepixie.snippetpixie package.
-# Copyright (C) 2018 THE com.github.bytepixie.snippetpixie'S COPYRIGHT HOLDER
+# Copyright (C) 2019 THE com.github.bytepixie.snippetpixie'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the com.github.bytepixie.snippetpixie package.
-# Automatically generated, 2018.
+# Automatically generated, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-24 00:44+0100\n"
-"PO-Revision-Date: 2018-04-24 00:44+0100\n"
+"POT-Creation-Date: 2019-02-06 00:14+0000\n"
+"PO-Revision-Date: 2019-02-06 00:14+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:7
-#: data/com.github.bytepixie.snippetpixie.desktop.in:3 src/MainWindow.vala:29
+#: data/com.github.bytepixie.snippetpixie.desktop.in:3 src/MainWindow.vala:49
+#: src/MainWindowHeader.vala:69 src/WelcomeView.vala:22
 msgid "Snippet Pixie"
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:8
-msgid "Your little snippet helper."
+#: data/com.github.bytepixie.snippetpixie.desktop.in:4
+msgid "Your little expandable snippet helper"
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:10
@@ -36,12 +38,74 @@ msgstr ""
 msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:57
-msgid "Byte Pixie"
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
+msgid ""
+"Added ability to export snippets to a JSON file via menu button or welcome "
+"screen."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.desktop.in:4
-msgid "Your little snippet helper"
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
+msgid ""
+"Added ability to export snippets to a JSON file via `--export` or `-e` CLI "
+"options."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:22
+msgid ""
+"Added ability to import snippets from an exported JSON file via menu button. "
+"Shocking! 😱"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:23
+msgid ""
+"Added ability to import snippets from an exported JSON file via `--import` "
+"or `-i` CLI options. Bet you didn't see that coming! 😉"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
+msgid "1.0 Release!"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:31
+msgid "Added Snippet Pixie to login startup items by default."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:32
+msgid ""
+"Added --autostart={on|off|status} option to CLI for turning autostart on, "
+"off, or getting settings status."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:33
+msgid "Changed body field to select all text when tabbed into."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:40
+msgid ""
+"Fixed crash when an application with a large number of controls was "
+"activated."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:41
+msgid ""
+"Fixed problem with snippets sometimes not expanding when returning to an "
+"application."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:42
+msgid "Added a splash of colour to the window header."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:43
+msgid "Added a new application icon."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:49
+msgid "Initial pre-release."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:90
+msgid "Byte Pixie"
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.desktop.in:6
@@ -50,4 +114,148 @@ msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.desktop.in:7
 msgid "expand;text;snippet;"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.desktop.in:15
+msgid "Start Snippet Pixie"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.desktop.in:19
+msgid "Stop Snippet Pixie"
+msgstr ""
+
+#: src/MainWindow.vala:112 src/WelcomeView.vala:24
+msgid "Import Snippets"
+msgstr ""
+
+#: src/MainWindow.vala:112
+msgid "Import"
+msgstr ""
+
+#: src/MainWindow.vala:119
+msgid "Overwrite Duplicate Snippets?"
+msgstr ""
+
+#: src/MainWindow.vala:119
+msgid ""
+"If any of the snippet abbreviations about to be imported already exist, do "
+"you want to skip importing them or update the existing snippet?"
+msgstr ""
+
+#: src/MainWindow.vala:120
+msgid "Update Existing"
+msgstr ""
+
+#: src/MainWindow.vala:121
+msgid "Cancel"
+msgstr ""
+
+#: src/MainWindow.vala:122
+msgid "Skip Duplicates"
+msgstr ""
+
+#: src/MainWindow.vala:149
+msgid "Imported Snippets"
+msgstr ""
+
+#: src/MainWindow.vala:149
+msgid "Your snippets were successfully imported."
+msgstr ""
+
+#: src/MainWindow.vala:153
+msgid "Failed to import selected file"
+msgstr ""
+
+#: src/MainWindow.vala:153
+msgid ""
+"Snippet Pixie can currently only import the JSON format files that it also "
+"exports."
+msgstr ""
+
+#: src/MainWindow.vala:161
+msgid "Export Snippets"
+msgstr ""
+
+#: src/MainWindow.vala:169
+msgid "Exported Snippets"
+msgstr ""
+
+#: src/MainWindow.vala:169
+msgid "Your snippets were successfully exported."
+msgstr ""
+
+#: src/MainWindow.vala:173
+msgid "Failed to export to file"
+msgstr ""
+
+#: src/MainWindow.vala:173
+msgid "Something went wrong, sorry."
+msgstr ""
+
+#: src/MainWindowHeader.vala:26
+msgid "Add snippet"
+msgstr ""
+
+#: src/MainWindowHeader.vala:44
+msgid "Import snippets…"
+msgstr ""
+
+#: src/MainWindowHeader.vala:46
+msgid "Export snippets…"
+msgstr ""
+
+#: src/MainWindowHeader.vala:48
+msgid "About…"
+msgstr ""
+
+#: src/Snippet.vala:22
+msgid "new"
+msgstr ""
+
+#: src/Snippet.vala:23
+msgid "Something to be replaced"
+msgstr ""
+
+#: src/ViewStack.vala:55
+msgid "Abbreviation"
+msgstr ""
+
+#: src/ViewStack.vala:64
+msgid "Body"
+msgstr ""
+
+#: src/WelcomeView.vala:22
+msgid "No snippets found."
+msgstr ""
+
+#: src/WelcomeView.vala:23
+msgid "document-new"
+msgstr ""
+
+#: src/WelcomeView.vala:23
+msgid "Add Snippet"
+msgstr ""
+
+#: src/WelcomeView.vala:23
+msgid "Create your first snippet."
+msgstr ""
+
+#: src/WelcomeView.vala:24
+msgid "document-import"
+msgstr ""
+
+#: src/WelcomeView.vala:24
+msgid "Import previously exported snippets."
+msgstr ""
+
+#: src/WelcomeView.vala:25
+msgid "help-contents"
+msgstr ""
+
+#: src/WelcomeView.vala:25
+msgid "Quick Start Guide"
+msgstr ""
+
+#: src/WelcomeView.vala:25
+msgid "Learn the basics of how to use Snippet Pixie."
 msgstr ""
