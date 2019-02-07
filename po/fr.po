@@ -45,7 +45,7 @@ msgstr "Par exemple : - « rsp` » s'étendra en « Règles de Snippet Pixie ! �
 msgid "Added ability to export snippets to a JSON file via menu button."
 msgstr ""
 "Ajout de la possibilité d'exporter des raccourcis vers un fichier JSON via "
-"un bouton de menu ou depuis l'écran de bienvenue."
+"un bouton de menu."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
 msgid ""
@@ -62,7 +62,7 @@ msgid ""
 "or welcome screen. Shocking! 😱"
 msgstr ""
 "Ajout de la possibilité d'importer des extraits d'un fichier JSON exporté "
-"via un bouton de menu. Choquant ! 😱"
+"via un bouton de menu ou depuis l'écran de bienvenue. Choquant ! 😱"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:23
 msgid ""
