@@ -54,7 +54,7 @@ parts:
     source: .
     override-build: |
       snapcraftctl build
-      sed -i 's|Icon=com.github.bytepixie.snippetpixie|Icon=${SNAP}/data/icons/256/com.github.bytepixie.snippetpixie.svg|' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/com.github.bytepixie.snippetpixie.desktop
+      sed -i 's|Icon=com.github.bytepixie.snippetpixie|Icon=\${SNAP}/meta/gui/icon.svg|' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/com.github.bytepixie.snippetpixie.desktop
     build-packages:
       - libgtk-3-dev
       - libglib2.0-dev
