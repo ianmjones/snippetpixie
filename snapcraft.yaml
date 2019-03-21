@@ -7,7 +7,7 @@ description: |
   For example:- "spr`" expands to "Snippet Pixie rules!"
 
 grade: stable
-confinement: devmode
+confinement: strict
 icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 
 apps:
@@ -16,6 +16,10 @@ apps:
     plugs:
       - desktop
       - desktop-legacy
+      - gsettings
+      - wayland
+      - x11
+      - home
     slots: [ dbus-snippetpixie ]
     desktop: usr/share/applications/com.github.bytepixie.snippetpixie.desktop
     environment:
