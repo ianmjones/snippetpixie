@@ -1,6 +1,6 @@
 name: snippetpixie
 base: core18
-version: git
+version: 1.1.1
 summary: Your little expandable snippet helper
 description: |
   Save your often used snippets and then expand them whenever you type their abbreviation.

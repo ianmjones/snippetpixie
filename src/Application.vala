@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.1.1";
 
         private static Application? _app = null;
 
