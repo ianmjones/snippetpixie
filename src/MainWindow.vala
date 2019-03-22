@@ -146,7 +146,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
             var result = Application.get_default ().snippets_manager.import_from_file (filepath, overwrite);
 
             if (result == 0) {
-                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Imported Snippets"), _("Your snippets were successfully imported."), "process-completed", Gtk.ButtonsType.CLOSE);
+                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Imported Snippets"), _("Your snippets were successfully imported."), "document-import", Gtk.ButtonsType.CLOSE);
                 cheer.run ();
                 cheer.destroy ();
             } else {
@@ -166,7 +166,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
             var result = Application.get_default ().snippets_manager.export_to_file (filepath);
 
             if (result == 0) {
-                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Exported Snippets"), _("Your snippets were successfully exported."), "process-completed", Gtk.ButtonsType.CLOSE);
+                var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Exported Snippets"), _("Your snippets were successfully exported."), "document-export", Gtk.ButtonsType.CLOSE);
                 cheer.run ();
                 cheer.destroy ();
             } else {
