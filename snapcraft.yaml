@@ -17,6 +17,7 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
+      - unity7
       - wayland
       - x11
       - home
