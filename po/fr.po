@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-06 20:33+0000\n"
+"POT-Creation-Date: 2019-03-23 19:34+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -24,7 +24,6 @@ msgstr "Snippet Pixie"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:8
 #: data/com.github.bytepixie.snippetpixie.desktop.in:4
-#, fuzzy
 msgid "Your little expandable snippet helper"
 msgstr "Votre petit assistant de raccourcis"
 
@@ -41,7 +40,6 @@ msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
 msgstr "Par exemple : - « rsp` » s'étendra en « Règles de Snippet Pixie ! »"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
-#, fuzzy
 msgid "Added ability to export snippets to a JSON file via menu button."
 msgstr ""
 "Ajout de la possibilité d'exporter des raccourcis vers un fichier JSON via "
@@ -56,7 +54,6 @@ msgstr ""
 "options en ligne de commande `--export` ou `-e`."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:22
-#, fuzzy
 msgid ""
 "Added ability to import snippets from an exported JSON file via menu button "
 "or welcome screen. Shocking! 😱"
@@ -137,12 +134,10 @@ msgid "expand;text;snippet;"
 msgstr "étendre;texte;raccourci;"
 
 #: data/com.github.bytepixie.snippetpixie.desktop.in:15
-#, fuzzy
 msgid "Start Snippet Pixie"
 msgstr "Lancer Snippet Pixie"
 
 #: data/com.github.bytepixie.snippetpixie.desktop.in:19
-#, fuzzy
 msgid "Stop Snippet Pixie"
 msgstr "Arrêter Snippet Pixie"
 
@@ -156,22 +151,24 @@ msgstr "Lancer sans fenêtre"
 
 #: src/Application.vala:476
 msgid "Fully quit the application, including the background process"
-msgstr "Quitter complétement l'application, ainsi que le processus en arrière-plan"
+msgstr ""
+"Quitter complétement l'application, ainsi que le processus en arrière-plan"
 
 #: src/Application.vala:477
 msgid ""
 "Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
 msgstr ""
-"Activer le démarrage automatique de Snippet Pixie lors de la connexion, activer, désactiver ou afficher l'état des paramètres"
+"Activer le démarrage automatique de Snippet Pixie lors de la connexion, "
+"activer, désactiver ou afficher l'état des paramètres"
 
 #: src/Application.vala:478
 msgid ""
 "Shows status of the application, exits with status 0 if running, 1 if not"
 msgstr ""
-"Affiche l'état de l'application, quitte avec le statut 0 si en cours d'exécution, 1 sinon"
+"Affiche l'état de l'application, quitte avec le statut 0 si en cours "
+"d'exécution, 1 sinon"
 
 #: src/Application.vala:479
-#, fuzzy
 msgid "Export snippets to file"
 msgstr "Exporter les raccourcis vers un fichier"
 
@@ -179,7 +176,8 @@ msgstr "Exporter les raccourcis vers un fichier"
 msgid ""
 "Import snippets from file, skips snippets where abbreviation already exists"
 msgstr ""
-"Importer des raccourcis à partir d'un fichier, ignore les raccourcis où l'abréviation existe déjà"
+"Importer des raccourcis à partir d'un fichier, ignore les raccourcis où "
+"l'abréviation existe déjà"
 
 #: src/Application.vala:480
 msgid "filename"
@@ -190,8 +188,8 @@ msgid ""
 "If used in conjunction with import, existing snippets with same abbreviation "
 "are updated"
 msgstr ""
-"S'ils sont utilisés conjointement avec l'importation, les raccourcis existants avec la même abréviation "
-"sont mis à jour"
+"S'ils sont utilisés conjointement avec l'importation, les raccourcis "
+"existants avec la même abréviation sont mis à jour"
 
 #: src/Application.vala:482
 msgid "Display version number"
@@ -209,10 +207,13 @@ msgstr "Erreur : %s\n"
 #: src/Application.vala:503
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
-msgstr "Exécutez « %s --help » pour visualiser la liste complète des options disponibles en ligne de commande.\n"
+msgstr ""
+"Exécutez « %s --help » pour visualiser la liste complète des options "
+"disponibles en ligne de commande.\n"
 
 #: src/Application.vala:518
-msgid "Quitting...\n"
+#, fuzzy
+msgid "Quitting…\n"
 msgstr "Fermeture…\n"
 
 #: src/Application.vala:526
@@ -338,7 +339,6 @@ msgid "Body"
 msgstr "Corps"
 
 #: src/ViewStack.vala:73
-#, fuzzy
 msgid "Remove Snippet"
 msgstr "Supprimer le raccourci"
 
@@ -365,6 +365,3 @@ msgstr "Guide de démarrage rapide"
 #: src/WelcomeView.vala:25
 msgid "Learn the basics of how to use Snippet Pixie."
 msgstr "Apprenez les bases de l'utilisation de Snippet Pixie."
-
-#~ msgid "Your little snippet helper."
-#~ msgstr "Votre petit assistant de raccourcis."

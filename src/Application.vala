@@ -515,7 +515,7 @@ namespace SnippetPixie {
             }
 
             if (stop) {
-                command_line.print (_("Quitting...\n"));
+                command_line.print (_("Quitting…\n"));
                 var app = get_default ();
                 app.quit ();
                 return 0;
