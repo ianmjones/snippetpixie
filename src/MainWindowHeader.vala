@@ -66,7 +66,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // pack_start (redo_button); // TODO: Add redo.
         pack_end (menu_button);
         // pack_end (search_entry); // TODO: Add search.
-        set_title ("Snippet Pixie");
+        set_title (_("Snippet Pixie"));
         show_all ();
      }
 }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-23 19:34+0100\n"
+"POT-Creation-Date: 2019-03-24 13:28+0100\n"
 "PO-Revision-Date: 2019-02-06 00:14+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,7 +18,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:7
-#: data/com.github.bytepixie.snippetpixie.desktop.in:3
+#: data/com.github.bytepixie.snippetpixie.desktop.in:3 src/MainWindow.vala:188
+#: src/MainWindowHeader.vala:69
 msgid "Snippet Pixie"
 msgstr ""
 
@@ -306,7 +307,7 @@ msgid "Remove Snippet"
 msgstr ""
 
 #: src/WelcomeView.vala:22
-msgid "No snippets found."
+msgid "No snippets found"
 msgstr ""
 
 #: src/WelcomeView.vala:23

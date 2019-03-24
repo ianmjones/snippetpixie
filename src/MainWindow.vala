@@ -185,7 +185,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         dialog.authors = {"Ian M. Jones"};
 
-        dialog.program_name = "Snippet Pixie";
+        dialog.program_name = _("Snippet Pixie");
         dialog.copyright = _("Copyright © Byte Pixie Limited");
         dialog.logo_icon_name = Application.ID;
         dialog.version = Application.VERSION;
