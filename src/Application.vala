@@ -37,6 +37,9 @@ namespace SnippetPixie {
         private Atspi.EventListenerCB focused_event_listener_cb;
         private Atspi.EventListenerCB window_activated_event_listener_cb;
         private Atspi.EventListenerCB window_deactivated_event_listener_cb;
+        private bool first_event = true;
+        private bool focus_changed = true;
+        private string last_event_type = "";
         public static Atspi.EditableText focused_control;
 
         public SnippetsManager snippets_manager;
@@ -172,11 +175,12 @@ namespace SnippetPixie {
             debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
 
             if (
-                focused_control != null && 
-                stroke.is_text && 
-                stroke.event_string != null && 
-                snippets_manager.triggers != null && 
-                snippets_manager.triggers.size > 0 && 
+                focused_control != null &&
+                focus_changed != true &&
+                stroke.is_text &&
+                stroke.event_string != null &&
+                snippets_manager.triggers != null &&
+                snippets_manager.triggers.size > 0 &&
                 snippets_manager.triggers.has_key (stroke.event_string)
                 ) {
                 debug ("!!! GOT A TRIGGER KEY MATCH !!!");
@@ -243,15 +247,25 @@ namespace SnippetPixie {
             return expanded;
         }
 
+        private void focus_changing () {
+            // Focused control must have changed.
+            focused_control = null;
+            focus_changed = true;
+        }
+
         [CCode (instance_pos = -1)]
         private bool on_focus (Atspi.Event event) {
             debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
+            focus_changing ();
+
+            last_event_type = event.type;
+            first_event = false;
+
             try {
+                // Try and grab editable control's handle, but don't want expansion within Snippet Pixie.
                 var app = event.source.get_application ();
-                if (app.get_name () == this.application_id) {
-                    focused_control = null;
-                } else {
+                if (app.get_name () != this.application_id) {
                     focused_control = event.source.get_editable_text_iface ();
                 }
             } catch (Error e) {
@@ -260,12 +274,27 @@ namespace SnippetPixie {
                 quit ();
             }
 
+            // We no longer need to look for a focused control.
+            if (focused_control != null) {
+                focus_changed = false;
+            }
+
             return false;
         }
 
         [CCode (instance_pos = -1)]
         private bool on_window_activate (Atspi.Event event) {
             debug (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
+
+            if (first_event == false && last_event_type != "window:deactivate") {
+                debug ("Out of order event: '%s'", event.type);
+                return false;
+            }
+
+            last_event_type = event.type;
+            first_event = false;
+
+            focus_changing ();
 
             if (event.source != null) {
                 event.source.clear_cache ();
@@ -281,19 +310,47 @@ namespace SnippetPixie {
         [CCode (instance_pos = -1)]
         private bool on_window_deactivate (Atspi.Event event) {
             debug ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
+            last_event_type = event.type;
+            first_event = false;
 
             // Make sure previously focused control doesn't accidently get results of expansion.
-            focused_control = null;
+            focus_changing ();
 
             return false;
         }
 
-        private Atspi.EditableText? get_focused_control (owned Atspi.Accessible? parent) {
+        private Atspi.EditableText? get_focused_control (owned Atspi.Accessible? parent, int level = 0) {
+            // Too far down the rabbit hole and we'll get stuck.
+            if (level > 20) {
+                debug ("Too deep down the rabit hole, returning to surface.");
+                return null;
+            }
+
+            // Safe guard, should not be called unless window just changed.
+            if (level == 0 && focus_changed == false) {
+                debug ("Oops, looking for focused control but focus event hasn't trigger it?");
+                return null;
+            }
+
+            if (level == 0 && focus_changed == true) {
+                focus_changed = false;
+            }
+
+            // If we're still looking for a focused control while focus changes, abort.
+            // In current single thread form this isn't going to happen, but we may need to go multi-threaded soon.
+            if (level != 0 && focus_changed == true) {
+                debug("Focus changed while looking for focused control, aborting current lookup.");
+                return null;
+            }
+
+            level++;
+
             try {
                 if (parent == null) {
-                    parent = Atspi.get_desktop (0);
                     debug ("Hmmm, had to go to desktop to try and find focused control, seems suspicious.");
+                    parent = Atspi.get_desktop (0);
                 } else {
+                    //debug("Checking that current app isn't myself.");
                     var app = parent.get_application ();
                     if (app.get_name () == this.application_id) {
                         return null;
@@ -308,7 +365,9 @@ namespace SnippetPixie {
             var children = 0;
 
             try {
+                debug("Counting child controls...");
                 children = parent.get_child_count ();
+                debug("...%d child controls found.", children);
             } catch (Error e) {
                 message ("Could not get parent control's child count: %s", e.message);
                 Atspi.exit ();
@@ -319,22 +378,30 @@ namespace SnippetPixie {
                 for (int i = 0; i < children; i++) {
                     Atspi.Accessible child = null;
 
+                    // If we're still looking for a focused control while focus changes, abort.
+                    if (focus_changed == true) {
+                        debug("Focus changed while looking for focused control, aborting current lookup.");
+                        return null;
+                    }
+
                     try {
-                        child = parent.get_child_at_index(i);
+                        if (parent != null) {
+                            child = parent.get_child_at_index(i);
+                        }
                     } catch (Error e) {
                         message ("Could not get child control: %s", e.message);
                         Atspi.exit ();
                         quit ();
                     }
 
-                    if (child.states.contains(Atspi.StateType.FOCUSED) && (child is Atspi.EditableText)) {
+                    if (child != null && child.states.contains(Atspi.StateType.FOCUSED) && (child is Atspi.EditableText)) {
                         debug ("$$$ Found focsed child control.");
                         return child;
                     }
 
                     // If the child control is visible and showing it's worth looking at its children.
-                    if (child.states.contains(Atspi.StateType.VISIBLE) && child.states.contains(Atspi.StateType.SHOWING)) {
-                        var control = get_focused_control (child);
+                    if (child != null && child.states.contains(Atspi.StateType.VISIBLE) && child.states.contains(Atspi.StateType.SHOWING)) {
+                        var control = get_focused_control (child, level);
 
                         // Woo hoo, found it buried down here somewhere.
                         if (control != null) {
