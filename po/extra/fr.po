@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-27 22:28+0100\n"
+"POT-Creation-Date: 2019-03-27 22:25+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -16,6 +16,131 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:7
+#: data/com.github.bytepixie.snippetpixie.desktop.in:3 src/MainWindow.vala:188
+#: src/MainWindowHeader.vala:69
+msgid "Snippet Pixie"
+msgstr "Snippet Pixie"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:8
+#: data/com.github.bytepixie.snippetpixie.desktop.in:4
+msgid "Your little expandable snippet helper"
+msgstr "Votre petit assistant de raccourcis"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:10
+msgid ""
+"Save your often used snippets and then expand them whenever you type their "
+"abbreviation."
+msgstr ""
+"Sauvegardez vos raccourcis souvent utilisés et développez-les à chaque fois "
+"que vous tapez leur abréviation."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:11
+msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
+msgstr "Par exemple : - « rsp` » s'étendra en « Règles de Snippet Pixie ! »"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
+msgid "Added ability to export snippets to a JSON file via menu button."
+msgstr ""
+"Ajout de la possibilité d'exporter des raccourcis vers un fichier JSON via "
+"un bouton de menu."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
+msgid ""
+"Added ability to export snippets to a JSON file via `--export` or `-e` CLI "
+"options."
+msgstr ""
+"Ajout de la possibilité d'exporter des extraits vers un fichier JSON via les "
+"options en ligne de commande `--export` ou `-e`."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:22
+msgid ""
+"Added ability to import snippets from an exported JSON file via menu button "
+"or welcome screen. Shocking! 😱"
+msgstr ""
+"Ajout de la possibilité d'importer des extraits d'un fichier JSON exporté "
+"via un bouton de menu ou depuis l'écran de bienvenue. Choquant ! 😱"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:23
+msgid ""
+"Added ability to import snippets from an exported JSON file via `--import` "
+"or `-i` CLI options. Bet you didn't see that coming! 😉"
+msgstr ""
+"Possibilité d'importer des extraits d'un fichier JSON exporté via les "
+"options en ligne de commande `--import` ou `-i`. Je parie que vous ne "
+"l'aviez pas vu venir ! 😉"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
+msgid "1.0 Release!"
+msgstr "Version 1.0 !"
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:31
+msgid "Added Snippet Pixie to login startup items by default."
+msgstr ""
+"Ajout de Snippet Pixie aux éléments de démarrage par défaut à la connexion."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:32
+msgid ""
+"Added --autostart={on|off|status} option to CLI for turning autostart on, "
+"off, or getting settings status."
+msgstr ""
+"Ajout de l'option --autostart={on|off|status} aux lignes de commande pour "
+"activer, désactiver ou obtenir le statut des paramètres."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:33
+msgid "Changed body field to select all text when tabbed into."
+msgstr ""
+"Changement du champ de texte pour sélectionner tout le texte lorsqu'il est "
+"affiché sous forme d'onglets."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:40
+msgid ""
+"Fixed crash when an application with a large number of controls was "
+"activated."
+msgstr ""
+"Correction d'un plantage lorsqu'une application avec un grand nombre de "
+"contrôles était activée."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:41
+msgid ""
+"Fixed problem with snippets sometimes not expanding when returning to an "
+"application."
+msgstr ""
+"Correction d'un problème avec les raccourcis qui ne se développaient pas "
+"toujours lors du retour à une application."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:42
+msgid "Added a splash of colour to the window header."
+msgstr "Ajout d'une touche de couleur à l'en-tête de la fenêtre."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:43
+msgid "Added a new application icon."
+msgstr "Ajout d'une nouvelle icône d'application."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:49
+msgid "Initial pre-release."
+msgstr "Pré-version initiale."
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:90
+msgid "Byte Pixie"
+msgstr "Byte Pixie"
+
+#: data/com.github.bytepixie.snippetpixie.desktop.in:6
+msgid "com.github.bytepixie.snippetpixie"
+msgstr "com.github.bytepixie.snippetpixie"
+
+#: data/com.github.bytepixie.snippetpixie.desktop.in:7
+msgid "expand;text;snippet;"
+msgstr "étendre;texte;raccourci;"
+
+#: data/com.github.bytepixie.snippetpixie.desktop.in:15
+msgid "Start Snippet Pixie"
+msgstr "Lancer Snippet Pixie"
+
+#: data/com.github.bytepixie.snippetpixie.desktop.in:19
+msgid "Stop Snippet Pixie"
+msgstr "Arrêter Snippet Pixie"
 
 #: src/Application.vala:474
 msgid "Show Snippet Pixie's window (default action)"
@@ -88,7 +213,6 @@ msgstr ""
 "disponibles en ligne de commande.\n"
 
 #: src/Application.vala:518
-#, fuzzy
 msgid "Quitting…\n"
 msgstr "Fermeture…\n"
 
@@ -177,10 +301,6 @@ msgstr "Échec de l'exportation du fichier"
 #: src/MainWindow.vala:173
 msgid "Something went wrong, sorry."
 msgstr "Une erreur s'est produite, désolé."
-
-#: src/MainWindow.vala:188 src/MainWindowHeader.vala:69
-msgid "Snippet Pixie"
-msgstr "Snippet Pixie"
 
 #: src/MainWindow.vala:189
 msgid "Copyright © Byte Pixie Limited"

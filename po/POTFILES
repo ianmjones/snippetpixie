@@ -1,5 +1,3 @@
-data/com.github.bytepixie.snippetpixie.appdata.xml.in
-data/com.github.bytepixie.snippetpixie.desktop.in
 src/Application.vala
 src/FramedTextView.vala
 src/MainWindow.vala
