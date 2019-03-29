@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-29 13:00+0100\n"
+"POT-Creation-Date: 2019-03-29 21:14+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -88,7 +88,6 @@ msgstr ""
 "disponibles en ligne de commande.\n"
 
 #: src/Application.vala:518
-#, fuzzy
 msgid "Quitting…\n"
 msgstr "Fermeture…\n"
 
@@ -178,6 +177,10 @@ msgstr "Échec de l'exportation du fichier"
 msgid "Something went wrong, sorry."
 msgstr "Une erreur s'est produite, désolé."
 
+#: src/MainWindow.vala:189
+msgid "Copyright © Byte Pixie Limited"
+msgstr "Copyright © Byte Pixie Limited"
+
 #: src/MainWindowHeader.vala:26
 msgid "Add snippet"
 msgstr "Ajouter un raccourci"
@@ -215,8 +218,8 @@ msgid "Remove Snippet"
 msgstr "Supprimer le raccourci"
 
 #: src/WelcomeView.vala:22
-msgid "No snippets found"
-msgstr "Aucun raccourci trouvé"
+msgid "No snippets found."
+msgstr "Aucun raccourci trouvé."
 
 #: src/WelcomeView.vala:23
 msgid "Add Snippet"
