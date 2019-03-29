@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-27 22:28+0100\n"
+"POT-Creation-Date: 2019-03-29 13:00+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -177,14 +177,6 @@ msgstr "Échec de l'exportation du fichier"
 #: src/MainWindow.vala:173
 msgid "Something went wrong, sorry."
 msgstr "Une erreur s'est produite, désolé."
-
-#: src/MainWindow.vala:188 src/MainWindowHeader.vala:69
-msgid "Snippet Pixie"
-msgstr "Snippet Pixie"
-
-#: src/MainWindow.vala:189
-msgid "Copyright © Byte Pixie Limited"
-msgstr "Copyright © Byte Pixie Limited"
 
 #: src/MainWindowHeader.vala:26
 msgid "Add snippet"
