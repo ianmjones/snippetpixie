@@ -21,6 +21,6 @@ Standards-Version: 3.9.3
 Package: com.github.bytepixie.snippetpixie
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Description: Your little expandable snippet helper.
- Save your often used snippets and then expand them whenever you type their abbreviation.
+Description: Your little expandable text snippet helper.
+ Save your often used text snippets and then expand them whenever you type their abbreviation.
  For example:- "spr`" expands to "Snippet Pixie rules!"

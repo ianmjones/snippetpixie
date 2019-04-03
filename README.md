@@ -11,9 +11,9 @@
     <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie"><img src="https://appcenter.elementary.io/badge.svg?new" alt="Get it on AppCenter" /></a>
 </p>
 
-Your little expandable snippet helper.
+Your little expandable text snippet helper.
 
-Save your often used snippets and then expand them whenever you type their abbreviation.
+Save your often used text snippets and then expand them whenever you type their abbreviation.
 
 For example:- "spr`" expands to "Snippet Pixie rules!"
 

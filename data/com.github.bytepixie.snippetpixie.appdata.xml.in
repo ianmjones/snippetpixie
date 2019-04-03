@@ -5,15 +5,23 @@
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-2.0+</project_license>
   <name>Snippet Pixie</name>
-  <summary>Your little expandable snippet helper</summary>
+  <summary>Your little expandable text snippet helper</summary>
   <description>
-    <p>Save your often used snippets and then expand them whenever you type their abbreviation.</p>
+    <p>Save your often used text snippets and then expand them whenever you type their abbreviation.</p>
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
   </description>
   <provides>
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.1.1" date="2019-04-03">
+      <description>
+        <ul>
+            <li>Improved performance, compatibility, and stability.</li>
+            <li>Added French translations. Huge thanks to <a href="https://github.com/NathanBnm">@NathanBnm</a> on GitHub! 🇨🇵️</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2019-02-05">
       <description>
         <ul>

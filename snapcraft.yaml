@@ -1,9 +1,9 @@
 name: snippetpixie
 base: core18
 version: 1.1.1
-summary: Your little expandable snippet helper
+summary: Your little expandable text snippet helper
 description: |
-  Save your often used snippets and then expand them whenever you type their abbreviation.
+  Save your often used text snippets and then expand them whenever you type their abbreviation.
 
   For example:- "spr`" expands to "Snippet Pixie rules!"
 

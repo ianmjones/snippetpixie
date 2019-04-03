@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-29 12:58+0100\n"
+"POT-Creation-Date: 2019-04-03 23:16+0100\n"
 "PO-Revision-Date: 2019-02-06 00:14+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -24,13 +24,13 @@ msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:8
 #: data/com.github.bytepixie.snippetpixie.desktop.in:4
-msgid "Your little expandable snippet helper"
+msgid "Your little expandable text snippet helper"
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:10
 msgid ""
-"Save your often used snippets and then expand them whenever you type their "
-"abbreviation."
+"Save your often used text snippets and then expand them whenever you type "
+"their abbreviation."
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:11
@@ -38,70 +38,78 @@ msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
-msgid "Added ability to export snippets to a JSON file via menu button."
+msgid "Improved performance, compatibility, and stability."
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
+msgid "@NathanBnm"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:28
+msgid "Added ability to export snippets to a JSON file via menu button."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:29
 msgid ""
 "Added ability to export snippets to a JSON file via `--export` or `-e` CLI "
 "options."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:22
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
 msgid ""
 "Added ability to import snippets from an exported JSON file via menu button "
 "or welcome screen. Shocking! 😱"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:23
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:31
 msgid ""
 "Added ability to import snippets from an exported JSON file via `--import` "
 "or `-i` CLI options. Bet you didn't see that coming! 😉"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:38
 msgid "1.0 Release!"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:31
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:39
 msgid "Added Snippet Pixie to login startup items by default."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:32
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:40
 msgid ""
 "Added --autostart={on|off|status} option to CLI for turning autostart on, "
 "off, or getting settings status."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:33
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:41
 msgid "Changed body field to select all text when tabbed into."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:40
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:48
 msgid ""
 "Fixed crash when an application with a large number of controls was "
 "activated."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:41
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:49
 msgid ""
 "Fixed problem with snippets sometimes not expanding when returning to an "
 "application."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:42
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:50
 msgid "Added a splash of colour to the window header."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:43
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:51
 msgid "Added a new application icon."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:49
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:57
 msgid "Initial pre-release."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:90
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:98
 msgid "Byte Pixie"
 msgstr ""
 

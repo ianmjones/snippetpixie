@@ -1,3 +1,10 @@
+com.github.bytepixie.snippetpixie (1.1.1) xenial; urgency=medium
+
+  * Improved performance, compatibility, and stability.
+  * Added French translations. Huge thanks to @NathanBnm on GitHub! 🇨🇵️
+
+ -- Byte Pixie <hello@bytepixie.com>  Wed, 03 Apr 2019 12:34:56 +0000
+
 com.github.bytepixie.snippetpixie (1.1.0) xenial; urgency=medium
 
   * Added ability to export snippets to a JSON file via menu button.
