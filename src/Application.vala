@@ -174,75 +174,79 @@ namespace SnippetPixie {
             var expanded = false;
             debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
 
-            if (
-                focused_control != null &&
-                focus_changed != true &&
-                stroke.is_text &&
-                stroke.event_string != null &&
-                snippets_manager.triggers != null &&
-                snippets_manager.triggers.size > 0 &&
-                snippets_manager.triggers.has_key (stroke.event_string)
-                ) {
-                debug ("!!! GOT A TRIGGER KEY MATCH !!!");
+            lock (focused_control) {
+                lock (focus_changed) {
+                    if (
+                        focused_control != null &&
+                        focus_changed != true &&
+                        stroke.is_text &&
+                        stroke.event_string != null &&
+                        snippets_manager.triggers != null &&
+                        snippets_manager.triggers.size > 0 &&
+                        snippets_manager.triggers.has_key (stroke.event_string)
+                        ) {
+                        debug ("!!! GOT A TRIGGER KEY MATCH !!!");
 
-                var ctrl = (Atspi.Text) focused_control;
-                var caret_offset = 0;
-
-                try {
-                    caret_offset = ctrl.get_caret_offset ();
-                } catch (Error e) {
-                    message ("Could not get caret offset: %s", e.message);
-                    return expanded;
-                }
-                debug ("Caret Offset %d", caret_offset);
-
-                for (int pos = caret_offset; pos >= 0; pos--) {
-                    // Stop checking if we're already checking against a larger character set than in any abbreviation.
-                    if ((caret_offset - pos) > snippets_manager.max_abbr_len) {
-                        return expanded;
-                    }
-
-                    var str = "";
-
-                    try {
-                        // At time of key capture the trigger isn't in the text yet so it's tacked onto search string.
-                        str = ctrl.get_text (pos, caret_offset) + stroke.event_string;
-                    } catch (Error e) {
-                        message ("Could not get text between positions %d and %d: %s", pos, caret_offset, e.message);
-                        return expanded;
-                    }
-                    debug ("Pos %d, Str %s", pos, str);
-
-                    if (snippets_manager.abbreviations.has_key (str)) {
-                        debug ("IT'S AN ABBREVIATION!!!");
+                        var ctrl = (Atspi.Text) focused_control;
+                        var caret_offset = 0;
 
                         try {
-                            if (! focused_control.delete_text (pos, caret_offset)) {
-                                message ("Could not delete abbreviation string from text.");
-                                break;
-                            }
+                            caret_offset = ctrl.get_caret_offset ();
                         } catch (Error e) {
-                            message ("Could not delete abbreviation string from text between positions %d and %d: %s", pos, caret_offset, e.message);
+                            message ("Could not get caret offset: %s", e.message);
                             return expanded;
                         }
+                        debug ("Caret Offset %d", caret_offset);
 
-                        var abbr = snippets_manager.abbreviations.get (str);
+                        for (int pos = caret_offset; pos >= 0; pos--) {
+                            // Stop checking if we're already checking against a larger character set than in any abbreviation.
+                            if ((caret_offset - pos) > snippets_manager.max_abbr_len) {
+                                return expanded;
+                            }
 
-                        try {
-                            if (! focused_control.insert_text (pos, abbr, abbr.length)) {
-                                message ("Could not insert expanded snippet into text.");
+                            var str = "";
+
+                            try {
+                                // At time of key capture the trigger isn't in the text yet so it's tacked onto search string.
+                                str = ctrl.get_text (pos, caret_offset) + stroke.event_string;
+                            } catch (Error e) {
+                                message ("Could not get text between positions %d and %d: %s", pos, caret_offset, e.message);
+                                return expanded;
+                            }
+                            debug ("Pos %d, Str %s", pos, str);
+
+                            if (snippets_manager.abbreviations.has_key (str)) {
+                                debug ("IT'S AN ABBREVIATION!!!");
+
+                                try {
+                                    if (! focused_control.delete_text (pos, caret_offset)) {
+                                        message ("Could not delete abbreviation string from text.");
+                                        break;
+                                    }
+                                } catch (Error e) {
+                                    message ("Could not delete abbreviation string from text between positions %d and %d: %s", pos, caret_offset, e.message);
+                                    return expanded;
+                                }
+
+                                var abbr = snippets_manager.abbreviations.get (str);
+
+                                try {
+                                    if (! focused_control.insert_text (pos, abbr, abbr.length)) {
+                                        message ("Could not insert expanded snippet into text.");
+                                        break;
+                                    }
+                                } catch (Error e) {
+                                    message ("Could not insert expanded snippet into text at position %d: %s", pos, e.message);
+                                    return expanded;
+                                }
+
+                                expanded = true;
                                 break;
                             }
-                        } catch (Error e) {
-                            message ("Could not insert expanded snippet into text at position %d: %s", pos, e.message);
-                            return expanded;
                         }
-
-                        expanded = true;
-                        break;
-                    }
-                }
-            }
+                    } // if something to check
+                } // lock focus_changed
+            } // lock focused_control
 
             return expanded;
         }
@@ -257,26 +261,30 @@ namespace SnippetPixie {
         private bool on_focus (Atspi.Event event) {
             debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
-            focus_changing ();
+            lock (focused_control) {
+                lock (focus_changed) {
+                    focus_changing ();
 
-            last_event_type = event.type;
-            first_event = false;
+                    last_event_type = event.type;
+                    first_event = false;
 
-            try {
-                // Try and grab editable control's handle, but don't want expansion within Snippet Pixie.
-                var app = event.source.get_application ();
-                if (app.get_name () != this.application_id) {
-                    focused_control = event.source.get_editable_text_iface ();
+                    try {
+                        // Try and grab editable control's handle, but don't want expansion within Snippet Pixie.
+                        var app = event.source.get_application ();
+                        if (app.get_name () != this.application_id) {
+                            focused_control = event.source.get_editable_text_iface ();
+                        }
+                    } catch (Error e) {
+                        message ("Could not get focused control: %s", e.message);
+                        Atspi.exit ();
+                        quit ();
+                    }
+
+                    // We no longer need to look for a focused control.
+                    if (focused_control != null) {
+                        focus_changed = false;
+                    }
                 }
-            } catch (Error e) {
-                message ("Could not get focused control: %s", e.message);
-                Atspi.exit ();
-                quit ();
-            }
-
-            // We no longer need to look for a focused control.
-            if (focused_control != null) {
-                focus_changed = false;
             }
 
             return false;
@@ -294,15 +302,24 @@ namespace SnippetPixie {
             last_event_type = event.type;
             first_event = false;
 
-            focus_changing ();
+            lock (focused_control) {
+                lock (focus_changed) {
+                    focus_changing ();
 
-            if (event.source != null) {
-                event.source.clear_cache ();
-                debug ("Cleared the cache for '%s'", event.source.name);
+                    if (event.source != null) {
+                        event.source.clear_cache ();
+                        debug ("Cleared the cache for '%s'", event.source.name);
+                    }
+                }
             }
 
+            // TODO: Spin off in thread or async.
             // If a window is being returned to one way or another, then check whether an editable text is already focused.
-            focused_control = get_focused_control (event.source);
+            var ctrl = get_focused_control (event.source);
+
+            lock (focused_control) {
+                focused_control = ctrl;
+            }
 
             return false;
         }
@@ -313,8 +330,12 @@ namespace SnippetPixie {
             last_event_type = event.type;
             first_event = false;
 
-            // Make sure previously focused control doesn't accidently get results of expansion.
-            focus_changing ();
+            lock (focused_control) {
+                lock (focus_changed) {
+                    // Make sure previously focused control doesn't accidently get results of expansion.
+                    focus_changing ();
+                }
+            }
 
             return false;
         }
@@ -326,21 +347,23 @@ namespace SnippetPixie {
                 return null;
             }
 
-            // Safe guard, should not be called unless window just changed.
-            if (level == 0 && focus_changed == false) {
-                debug ("Oops, looking for focused control but focus event hasn't trigger it?");
-                return null;
-            }
+            lock (focus_changed) {
+                // Safe guard, should not be called unless window just changed.
+                if (level == 0 && focus_changed == false) {
+                    debug ("Oops, looking for focused control but focus event hasn't trigger it?");
+                    return null;
+                }
 
-            if (level == 0 && focus_changed == true) {
-                focus_changed = false;
-            }
+                if (level == 0 && focus_changed == true) {
+                    focus_changed = false;
+                }
 
-            // If we're still looking for a focused control while focus changes, abort.
-            // In current single thread form this isn't going to happen, but we may need to go multi-threaded soon.
-            if (level != 0 && focus_changed == true) {
-                debug("Focus changed while looking for focused control, aborting current lookup.");
-                return null;
+                // If we're still looking for a focused control while focus changes, abort.
+                // In current single thread form this isn't going to happen, but we may need to go multi-threaded soon.
+                if (level != 0 && focus_changed == true) {
+                    debug("Focus changed while looking for focused control, aborting current lookup.");
+                    return null;
+                }
             }
 
             level++;
@@ -378,10 +401,12 @@ namespace SnippetPixie {
                 for (int i = 0; i < children; i++) {
                     Atspi.Accessible child = null;
 
-                    // If we're still looking for a focused control while focus changes, abort.
-                    if (focus_changed == true) {
-                        debug("Focus changed while looking for focused control, aborting current lookup.");
-                        return null;
+                    lock (focus_changed) {
+                        // If we're still looking for a focused control while focus changes, abort.
+                        if (focus_changed == true) {
+                            debug("Focus changed while looking for focused control, aborting current lookup.");
+                            return null;
+                        }
                     }
 
                     try {
@@ -659,6 +684,11 @@ namespace SnippetPixie {
         }
 
         public static int main (string[] args) {
+            if (Thread.supported () == false) {
+                stderr.printf(_("Cannot run without threads.\n"));
+                return -1;
+            }
+
             var app = get_default ();
             return app.run (args);
         }
