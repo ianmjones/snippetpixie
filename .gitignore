@@ -2,3 +2,8 @@
 build/
 .idea/
 .buildconfig
+parts/
+prime/
+snap/
+stage/
+*.snap
