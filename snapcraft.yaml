@@ -14,6 +14,8 @@ icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 apps:
   snippetpixie:
     command: desktop-launch $SNAP/usr/bin/com.github.bytepixie.snippetpixie
+    passthrough:
+      autostart: com.github.bytepixie.snippetpixie.desktop
     plugs:
       - desktop
       - desktop-legacy

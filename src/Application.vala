@@ -504,9 +504,15 @@ namespace SnippetPixie {
             var dest_file = File.new_for_path (dest_path);
 
             try {
+                var parent = dest_file.get_parent ();
+
+                if (! parent.query_exists ()) {
+                    parent.make_directory_with_parents ();
+                }
                 desktop_file.copy (dest_file, FileCopyFlags.OVERWRITE);
             } catch (Error e) {
                 warning ("Error making copy of desktop file for autostart: %s", e.message);
+                return;
             }
 
             var keyfile = new KeyFile ();
@@ -515,9 +521,19 @@ namespace SnippetPixie {
                 keyfile.load_from_file (dest_path, KeyFileFlags.NONE);
                 keyfile.set_string ("Desktop Entry", "Exec", "com.github.bytepixie.snippetpixie --start");
                 keyfile.set_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled", autostart);
+
+                if (keyfile.has_group ("Desktop Action Start")) {
+                    keyfile.remove_group ("Desktop Action Start");
+                }
+
+                if (keyfile.has_group ("Desktop Action Stop")) {
+                    keyfile.remove_group ("Desktop Action Stop");
+                }
+
                 keyfile.save_to_file (dest_path);
             } catch (Error e) {
                 warning ("Error enabling autostart: %s", e.message);
+                return;
             }
         }
 
