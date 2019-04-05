@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.1.1";
+        public const string VERSION = "1.1.2";
 
         private static Application? _app = null;
 
@@ -37,9 +37,8 @@ namespace SnippetPixie {
         private Atspi.EventListenerCB focused_event_listener_cb;
         private Atspi.EventListenerCB window_activated_event_listener_cb;
         private Atspi.EventListenerCB window_deactivated_event_listener_cb;
-        private bool first_event = true;
         private bool focus_changed = true;
-        private string last_event_type = "";
+        private int focused_app_id = -1;
         public static Atspi.EditableText focused_control;
 
         public SnippetsManager snippets_manager;
@@ -265,10 +264,9 @@ namespace SnippetPixie {
                 lock (focus_changed) {
                     focus_changing ();
 
-                    last_event_type = event.type;
-                    first_event = false;
-
                     try {
+                        focused_app_id = event.source.get_id ();
+
                         // Try and grab editable control's handle, but don't want expansion within Snippet Pixie.
                         var app = event.source.get_application ();
                         if (app.get_name () != this.application_id) {
@@ -276,8 +274,7 @@ namespace SnippetPixie {
                         }
                     } catch (Error e) {
                         message ("Could not get focused control: %s", e.message);
-                        Atspi.exit ();
-                        quit ();
+                        return false;
                     }
 
                     // We no longer need to look for a focused control.
@@ -294,26 +291,23 @@ namespace SnippetPixie {
         private bool on_window_activate (Atspi.Event event) {
             debug (">>> WINDOW ACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
-            if (first_event == false && last_event_type != "window:deactivate") {
-                debug ("Out of order event: '%s'", event.type);
-                return false;
-            }
-
-            last_event_type = event.type;
-            first_event = false;
-
             lock (focused_control) {
                 lock (focus_changed) {
                     focus_changing ();
 
-                    if (event.source != null) {
+                    try {
+                        focused_app_id = event.source.get_id ();
+
                         event.source.clear_cache ();
                         debug ("Cleared the cache for '%s'", event.source.name);
+                    } catch (Error e) {
+                        message ("Could not clear cache for '%s': %s", event.source.name, e.message);
+                        return false;
                     }
                 }
             }
 
-            // TODO: Spin off in thread or async.
+            // TODO: Maybe spin off in thread or async?
             // If a window is being returned to one way or another, then check whether an editable text is already focused.
             var ctrl = get_focused_control (event.source);
 
@@ -327,11 +321,23 @@ namespace SnippetPixie {
         [CCode (instance_pos = -1)]
         private bool on_window_deactivate (Atspi.Event event) {
             debug ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
-            last_event_type = event.type;
-            first_event = false;
 
             lock (focused_control) {
                 lock (focus_changed) {
+                    int deactivated_app_id = -1;
+
+                    try {
+                        deactivated_app_id = event.source.get_id ();
+                    } catch (Error e) {
+                        message ("Could not get deactivated app id for '%s': %s", event.source.name, e.message);
+                        return false;
+                    }
+
+                    if (focused_app_id > 0 && deactivated_app_id != focused_app_id) {
+                        debug ("Out of order event: '%s', skipping.", event.type);
+                        return false;
+                    }
+
                     // Make sure previously focused control doesn't accidently get results of expansion.
                     focus_changing ();
                 }

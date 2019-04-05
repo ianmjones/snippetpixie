@@ -1,3 +1,9 @@
+com.github.bytepixie.snippetpixie (1.1.2) xenial; urgency=medium
+
+  * Improved active window/control detection when switching via Alt-Tab.
+
+ -- Byte Pixie <hello@bytepixie.com>  Sat, 06 Apr 2019 12:34:56 +0000
+
 com.github.bytepixie.snippetpixie (1.1.1) xenial; urgency=medium
 
   * Improved performance, compatibility, and stability.
