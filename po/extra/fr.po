@@ -24,12 +24,10 @@ msgstr "Snippet Pixie"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:8
 #: data/com.github.bytepixie.snippetpixie.desktop.in:4
-#, fuzzy
 msgid "Your little expandable text snippet helper"
 msgstr "Votre petit assistant de raccourcis"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:10
-#, fuzzy
 msgid ""
 "Save your often used text snippets and then expand them whenever you type "
 "their abbreviation."
@@ -43,11 +41,11 @@ msgstr "Par exemple : - « rsp` » s'étendra en « Règles de Snippet Pixie ! �
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
 msgid "Improved performance, compatibility, and stability."
-msgstr ""
+msgstr "Amélioration de la performance, de la compatibilité et de la stabilité."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
 msgid "@NathanBnm"
-msgstr ""
+msgstr "@NathanBnm"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:28
 msgid "Added ability to export snippets to a JSON file via menu button."
