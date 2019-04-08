@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-06 16:39+0200\n"
+"POT-Creation-Date: 2019-04-08 01:01+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -41,7 +41,9 @@ msgstr "Par exemple : - « rsp` » s'étendra en « Règles de Snippet Pixie ! �
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
 msgid "Improved active window/control detection when switching via Alt-Tab."
-msgstr "Amélioration de la détection de la mise au premier plan de la fenêtre lors du défilement avec Alt+Tab."
+msgstr ""
+"Amélioration de la détection de la mise au premier plan de la fenêtre lors "
+"du défilement avec Alt+Tab."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:27
 msgid "Improved performance, compatibility, and stability."
@@ -97,8 +99,7 @@ msgid ""
 "Added --autostart={on|off|status} option to CLI for turning autostart on, "
 "off, or getting settings status."
 msgstr ""
-"Ajout de l'option --autostart={on|off|st#, fuzzy
-atus} aux lignes de commande pour "
+"Ajout de l'option --autostart={on|off|status} aux lignes de commande pour "
 "activer, désactiver ou obtenir le statut des paramètres."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:48
