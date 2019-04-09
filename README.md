@@ -9,6 +9,7 @@
 <h1 align="center">Snippet Pixie</h1>
 <p align="center">
     <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie"><img src="https://appcenter.elementary.io/badge.svg?new" alt="Get it on AppCenter" /></a>
+    <a href="https://snapcraft.io/snippetpixie"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a>
 </p>
 
 Your little expandable text snippet helper.
@@ -23,36 +24,47 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 ## Knonw Issues
 
-* Only works with accessible applications with simple(ish) text entry
-* Does not work with Electron based apps (probably because they have "very limited" support for ATK on Linux)
+* Only works with accessible applications with simple(ish) text entry.
+* Does not work with Chromium/WebKit based browsers because they have "[very limited](https://www.chromium.org/developers/design-documents/accessibility#TOC-API-support)" support for [ATK on Linux](https://www.chromium.org/developers/accessibility/linux-accessibility).
+* Does not work with Electron based apps because they use Chrome under the hood.
 
 ## Roadmap
 
 * ~~Automatically add to Startup apps~~
-* Undo/Redo of snippet edits
 * ~~Export/Import snippets~~
-* Date/Time placeholders
+* Date/Time, clipboard, other snippets and cursor placeholders
 * Snippet search
 * Group snippets?
+* Undo/Redo of snippet edits
 * Right To Left (RTL) language support
 * Rich text?
 
 ## Building, Testing, and Installation
 
 You'll need the following dependencies to build:
-* libgtk-3-dev
-* libgee-0.8-dev
-* libsqlite3-dev
-* libibus-1.0-dev
-* libjson-glib-dev
 * meson
 * valac
+* appstream
+* desktop-file-utils
+* libatspi2.0-dev
+* libgee-0.8-dev
+* libglib2.0-dev
+* libgranite-dev
+* libgtk-3-dev
+* libibus-1.0-dev
+* libjson-glib-dev
+* libsqlite3-dev
+* libx11-dev
 
 Run `meson build` to configure the build environment and then change to the build directory and run `ninja test` to build and run automated tests
 
     meson build --prefix=/usr 
     cd build
     ninja test
+
+There's also a convenient `01-setup.sh` script that should need only be run once to set up the `build` directory.
+
+`02-build-bin.sh` is a neat way of building `build/com.github.bytepixie.snippetpixie` after changing the source while keeping the translation templates and language files up to date with any changes and running the automated tests.
 
 To install, use `ninja install`, then execute with `com.github.bytepixie.snippetpixie`
 
