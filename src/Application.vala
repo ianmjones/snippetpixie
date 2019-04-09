@@ -23,6 +23,9 @@ namespace SnippetPixie {
         public const string ID = "com.github.bytepixie.snippetpixie";
         public const string VERSION = "1.1.2";
 
+        private const string placeholder_delimiter = "$$";
+        private const string placeholder_macro = "@";
+
         private static Application? _app = null;
 
         private bool app_running = false;
@@ -227,10 +230,13 @@ namespace SnippetPixie {
                                     return expanded;
                                 }
 
-                                var abbr = snippets_manager.abbreviations.get (str);
+                                var body = snippets_manager.abbreviations.get (str);
+
+                                // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
+                                body = expand_snippet (body);
 
                                 try {
-                                    if (! focused_control.insert_text (pos, abbr, abbr.length)) {
+                                    if (! focused_control.insert_text (pos, body, body.length)) {
                                         message ("Could not insert expanded snippet into text.");
                                         break;
                                     }
@@ -241,13 +247,48 @@ namespace SnippetPixie {
 
                                 expanded = true;
                                 break;
-                            }
-                        }
+                            } // have matching abbreviation
+                        } // step back through characters
                     } // if something to check
                 } // lock focus_changed
             } // lock focused_control
 
             return expanded;
+        }
+
+        private string expand_snippet (string body) {
+            // Quick check that placeholder exists at least once in string, and a macro name start is too.
+            if (body.contains (placeholder_delimiter) && body.contains (placeholder_delimiter.concat (placeholder_macro))) {
+                string result = "";
+                var bits = body.split (placeholder_delimiter);
+
+                foreach (string bit in bits) {
+                    // Date/Time Placeholder.
+                    bit = expand_date (bit);
+
+                    result = result.concat (bit);
+                }
+
+                return result;
+            }
+
+            return body;
+        }
+
+        private string expand_date (owned string body) {
+            string macros[] = { _("date"), _("time") };
+
+            foreach (string macro in macros) {
+                var needle = placeholder_macro.concat (macro, ":");
+
+                if (body.index_of (needle) == 0) {
+                    var fmt = body.substring (needle.length);
+                    var dt = new DateTime.now_local ();
+                    body = dt.format (fmt);
+                }
+            }
+
+            return body;
         }
 
         private void focus_changing () {

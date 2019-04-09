@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 01:01+0100\n"
+"POT-Creation-Date: 2019-04-09 22:20+0100\n"
 "PO-Revision-Date: 2019-02-06 00:14+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,83 +17,91 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/Application.vala:591
+#: src/Application.vala:279
+msgid "date"
+msgstr ""
+
+#: src/Application.vala:279
+msgid "time"
+msgstr ""
+
+#: src/Application.vala:632
 msgid "Show Snippet Pixie's window (default action)"
 msgstr ""
 
-#: src/Application.vala:592
+#: src/Application.vala:633
 msgid "Start with no window"
 msgstr ""
 
-#: src/Application.vala:593
+#: src/Application.vala:634
 msgid "Fully quit the application, including the background process"
 msgstr ""
 
-#: src/Application.vala:594
+#: src/Application.vala:635
 msgid ""
 "Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
 msgstr ""
 
-#: src/Application.vala:595
+#: src/Application.vala:636
 msgid ""
 "Shows status of the application, exits with status 0 if running, 1 if not"
 msgstr ""
 
-#: src/Application.vala:596
+#: src/Application.vala:637
 msgid "Export snippets to file"
 msgstr ""
 
-#: src/Application.vala:597
+#: src/Application.vala:638
 msgid ""
 "Import snippets from file, skips snippets where abbreviation already exists"
 msgstr ""
 
-#: src/Application.vala:597
+#: src/Application.vala:638
 msgid "filename"
 msgstr ""
 
-#: src/Application.vala:598
+#: src/Application.vala:639
 msgid ""
 "If used in conjunction with import, existing snippets with same abbreviation "
 "are updated"
 msgstr ""
 
-#: src/Application.vala:599
+#: src/Application.vala:640
 msgid "Display version number"
 msgstr ""
 
-#: src/Application.vala:600
+#: src/Application.vala:641
 msgid "Display this help"
 msgstr ""
 
-#: src/Application.vala:619
+#: src/Application.vala:660
 #, c-format
 msgid "error: %s\n"
 msgstr ""
 
-#: src/Application.vala:620
+#: src/Application.vala:661
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 
-#: src/Application.vala:635
+#: src/Application.vala:676
 msgid "Quitting…\n"
 msgstr ""
 
-#: src/Application.vala:643
+#: src/Application.vala:684
 msgid "Running.\n"
 msgstr ""
 
-#: src/Application.vala:646
+#: src/Application.vala:687
 msgid "Not Running.\n"
 msgstr ""
 
-#: src/Application.vala:668
+#: src/Application.vala:709
 #, c-format
 msgid "Invalid autostart value \"%s\".\n"
 msgstr ""
 
-#: src/Application.vala:713
+#: src/Application.vala:754
 msgid "Cannot run without threads.\n"
 msgstr ""
 
