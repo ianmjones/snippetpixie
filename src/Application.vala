@@ -294,10 +294,8 @@ namespace SnippetPixie {
                  * @macro:
                  * @macro
                  */
-                var needle = placeholder_macro.concat (macro, ":");
-
                 if (body.index_of (placeholder_macro.concat (macro, ":")) == 0) {
-                    var fmt = body.substring (needle.length);
+                    var fmt = body.substring (placeholder_macro.concat (macro, ":").length);
 
                     if (fmt.strip ().length == 0 && (macro == "date" || macro == _("date"))) {
                         fmt = "%x";
