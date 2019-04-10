@@ -233,7 +233,8 @@ namespace SnippetPixie {
                                 var body = snippets_manager.abbreviations.get (str);
 
                                 // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
-                                body = expand_snippet (body);
+                                var dt = new DateTime.now_local ();
+                                body = expand_snippet (body, dt);
 
                                 try {
                                     if (! focused_control.insert_text (pos, body, body.length)) {
@@ -256,7 +257,7 @@ namespace SnippetPixie {
             return expanded;
         }
 
-        private string expand_snippet (string body) {
+        private string expand_snippet (string body, DateTime dt) {
             // Quick check that placeholder exists at least once in string, and a macro name start is too.
             if (body.contains (placeholder_delimiter) && body.contains (placeholder_delimiter.concat (placeholder_macro))) {
                 string result = "";
@@ -264,7 +265,7 @@ namespace SnippetPixie {
 
                 foreach (string bit in bits) {
                     // Date/Time Placeholder.
-                    bit = expand_date (bit);
+                    bit = expand_date (bit, dt);
 
                     result = result.concat (bit);
                 }
@@ -275,16 +276,44 @@ namespace SnippetPixie {
             return body;
         }
 
-        private string expand_date (owned string body) {
-            string macros[] = { _("date"), _("time") };
+        private string expand_date (owned string body, DateTime dt) {
+            string macros[] = { "date", "time", _("date"), _("time") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
 
             foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                /*
+                 * Test for macro in following order...
+                 * @macro: fmt
+                 * @macro:
+                 * @macro
+                 */
                 var needle = placeholder_macro.concat (macro, ":");
 
-                if (body.index_of (needle) == 0) {
+                if (body.index_of (placeholder_macro.concat (macro, ":")) == 0) {
                     var fmt = body.substring (needle.length);
-                    var dt = new DateTime.now_local ();
+
+                    if (fmt.strip ().length == 0 && (macro == "date" || macro == _("date"))) {
+                        fmt = "%x";
+                    }
+
+                    if (fmt.strip ().length == 0 && (macro == "time" || macro == _("time"))) {
+                        fmt = "%X";
+                    }
+
                     body = dt.format (fmt);
+                } else if (body.index_of (placeholder_macro.concat (macro)) == 0) {
+                    if (macro == "date" || macro == _("date")) {
+                        body = dt.format ("%x");
+                    } else if (macro == "time" || macro == _("time")) {
+                        body = dt.format ("%X");
+                    }
                 }
             }
 
