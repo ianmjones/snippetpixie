@@ -290,32 +290,106 @@ namespace SnippetPixie {
 
                 /*
                  * Test for macro in following order...
-                 * @macro: fmt
+                 * @macro@calc:fmt
+                 * @macro@calc:
+                 * @macro@calc
+                 * @macro:fmt
                  * @macro:
                  * @macro
                  */
-                if (body.index_of (placeholder_macro.concat (macro, ":")) == 0) {
-                    var fmt = body.substring (placeholder_macro.concat (macro, ":").length);
+                if (body.index_of (placeholder_macro.concat (macro, placeholder_macro)) == 0) {
+                    var rest = body.substring (placeholder_macro.concat (macro, placeholder_macro).length);
 
-                    if (fmt.strip ().length == 0 && (macro == "date" || macro == _("date"))) {
-                        fmt = "%x";
+                    var calc = rest.substring (0, rest.index_of (":"));
+                    var fmt = rest.substring (calc.length);
+
+                    fmt = maybe_fix_date_placeholder_format (fmt, macro);
+
+                    var ndt = dt.to_local ();
+                    var pos = 0;
+                    var cnt = 0;
+                    var nums = calc.split_set ("YMWDhms");
+
+                    if (nums.length == 0) {
+                        warning (_("Date adjustment does not seem to have a positive or negative integer in placeholder '%1$s'."), body);
+                        return body;
                     }
 
-                    if (fmt.strip ().length == 0 && (macro == "time" || macro == _("time"))) {
-                        fmt = "%X";
+                    foreach (string num_str in nums) {
+                        cnt++;
+
+                        // Because we expect the calc string to end with a "delimiter", chances are we'll get a blank last element.
+                        if (num_str.length == 0 && nums.length == cnt) {
+                            continue;
+                        }
+
+                        var num = int.parse (num_str);
+
+                        if (num == 0) {
+                            warning (_("Date adjustment number %1$d does not seem to start with a positive or negative integer in placeholder '%2$s'."), cnt, body);
+                            return body;
+                        }
+
+                        pos += num_str.length;
+                        var unit = calc.substring (pos, 1);
+                        pos++;
+
+                        switch (unit) {
+                            case "Y":
+                                ndt = ndt.add_years (num);
+                                break;
+                            case "M":
+                                ndt = ndt.add_months (num);
+                                break;
+                            case "W":
+                                ndt = ndt.add_weeks (num);
+                                break;
+                            case "D":
+                                ndt = ndt.add_days (num);
+                                break;
+                            case "h":
+                                ndt = ndt.add_hours (num);
+                                break;
+                            case "m":
+                                ndt = ndt.add_minutes (num);
+                                break;
+                            case "s":
+                                ndt = ndt.add_seconds (num);
+                                break;
+                            default:
+                                warning (_("Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', 'D', 'h', 'm' or 's' in placeholder '%2$s'."), cnt, body);
+                                return body;
+                        }
                     }
+
+                    body = ndt.format (fmt);
+                } else if (body.index_of (placeholder_macro.concat (macro)) == 0) {
+                    var fmt = body.substring (placeholder_macro.concat (macro).length);
+
+                    fmt = maybe_fix_date_placeholder_format (fmt, macro);
 
                     body = dt.format (fmt);
-                } else if (body.index_of (placeholder_macro.concat (macro)) == 0) {
-                    if (macro == "date" || macro == _("date")) {
-                        body = dt.format ("%x");
-                    } else if (macro == "time" || macro == _("time")) {
-                        body = dt.format ("%X");
-                    }
                 }
             }
 
             return body;
+        }
+
+        private string maybe_fix_date_placeholder_format (owned string fmt, owned string macro) {
+            // Strip leading ":" from format string.
+            if (fmt.has_prefix (":")) {
+                fmt = fmt.substring (1);
+            }
+
+            if (fmt.strip ().length == 0 && (macro == "date" || macro == _("date"))) {
+                fmt = "%x";
+            }
+
+            if (fmt.strip ().length == 0 && (macro == "time" || macro == _("time"))) {
+                fmt = "%X";
+            }
+
+            return fmt;
         }
 
         private void focus_changing () {
