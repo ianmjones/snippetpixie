@@ -362,13 +362,25 @@ namespace SnippetPixie {
                         }
                     }
 
-                    body = ndt.format (fmt);
+                    var result = ndt.format (fmt);
+
+                    if (result == null) {
+                        warning (_("Oops, date format '%1$s' could not be parsed."), fmt);
+                    } else {
+                        body = result;
+                    }
                 } else if (body.index_of (placeholder_macro.concat (macro)) == 0) {
                     var fmt = body.substring (placeholder_macro.concat (macro).length);
 
                     fmt = maybe_fix_date_placeholder_format (fmt, macro);
 
-                    body = dt.format (fmt);
+                    var result = dt.format (fmt);
+
+                    if (result == null) {
+                        warning (_("Oops, date format '%1$s' could not be parsed."), fmt);
+                    } else {
+                        body = result;
+                    }
                 }
             }
 
