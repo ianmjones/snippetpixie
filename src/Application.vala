@@ -278,6 +278,9 @@ namespace SnippetPixie {
                     // Date/Time Placeholder.
                     bit = expand_date_placeholder (bit, dt);
 
+                    // Clipboard Placeholder.
+                    bit = expand_clipboard_placeholder (bit);
+
                     result = result.concat (bit);
                 }
 
@@ -314,6 +317,9 @@ namespace SnippetPixie {
                         body = snippets_manager.abbreviations.get (str);
 
                         body = expand_snippet(body, dt, level);
+
+                        // Don't need to process other macro name varients.
+                        return body;
                     }
                 }
             }
@@ -427,6 +433,9 @@ namespace SnippetPixie {
                         body = result;
                     }
                 }
+
+                // Don't need to process other macro name varients.
+                return body;
             }
 
             return body;
@@ -447,6 +456,42 @@ namespace SnippetPixie {
             }
 
             return fmt;
+        }
+
+        private string expand_clipboard_placeholder (string body) {
+            string macros[] = { "clipboard", _("clipboard") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                var board = Gtk.Clipboard.get_default (Gdk.Display.get_default ());
+
+                /*
+                 * Expect "@clipboard"
+                 *
+                 * Currently only handles text from clipboard, and this will be the default if other formats added later.
+                 */
+                if (body.index_of (placeholder_macro.concat (macro)) == 0 && board.wait_is_text_available ()) {
+                    var text = board.wait_for_text ();
+
+                    if (text == null) {
+                        continue;
+                    } else {
+                        body = text;
+                    }
+
+                    // Don't need to process other macro name varients.
+                    return body;
+                }
+            }
+
+            return body;
         }
 
         private void focus_changing () {
