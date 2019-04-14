@@ -257,15 +257,26 @@ namespace SnippetPixie {
             return expanded;
         }
 
-        private string expand_snippet (string body, DateTime dt) {
+        private string expand_snippet (string body, DateTime dt, int level = 0) {
+            level++;
+
+            // We don't want keep on going down the rabbit hole for ever.
+            if (level > 3) {
+                debug ("Too much inception at level %d, returning to the surface.", level);
+                return body;
+            }
+
             // Quick check that placeholder exists at least once in string, and a macro name start is too.
             if (body.contains (placeholder_delimiter) && body.contains (placeholder_delimiter.concat (placeholder_macro))) {
                 string result = "";
                 var bits = body.split (placeholder_delimiter);
 
                 foreach (string bit in bits) {
+                    // Other Placeholder.
+                    bit = expand_snippet_placeholder (bit, dt, level);
+
                     // Date/Time Placeholder.
-                    bit = expand_date (bit, dt);
+                    bit = expand_date_placeholder (bit, dt);
 
                     result = result.concat (bit);
                 }
@@ -276,7 +287,41 @@ namespace SnippetPixie {
             return body;
         }
 
-        private string expand_date (owned string body, DateTime dt) {
+        private string expand_snippet_placeholder (owned string body, DateTime dt, int level) {
+            string macros[] = { "snippet", _("snippet") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                /*
+                 * Expect "@snippet:abbr"
+                 */
+                if (body.index_of (placeholder_macro.concat (macro, ":")) == 0) {
+                    var str = body.substring (placeholder_macro.concat (macro, ":").length);
+                    debug ("Embedded snippet placeholder value: '%s'", str);
+
+                    /*
+                     * If abbreviation exists, get its body and run through expansion.
+                     */
+                    if (snippets_manager.abbreviations.has_key (str)) {
+                        debug ("Embedded snippet '%s' exists, yay.", str);
+                        body = snippets_manager.abbreviations.get (str);
+
+                        body = expand_snippet(body, dt, level);
+                    }
+                }
+            }
+
+            return body;
+        }
+
+        private string expand_date_placeholder (owned string body, DateTime dt) {
             string macros[] = { "date", "time", _("date"), _("time") };
             Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
 
