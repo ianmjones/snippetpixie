@@ -233,8 +233,9 @@ namespace SnippetPixie {
                                 var body = snippets_manager.abbreviations.get (str);
 
                                 // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
+                                var new_offset = -1;
                                 var dt = new DateTime.now_local ();
-                                body = expand_snippet (body, dt);
+                                body = expand_snippet (body, ref new_offset, dt);
 
                                 try {
                                     if (! focused_control.insert_text (pos, body, body.length)) {
@@ -244,6 +245,18 @@ namespace SnippetPixie {
                                 } catch (Error e) {
                                     message ("Could not insert expanded snippet into text at position %d: %s", pos, e.message);
                                     return expanded;
+                                }
+
+                                if (new_offset >= 0) {
+                                    try {
+                                        if (! ((Atspi.Text) focused_control).set_caret_offset (new_offset)) {
+                                            message ("Could not set new cursor position.");
+                                            break;
+                                        }
+                                    } catch (Error e) {
+                                        message ("Could not set new cursor at position %d: %s", new_offset, e.message);
+                                        return expanded;
+                                    }
                                 }
 
                                 expanded = true;
@@ -257,7 +270,7 @@ namespace SnippetPixie {
             return expanded;
         }
 
-        private string expand_snippet (string body, DateTime dt, int level = 0) {
+        private string expand_snippet (string body, ref int caret_offset, DateTime dt, int level = 0) {
             level++;
 
             // We don't want keep on going down the rabbit hole for ever.
@@ -273,7 +286,7 @@ namespace SnippetPixie {
 
                 foreach (string bit in bits) {
                     // Other Placeholder.
-                    bit = expand_snippet_placeholder (bit, dt, level);
+                    bit = expand_snippet_placeholder (bit, ref caret_offset, dt, level, result);
 
                     // Date/Time Placeholder.
                     bit = expand_date_placeholder (bit, dt);
@@ -281,7 +294,13 @@ namespace SnippetPixie {
                     // Clipboard Placeholder.
                     bit = expand_clipboard_placeholder (bit);
 
-                    result = result.concat (bit);
+                    // Cursor Placeholder.
+                    if (expand_cursor_placeholder (bit)) {
+                        caret_offset = result.length;
+                        debug ("New caret offset = %d", caret_offset);
+                    } else {
+                        result = result.concat (bit);
+                    }
                 }
 
                 return result;
@@ -290,7 +309,7 @@ namespace SnippetPixie {
             return body;
         }
 
-        private string expand_snippet_placeholder (owned string body, DateTime dt, int level) {
+        private string expand_snippet_placeholder (owned string body, ref int caret_offset, DateTime dt, int level, string result) {
             string macros[] = { "snippet", _("snippet") };
             Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
 
@@ -316,9 +335,14 @@ namespace SnippetPixie {
                         debug ("Embedded snippet '%s' exists, yay.", str);
                         body = snippets_manager.abbreviations.get (str);
 
-                        body = expand_snippet(body, dt, level);
+                        var new_offset = -1;
+                        body = expand_snippet(body, ref new_offset, dt, level);
 
-                        // Don't need to process other macro name varients.
+                        if (new_offset >= 0) {
+                            caret_offset = result.length + new_offset;
+                        }
+
+                        // Don't need to process other macro name variants.
                         return body;
                     }
                 }
@@ -434,7 +458,7 @@ namespace SnippetPixie {
                     }
                 }
 
-                // Don't need to process other macro name varients.
+                // Don't need to process other macro name variants.
                 return body;
             }
 
@@ -486,12 +510,36 @@ namespace SnippetPixie {
                         body = text;
                     }
 
-                    // Don't need to process other macro name varients.
+                    // Don't need to process other macro name variants.
                     return body;
                 }
             }
 
             return body;
+        }
+
+        private bool expand_cursor_placeholder (string body) {
+            string macros[] = { "cursor", _("cursor") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                /*
+                 * Expect "@cursor"
+                 */
+                if (body.index_of (placeholder_macro.concat (macro)) == 0) {
+                    // Don't need to process other macro name variants.
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void focus_changing () {
