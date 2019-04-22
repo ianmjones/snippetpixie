@@ -441,8 +441,9 @@ namespace SnippetPixie {
 
                     if (result == null) {
                         warning (_("Oops, date format '%1$s' could not be parsed."), fmt);
+                        return body;
                     } else {
-                        body = result;
+                        return result;
                     }
                 } else if (body.index_of (placeholder_macro.concat (macro)) == 0) {
                     var fmt = body.substring (placeholder_macro.concat (macro).length);
@@ -453,13 +454,11 @@ namespace SnippetPixie {
 
                     if (result == null) {
                         warning (_("Oops, date format '%1$s' could not be parsed."), fmt);
+                        return body;
                     } else {
-                        body = result;
+                        return result;
                     }
                 }
-
-                // Don't need to process other macro name variants.
-                return body;
             }
 
             return body;
