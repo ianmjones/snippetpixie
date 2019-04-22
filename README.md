@@ -20,10 +20,10 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 Supports [placeholders](#placeholders):-
 
-* **[Date/Time](#@date):** Insert the current or calculated date/time with configurable format.
-* **[Clipboard](#@clipboard):** Insert the text contents of the clipboard.
-* **[Snippets](#@snippet):** Insert snippets in your snippets!
-* **[Cursor](#@cursor):** Set where the cursor should end up after the snippet has expanded.
+* **[Date/Time](#date):** Insert the current or calculated date/time with configurable format.
+* **[Clipboard](#clipboard):** Insert the text contents of the clipboard.
+* **[Snippets](#snippet):** Insert snippets in your snippets!
+* **[Cursor](#cursor):** Set where the cursor should end up after the snippet has expanded.
 
 ![Snippet Pixie Edit Screen](data/screenshot.png?raw=true)
 
