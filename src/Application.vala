@@ -25,6 +25,7 @@ namespace SnippetPixie {
 
         private const string placeholder_delimiter = "$$";
         private const string placeholder_macro = "@";
+        private const string placeholder_delimiter_escaped = "$\\$";
 
         private static Application? _app = null;
 
@@ -236,6 +237,7 @@ namespace SnippetPixie {
                                 var new_offset = -1;
                                 var dt = new DateTime.now_local ();
                                 body = expand_snippet (body, ref new_offset, dt);
+                                body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
 
                                 try {
                                     if (! focused_control.insert_text (pos, body, body.length)) {
@@ -249,7 +251,7 @@ namespace SnippetPixie {
 
                                 if (new_offset >= 0) {
                                     try {
-                                        if (! ((Atspi.Text) focused_control).set_caret_offset (new_offset)) {
+                                        if (! ((Atspi.Text) focused_control).set_caret_offset (pos + new_offset)) {
                                             message ("Could not set new cursor position.");
                                             break;
                                         }
@@ -268,6 +270,23 @@ namespace SnippetPixie {
             } // lock focused_control
 
             return expanded;
+        }
+
+        private string collapse_escaped_placeholder_delimiter (owned string body, ref int caret_offset) {
+            var diff = placeholder_delimiter_escaped.length - placeholder_delimiter.length;
+            var index = body.index_of (placeholder_delimiter_escaped);
+
+            while (index >= 0) {
+                body = body.splice (index, index + placeholder_delimiter_escaped.length, placeholder_delimiter);
+
+                if (caret_offset > index) {
+                    caret_offset -= diff;
+                }
+
+                index = body.index_of (placeholder_delimiter_escaped);
+            }
+
+            return body;
         }
 
         private string expand_snippet (string body, ref int caret_offset, DateTime dt, int level = 0) {
