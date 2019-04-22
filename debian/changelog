@@ -1,3 +1,14 @@
+com.github.bytepixie.snippetpixie (1.2.0) xenial; urgency=medium
+
+  Added support for placeholders.
+
+  * Date/Time: Insert the current or calculated date/time with configurable format.
+  * Clipboard: Insert the text contents of the clipboard.
+  * Snippets: Insert snippets in your snippets!
+  * Cursor: Set where the cursor should end up after the snippet has expanded.
+
+ -- Byte Pixie <hello@bytepixie.com>  Mon, 22 Apr 2019 12:34:56 +0000
+
 com.github.bytepixie.snippetpixie (1.1.2) xenial; urgency=medium
 
   * Improved active window/control detection when switching via Alt-Tab.

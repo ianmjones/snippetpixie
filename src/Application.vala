@@ -21,7 +21,11 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.1.2";
+        public const string VERSION = "1.2.0";
+
+        private const string placeholder_delimiter = "$$";
+        private const string placeholder_macro = "@";
+        private const string placeholder_delimiter_escaped = "$\\$";
 
         private static Application? _app = null;
 
@@ -227,10 +231,16 @@ namespace SnippetPixie {
                                     return expanded;
                                 }
 
-                                var abbr = snippets_manager.abbreviations.get (str);
+                                var body = snippets_manager.abbreviations.get (str);
+
+                                // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
+                                var new_offset = -1;
+                                var dt = new DateTime.now_local ();
+                                body = expand_snippet (body, ref new_offset, dt);
+                                body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
 
                                 try {
-                                    if (! focused_control.insert_text (pos, abbr, abbr.length)) {
+                                    if (! focused_control.insert_text (pos, body, body.length)) {
                                         message ("Could not insert expanded snippet into text.");
                                         break;
                                     }
@@ -239,15 +249,315 @@ namespace SnippetPixie {
                                     return expanded;
                                 }
 
+                                if (new_offset >= 0) {
+                                    try {
+                                        if (! ((Atspi.Text) focused_control).set_caret_offset (pos + new_offset)) {
+                                            message ("Could not set new cursor position.");
+                                            break;
+                                        }
+                                    } catch (Error e) {
+                                        message ("Could not set new cursor at position %d: %s", new_offset, e.message);
+                                        return expanded;
+                                    }
+                                }
+
                                 expanded = true;
                                 break;
-                            }
-                        }
+                            } // have matching abbreviation
+                        } // step back through characters
                     } // if something to check
                 } // lock focus_changed
             } // lock focused_control
 
             return expanded;
+        }
+
+        private string collapse_escaped_placeholder_delimiter (owned string body, ref int caret_offset) {
+            var diff = placeholder_delimiter_escaped.length - placeholder_delimiter.length;
+            var index = body.index_of (placeholder_delimiter_escaped);
+
+            while (index >= 0) {
+                body = body.splice (index, index + placeholder_delimiter_escaped.length, placeholder_delimiter);
+
+                if (caret_offset > index) {
+                    caret_offset -= diff;
+                }
+
+                index = body.index_of (placeholder_delimiter_escaped);
+            }
+
+            return body;
+        }
+
+        private string expand_snippet (string body, ref int caret_offset, DateTime dt, int level = 0) {
+            level++;
+
+            // We don't want keep on going down the rabbit hole for ever.
+            if (level > 3) {
+                debug ("Too much inception at level %d, returning to the surface.", level);
+                return body;
+            }
+
+            // Quick check that placeholder exists at least once in string, and a macro name start is too.
+            if (body.contains (placeholder_delimiter) && body.contains (placeholder_delimiter.concat (placeholder_macro))) {
+                string result = "";
+                var bits = body.split (placeholder_delimiter);
+
+                foreach (string bit in bits) {
+                    // Other Placeholder.
+                    bit = expand_snippet_placeholder (bit, ref caret_offset, dt, level, result);
+
+                    // Date/Time Placeholder.
+                    bit = expand_date_placeholder (bit, dt);
+
+                    // Clipboard Placeholder.
+                    bit = expand_clipboard_placeholder (bit);
+
+                    // Cursor Placeholder.
+                    if (expand_cursor_placeholder (bit)) {
+                        caret_offset = result.length;
+                        debug ("New caret offset = %d", caret_offset);
+                    } else {
+                        result = result.concat (bit);
+                    }
+                }
+
+                return result;
+            }
+
+            return body;
+        }
+
+        private string expand_snippet_placeholder (owned string body, ref int caret_offset, DateTime dt, int level, string result) {
+            string macros[] = { "snippet", _("snippet") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                /*
+                 * Expect "@snippet:abbr"
+                 */
+                if (body.index_of (placeholder_macro.concat (macro, ":")) == 0) {
+                    var str = body.substring (placeholder_macro.concat (macro, ":").length);
+                    debug ("Embedded snippet placeholder value: '%s'", str);
+
+                    /*
+                     * If abbreviation exists, get its body and run through expansion.
+                     */
+                    if (snippets_manager.abbreviations.has_key (str)) {
+                        debug ("Embedded snippet '%s' exists, yay.", str);
+                        body = snippets_manager.abbreviations.get (str);
+
+                        var new_offset = -1;
+                        body = expand_snippet(body, ref new_offset, dt, level);
+
+                        if (new_offset >= 0) {
+                            caret_offset = result.length + new_offset;
+                        }
+
+                        // Don't need to process other macro name variants.
+                        return body;
+                    }
+                }
+            }
+
+            return body;
+        }
+
+        private string expand_date_placeholder (owned string body, DateTime dt) {
+            string macros[] = { "date", "time", _("date"), _("time") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                /*
+                 * Test for macro in following order...
+                 * @macro@calc:fmt
+                 * @macro@calc:
+                 * @macro@calc
+                 * @macro:fmt
+                 * @macro:
+                 * @macro
+                 */
+                if (body.index_of (placeholder_macro.concat (macro, placeholder_macro)) == 0) {
+                    var rest = body.substring (placeholder_macro.concat (macro, placeholder_macro).length);
+
+                    var calc = rest.substring (0, rest.index_of (":"));
+                    var fmt = rest.substring (calc.length);
+
+                    fmt = maybe_fix_date_placeholder_format (fmt, macro);
+
+                    var ndt = dt.to_local ();
+                    var pos = 0;
+                    var cnt = 0;
+                    var nums = calc.split_set ("YMWDhms");
+
+                    if (nums.length == 0) {
+                        warning (_("Date adjustment does not seem to have a positive or negative integer in placeholder '%1$s'."), body);
+                        return body;
+                    }
+
+                    foreach (string num_str in nums) {
+                        cnt++;
+
+                        // Because we expect the calc string to end with a "delimiter", chances are we'll get a blank last element.
+                        if (num_str.length == 0 && nums.length == cnt) {
+                            continue;
+                        }
+
+                        var num = int.parse (num_str);
+
+                        if (num == 0) {
+                            warning (_("Date adjustment number %1$d does not seem to start with a positive or negative integer in placeholder '%2$s'."), cnt, body);
+                            return body;
+                        }
+
+                        pos += num_str.length;
+                        var unit = calc.substring (pos, 1);
+                        pos++;
+
+                        switch (unit) {
+                            case "Y":
+                                ndt = ndt.add_years (num);
+                                break;
+                            case "M":
+                                ndt = ndt.add_months (num);
+                                break;
+                            case "W":
+                                ndt = ndt.add_weeks (num);
+                                break;
+                            case "D":
+                                ndt = ndt.add_days (num);
+                                break;
+                            case "h":
+                                ndt = ndt.add_hours (num);
+                                break;
+                            case "m":
+                                ndt = ndt.add_minutes (num);
+                                break;
+                            case "s":
+                                ndt = ndt.add_seconds (num);
+                                break;
+                            default:
+                                warning (_("Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', 'D', 'h', 'm' or 's' in placeholder '%2$s'."), cnt, body);
+                                return body;
+                        }
+                    }
+
+                    var result = ndt.format (fmt);
+
+                    if (result == null) {
+                        warning (_("Oops, date format '%1$s' could not be parsed."), fmt);
+                        return body;
+                    } else {
+                        return result;
+                    }
+                } else if (body.index_of (placeholder_macro.concat (macro)) == 0) {
+                    var fmt = body.substring (placeholder_macro.concat (macro).length);
+
+                    fmt = maybe_fix_date_placeholder_format (fmt, macro);
+
+                    var result = dt.format (fmt);
+
+                    if (result == null) {
+                        warning (_("Oops, date format '%1$s' could not be parsed."), fmt);
+                        return body;
+                    } else {
+                        return result;
+                    }
+                }
+            }
+
+            return body;
+        }
+
+        private string maybe_fix_date_placeholder_format (owned string fmt, owned string macro) {
+            // Strip leading ":" from format string.
+            if (fmt.has_prefix (":")) {
+                fmt = fmt.substring (1);
+            }
+
+            if (fmt.strip ().length == 0 && (macro == "date" || macro == _("date"))) {
+                fmt = "%x";
+            }
+
+            if (fmt.strip ().length == 0 && (macro == "time" || macro == _("time"))) {
+                fmt = "%X";
+            }
+
+            return fmt;
+        }
+
+        private string expand_clipboard_placeholder (string body) {
+            string macros[] = { "clipboard", _("clipboard") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                var board = Gtk.Clipboard.get_default (Gdk.Display.get_default ());
+
+                /*
+                 * Expect "@clipboard"
+                 *
+                 * Currently only handles text from clipboard, and this will be the default if other formats added later.
+                 */
+                if (body.index_of (placeholder_macro.concat (macro)) == 0 && board.wait_is_text_available ()) {
+                    var text = board.wait_for_text ();
+
+                    if (text == null) {
+                        continue;
+                    } else {
+                        body = text;
+                    }
+
+                    // Don't need to process other macro name variants.
+                    return body;
+                }
+            }
+
+            return body;
+        }
+
+        private bool expand_cursor_placeholder (string body) {
+            string macros[] = { "cursor", _("cursor") };
+            Gee.HashMap<string,bool> done = new Gee.HashMap<string,bool> ();
+
+            foreach (string macro in macros) {
+                // If macro name not translated, don't repeat ourselves.
+                if (done.has_key (macro)) {
+                    continue;
+                } else {
+                    done.set (macro, true);
+                }
+
+                /*
+                 * Expect "@cursor"
+                 */
+                if (body.index_of (placeholder_macro.concat (macro)) == 0) {
+                    // Don't need to process other macro name variants.
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void focus_changing () {

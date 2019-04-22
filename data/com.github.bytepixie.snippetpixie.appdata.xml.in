@@ -9,53 +9,73 @@
   <description>
     <p>Save your often used text snippets and then expand them whenever you type their abbreviation.</p>
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
+    <p>Supports placeholders:-</p>
+    <ul>
+      <li>Date/Time: Insert the current or calculated date/time with configurable format.</li>
+      <li>Clipboard: Insert the text contents of the clipboard.</li>
+      <li>Snippets: Insert snippets in your snippets!</li>
+      <li>Cursor: Set where the cursor should end up after the snippet has expanded.</li>
+    </ul>
+    <p>All placeholders are delimited (wrapped) by "$$", with the placeholder name starting with an "@" symbol.</p>
+    <p>For example, today's date can be inserted with "$$@date$$".</p>
   </description>
   <provides>
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.2.0" date="2019-04-22">
+      <description>
+        <p>Added support for placeholders.</p>
+        <ul>
+          <li>Date/Time: Insert the current or calculated date/time with configurable format.</li>
+          <li>Clipboard: Insert the text contents of the clipboard.</li>
+          <li>Snippets: Insert snippets in your snippets!</li>
+          <li>Cursor: Set where the cursor should end up after the snippet has expanded.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.2" date="2019-04-06">
       <description>
         <ul>
-            <li>Improved active window/control detection when switching via Alt-Tab.</li>
+          <li>Improved active window/control detection when switching via Alt-Tab.</li>
         </ul>
       </description>
     </release>
     <release version="1.1.1" date="2019-04-03">
       <description>
         <ul>
-            <li>Improved performance, compatibility, and stability.</li>
-            <li>Added French translations. Huge thanks to <a href="https://github.com/NathanBnm">@NathanBnm</a> on GitHub! 🇨🇵️</li>
+          <li>Improved performance, compatibility, and stability.</li>
+          <li>Added French translations. Huge thanks to <a href="https://github.com/NathanBnm">@NathanBnm</a> on GitHub! 🇨🇵️</li>
         </ul>
       </description>
     </release>
     <release version="1.1.0" date="2019-02-05">
       <description>
         <ul>
-            <li>Added ability to export snippets to a JSON file via menu button.</li>
-            <li>Added ability to export snippets to a JSON file via `--export` or `-e` CLI options.</li>
-            <li>Added ability to import snippets from an exported JSON file via menu button or welcome screen. Shocking! 😱</li>
-            <li>Added ability to import snippets from an exported JSON file via `--import` or `-i` CLI options. Bet you didn't see that coming! 😉</li>
+          <li>Added ability to export snippets to a JSON file via menu button.</li>
+          <li>Added ability to export snippets to a JSON file via `--export` or `-e` CLI options.</li>
+          <li>Added ability to import snippets from an exported JSON file via menu button or welcome screen. Shocking! 😱</li>
+          <li>Added ability to import snippets from an exported JSON file via `--import` or `-i` CLI options. Bet you didn't see that coming! 😉</li>
         </ul>
       </description>
     </release>
     <release version="1.0.0" date="2019-01-15">
       <description>
         <ul>
-            <li>1.0 Release!</li>
-            <li>Added Snippet Pixie to login startup items by default.</li>
-            <li>Added --autostart={on|off|status} option to CLI for turning autostart on, off, or getting settings status.</li>
-            <li>Changed body field to select all text when tabbed into.</li>
+          <li>1.0 Release!</li>
+          <li>Added Snippet Pixie to login startup items by default.</li>
+          <li>Added --autostart={on|off|status} option to CLI for turning autostart on, off, or getting settings status.</li>
+          <li>Changed body field to select all text when tabbed into.</li>
         </ul>
       </description>
     </release>
     <release version="0.9.3" date="2018-12-08">
       <description>
         <ul>
-            <li>Fixed crash when an application with a large number of controls was activated.</li>
-            <li>Fixed problem with snippets sometimes not expanding when returning to an application.</li>
-            <li>Added a splash of colour to the window header.</li>
-            <li>Added a new application icon.</li>
+          <li>Fixed crash when an application with a large number of controls was activated.</li>
+          <li>Fixed problem with snippets sometimes not expanding when returning to an application.</li>
+          <li>Added a splash of colour to the window header.</li>
+          <li>Added a new application icon.</li>
         </ul>
       </description>
     </release>

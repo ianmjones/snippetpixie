@@ -1,11 +1,21 @@
 name: snippetpixie
 base: core18
-version: 1.1.2
+version: 1.2.0
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
 
   For example:- "spr`" expands to "Snippet Pixie rules!"
+
+  Supports placeholders:-
+
+  * Date/Time: Insert the current or calculated date/time with configurable format.
+  * Clipboard: Insert the text contents of the clipboard.
+  * Snippets: Insert snippets in your snippets!
+  * Cursor: Set where the cursor should end up after the snippet has expanded.
+
+  All placeholders are delimited (wrapped) by "$$", with the placeholder name starting with an "@" symbol.
+  For example, today's date can be inserted with "$$@date$$".
 
 grade: stable
 confinement: strict
