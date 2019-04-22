@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.1.2";
+        public const string VERSION = "1.2.0";
 
         private const string placeholder_delimiter = "$$";
         private const string placeholder_macro = "@";
