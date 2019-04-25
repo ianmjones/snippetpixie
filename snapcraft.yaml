@@ -34,6 +34,8 @@ apps:
       - gsettings
       - unity7
       - wayland
+      - x11
+      - spi
       - home
     slots: [ dbus-snippetpixie ]
     desktop: usr/share/applications/com.github.bytepixie.snippetpixie.desktop
