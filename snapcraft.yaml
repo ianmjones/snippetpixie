@@ -18,26 +18,16 @@ description: |
   For example, today's date can be inserted with "$$@date$$".
 
 grade: stable
-confinement: strict
+confinement: classic
 architectures:
   - amd64
 icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 
 apps:
   snippetpixie:
-    command: desktop-launch $SNAP/usr/bin/com.github.bytepixie.snippetpixie
+    command: bin/desktop-launch $SNAP/usr/bin/com.github.bytepixie.snippetpixie
     passthrough:
       autostart: com.github.bytepixie.snippetpixie.desktop
-    plugs:
-      - desktop
-      - desktop-legacy
-      - gsettings
-      - unity7
-      - wayland
-      - x11
-      - spi
-      - home
-    slots: [ dbus-snippetpixie ]
     desktop: usr/share/applications/com.github.bytepixie.snippetpixie.desktop
     environment:
       GSETTINGS_SCHEMA_DIR: $SNAP/share/glib-2.0/schemas
@@ -59,12 +49,6 @@ plugs:
     interface: content
     target: $SNAP/data-dir/sounds
     default-provider: gtk-common-themes
-
-slots:
-  dbus-snippetpixie:
-    interface: dbus
-    bus: session
-    name: com.github.bytepixie.snippetpixie
 
 parts:
   snippetpixie:
