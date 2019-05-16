@@ -30,27 +30,16 @@ apps:
       autostart: com.github.bytepixie.snippetpixie.desktop
     desktop: usr/share/applications/com.github.bytepixie.snippetpixie.desktop
     environment:
-      GSETTINGS_SCHEMA_DIR: $SNAP/share/glib-2.0/schemas
-
-plugs:
-  gnome-3-28-1804:
-    interface: content
-    target: $SNAP/gnome-platform
-    default-provider: gnome-3-28-1804
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes
+      GSETTINGS_SCHEMA_DIR: $SNAP/usr/share/glib-2.0/schemas
 
 parts:
+#  snippetpixie:
+#    after: [granite, desktop-gnome-platform]
+#    plugin: dump
+#    source: http://packages.elementary.io/appcenter/pool/main/c/com.github.bytepixie.snippetpixie/com.github.bytepixie.snippetpixie1.2.0-889e0b.deb
+#    override-build: |
+#      snapcraftctl build
+#      sed -i 's|Icon=com.github.bytepixie.snippetpixie|Icon=\${SNAP}/meta/gui/icon.svg|' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/com.github.bytepixie.snippetpixie.desktop
   snippetpixie:
     after: [granite, desktop-gnome-platform]
     plugin: meson
@@ -128,6 +117,9 @@ parts:
       - zlib1g
       - libjson-glib-1.0-0
       - libsqlite3-0
+#  granite:
+#    plugin: dump
+#    source: http://packages.elementary.io/stable/pool/main/g/granite/libgranite5_5.0%2Br1192%2Bpkg99~ubuntu5.0.1_amd64.deb
   granite:
     plugin: meson
     meson-parameters:
@@ -151,6 +143,3 @@ parts:
       - build-essential
       - gettext
       - libgtk-3-dev
-    override-build: |
-      snapcraftctl build
-      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
