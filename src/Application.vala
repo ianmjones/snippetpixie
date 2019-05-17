@@ -31,6 +31,7 @@ namespace SnippetPixie {
 
         private bool app_running = false;
         private bool show = true;
+        private bool snap = false;
         public MainWindow app_window { get; private set; }
 
         // For tracking keystrokes.
@@ -812,7 +813,19 @@ namespace SnippetPixie {
          */
         private void update_autostart (bool autostart) {
             var desktop_file_name = application_id + ".desktop";
-            var desktop_file_path = new DesktopAppInfo (desktop_file_name).filename;
+
+            if (snap) {
+                desktop_file_name = "snippetpixie_snippetpixie.desktop";
+            }
+
+            var app_info = new DesktopAppInfo (desktop_file_name);
+
+            if (app_info == null) {
+                warning ("Could not find desktop file with name: %s", desktop_file_name);
+                return;
+            }
+
+            var desktop_file_path = app_info.get_filename();
             var desktop_file = File.new_for_path (desktop_file_path);
             var dest_path = Path.build_path (
                 Path.DIR_SEPARATOR_S,
@@ -838,7 +851,13 @@ namespace SnippetPixie {
 
             try {
                 keyfile.load_from_file (dest_path, KeyFileFlags.NONE);
-                keyfile.set_string ("Desktop Entry", "Exec", "com.github.bytepixie.snippetpixie --start");
+
+                var exec_string = keyfile.get_string ("Desktop Entry", "Exec");
+                var start = exec_string.last_index_of ("snippetpixie");
+                var end = start + 12;
+                exec_string = exec_string.splice (start, end, "snippetpixie --start");
+
+                keyfile.set_string ("Desktop Entry", "Exec", exec_string);
                 keyfile.set_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled", autostart);
 
                 if (keyfile.has_group ("Desktop Action Start")) {
@@ -858,12 +877,18 @@ namespace SnippetPixie {
 
         private bool get_autostart () {
             var desktop_file_name = application_id + ".desktop";
+
+            if (snap) {
+                desktop_file_name = "snippetpixie_snippetpixie.desktop";
+            }
+
             var dest_path = Path.build_path (
                 Path.DIR_SEPARATOR_S,
                 Environment.get_user_config_dir (),
                 "autostart",
                 desktop_file_name
             );
+
             var dest_file = File.new_for_path (dest_path);
 
             if (! dest_file.query_exists ()) {
@@ -886,6 +911,12 @@ namespace SnippetPixie {
         }
 
         public override int command_line (ApplicationCommandLine command_line) {
+            var snap_env = Environment.get_variable ("SNAP");
+
+            if (snap_env != null && snap_env.contains ("snippetpixie")) {
+                snap = true;
+            }
+
             show = true;
             bool start = false;
             bool stop = false;
