@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-18 00:16+0100\n"
+"POT-Creation-Date: 2019-05-20 20:36+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -228,7 +228,12 @@ msgstr "Échec de l'exportation du fichier"
 msgid "Something went wrong, sorry."
 msgstr "Une erreur s'est produite, désolé."
 
-#: src/MainWindow.vala:189
+#: src/MainWindow.vala:187
+msgid "@NathanBnm https://github.com/NathanBnm/"
+msgstr ""
+
+#: src/MainWindow.vala:190
+#, fuzzy
 msgid "Copyright © Byte Pixie Limited"
 msgstr "Copyright © Byte Pixie Limited"
 
