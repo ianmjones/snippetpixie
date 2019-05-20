@@ -19,3 +19,12 @@
 @define-color colorPrimary #52658d;
 @define-color textColorPrimary #fafafa;
 @define-color textColorPrimaryShadow #7e8087;
+
+.h1 {
+	font-size: 32px;
+}
+
+
+.dim-label.h2 {
+	font-size: 24px;
+}

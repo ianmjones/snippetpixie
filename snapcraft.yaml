@@ -1,6 +1,6 @@
 name: snippetpixie
 base: core18
-version: 1.2.0
+version: 1.2.1
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
@@ -33,13 +33,6 @@ apps:
       GSETTINGS_SCHEMA_DIR: $SNAP/usr/share/glib-2.0/schemas
 
 parts:
-#  snippetpixie:
-#    after: [granite, desktop-gnome-platform]
-#    plugin: dump
-#    source: http://packages.elementary.io/appcenter/pool/main/c/com.github.bytepixie.snippetpixie/com.github.bytepixie.snippetpixie1.2.0-889e0b.deb
-#    override-build: |
-#      snapcraftctl build
-#      sed -i 's|Icon=com.github.bytepixie.snippetpixie|Icon=\${SNAP}/meta/gui/icon.svg|' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/com.github.bytepixie.snippetpixie.desktop
   snippetpixie:
     after: [granite, desktop-gnome-platform]
     plugin: meson
@@ -117,9 +110,6 @@ parts:
       - zlib1g
       - libjson-glib-1.0-0
       - libsqlite3-0
-#  granite:
-#    plugin: dump
-#    source: http://packages.elementary.io/stable/pool/main/g/granite/libgranite5_5.0%2Br1192%2Bpkg99~ubuntu5.0.1_amd64.deb
   granite:
     plugin: meson
     meson-parameters:
