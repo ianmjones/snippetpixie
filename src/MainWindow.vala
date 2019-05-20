@@ -183,7 +183,8 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         dialog.set_transient_for (this);
         dialog.set_modal (true);
 
-        dialog.authors = {"Ian M. Jones"};
+        dialog.authors = {"@ianmjones https://github.com/ianmjones/"};
+        dialog.translator_credits = _("@NathanBnm https://github.com/NathanBnm/");
 
         dialog.program_name = "Snippet Pixie";
         dialog.copyright = _("Copyright © Byte Pixie Limited");
