@@ -23,6 +23,14 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.2.1" date="2019-07-10">
+      <description>
+        <ul>
+          <li>Various fixes for snap.</li>
+          <li>Updated credits to use GitHub handles and add Nathan as a translator (long overdue)!</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.0" date="2019-04-22">
       <description>
         <p>Added support for placeholders.</p>
