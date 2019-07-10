@@ -1,3 +1,10 @@
+com.github.bytepixie.snippetpixie (1.2.1) xenial; urgency=medium
+
+  * Various fixes for snap.
+  * Updated credits to use GitHub handles and add Nathan as a translator (long overdue)!
+
+ -- Byte Pixie <hello@bytepixie.com>  Wed, 10 Jul 2019 12:34:56 +0000
+
 com.github.bytepixie.snippetpixie (1.2.0) xenial; urgency=medium
 
   Added support for placeholders.
