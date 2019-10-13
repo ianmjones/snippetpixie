@@ -13,7 +13,23 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 # SYNOPSIS
 
-*com.github.bytepixie.snippetpixie* [*--show*] [*--start*] [*--stop*] [*--autostart=*{*on*|*off*|*status*}] [*--status*] [*-e*|*--export* _filename_] [*-i*|*--import* _filename_ [*--force*]] [*--version*] [*-h*|*--help*]
+*com.github.bytepixie.snippetpixie* [*--show*]
+
+*com.github.bytepixie.snippetpixie* *--start*
+
+*com.github.bytepixie.snippetpixie* *--stop*
+
+*com.github.bytepixie.snippetpixie* *--autostart=*{*on*|*off*|*status*}
+
+*com.github.bytepixie.snippetpixie* *--status*
+
+*com.github.bytepixie.snippetpixie* *-e*|*--export* _filename_
+
+*com.github.bytepixie.snippetpixie* *-i*|*--import* _filename_ [*--force*]
+
+*com.github.bytepixie.snippetpixie* *--version*
+
+*com.github.bytepixie.snippetpixie* *-h*|*--help*
 
 # OPTIONS
 
