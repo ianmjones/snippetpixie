@@ -67,9 +67,31 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 # NOTES
 
+Abbreviations should be short, easy to remember and hard to trigger accidentally.
+
+It helps if an abbreviation includes either a key word from the fully expanded text, or an initialization or acronym that is part of it.
+
+For example, if you regularly wrote "Snippet Pixie" 😉 you might use "*sp*".
+
+However, there are a lot of words that include the letter combination "*sp*", (see https://www.wordfind.com/contains/sp/), so there's a reasonably high chance that Snippet Pixie would expand that abbreviation when you didn't want it to.
+
+So instead it's common to add a "*trigger character*" to the end of the abbreviation. This is commonly a character that isn't found in normal sentences such as "*`*" or "*~*" that is easy to find on your keyboard. Often just appending a space is enough, or doubling up characters.
+
+I personally use "*`*" (commonly known as grav or backtick) a lot as it's a single keystroke on my British layout keyboard just below my Escape key. So for me "*sp`*" is a natural abbreviation for "*Snippet Pixie*".
+
+However, I could see using "*sp *" or "*spp*" for the abbreviation.
+
+If you do use a trailing space as your trigger character you might find it useful to include a trailing space in the text that is expanded, e.g. "*sp *" expands to "*Snippet Pixie *" as it's more natural when typing.
+
+# LIMITATIONS
+
 - Only works with accessible applications with simple(ish) text entry.
 - Does not work with Chromium/WebKit based browsers because they have "very limited support" for ATK on Linux (see https://www.chromium.org/developers/design-documents/accessibility#TOC-API-support & https://www.chromium.org/developers/accessibility/linux-accessibility).
 - Does not work with Electron based apps because they use Chrome under the hood.
+
+# SEE ALSO
+
+snippetpixie-placeholders(5)
 
 # AUTHORS
 

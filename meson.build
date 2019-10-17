@@ -46,3 +46,4 @@ subdir('po')
 meson.add_install_script('meson/post_install.py')
 
 install_man('man/snippetpixie.1')
+install_man('man/snippetpixie-placeholders.5')
