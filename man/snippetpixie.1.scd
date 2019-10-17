@@ -65,6 +65,12 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 *-h*, *--help*
 	Display help.
 
+# NOTES
+
+- Only works with accessible applications with simple(ish) text entry.
+- Does not work with Chromium/WebKit based browsers because they have "very limited support" for ATK on Linux (see https://www.chromium.org/developers/design-documents/accessibility#TOC-API-support & https://www.chromium.org/developers/accessibility/linux-accessibility).
+- Does not work with Electron based apps because they use Chrome under the hood.
+
 # AUTHORS
 
 Created and maintained by Ian Jones <ian@ianmjones.com>, supported by Byte Pixie Limited <hello@bytepixie.com> and other generous contributors of skills, time, and funds. Up to date sources can be found at https://github.com/bytepixie/snippetpixie, where bug reports and feature requests may also be submitted.

@@ -4,7 +4,7 @@
 .nh
 .ad l
 .\" Begin generated content:
-.TH "snippetpixie" "1" "2019-10-13"
+.TH "snippetpixie" "1" "2019-10-17"
 .P
 .SH NAME
 .P
@@ -91,6 +91,37 @@ Display version number.
 Display help.
 .P
 .RE
+.SH NOTES
+.P
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.IP \(bu 4
+.\}
+Only works with accessible applications with simple(ish) text entry.
+.RE
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.IP \(bu 4
+.\}
+Does not work with Chromium/WebKit based browsers because they have "very limited support" for ATK on Linux (see https://www.chromium.org/developers/design-documents/accessibility#TOC-API-support & https://www.chromium.org/developers/accessibility/linux-accessibility).
+.RE
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.IP \(bu 4
+.\}
+Does not work with Electron based apps because they use Chrome under the hood.
+
+.RE
+.P
 .SH AUTHORS
 .P
 Created and maintained by Ian Jones <ian@ianmjones.com>, supported by Byte Pixie Limited <hello@bytepixie.com> and other generous contributors of skills, time, and funds. Up to date sources can be found at https://github.com/bytepixie/snippetpixie, where bug reports and feature requests may also be submitted.
