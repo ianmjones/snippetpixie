@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-10 20:08+0100\n"
+"POT-Creation-Date: 2019-12-10 21:43+0000\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -102,8 +102,8 @@ msgstr ""
 "Amélioration de la performance, de la compatibilité et de la stabilité."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:56
-msgid "@NathanBnm"
-msgstr "@NathanBnm"
+msgid "Added French translations. Huge thanks to @NathanBnm on GitHub! 🇨🇵️"
+msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:63
 msgid "Added ability to export snippets to a JSON file via menu button."
@@ -206,3 +206,6 @@ msgstr "Lancer Snippet Pixie"
 #: data/com.github.bytepixie.snippetpixie.desktop.in:19
 msgid "Stop Snippet Pixie"
 msgstr "Arrêter Snippet Pixie"
+
+#~ msgid "@NathanBnm"
+#~ msgstr "@NathanBnm"
