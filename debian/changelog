@@ -1,3 +1,10 @@
+com.github.bytepixie.snippetpixie (1.2.2) xenial; urgency=medium
+
+  * Added man pages for snippetpixie and snippetpixie-placeholders.
+  * Minor fixes for compile time warnings.
+
+ -- Byte Pixie <hello@bytepixie.com>  Tue, 10 Dec 2019 12:34:56 +0000
+
 com.github.bytepixie.snippetpixie (1.2.1) xenial; urgency=medium
 
   * Various fixes for snap.
