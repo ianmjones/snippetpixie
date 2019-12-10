@@ -750,9 +750,6 @@ namespace SnippetPixie {
                             return control;
                         }
                     }
-
-                    // Be nice.
-                    yield;
                 }
             }
 
