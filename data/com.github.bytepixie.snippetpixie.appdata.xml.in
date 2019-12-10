@@ -23,6 +23,14 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.2.2" date="2019-12-10">
+      <description>
+        <ul>
+          <li>Added man pages for snippetpixie and snippetpixie-placeholders.</li>
+          <li>Minor fixes for compile time warnings.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.2.1" date="2019-07-10">
       <description>
         <ul>

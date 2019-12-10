@@ -1,6 +1,6 @@
 name: snippetpixie
 base: core18
-version: 1.2.1
+version: 1.2.2
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
@@ -114,7 +114,7 @@ parts:
     plugin: meson
     meson-parameters:
       - --prefix=/usr
-    source: https://github.com/elementary/granite/archive/5.2.3.tar.gz
+    source: https://github.com/elementary/granite/archive/5.2.5.tar.gz
     source-type: tar
     override-build: |
       snapcraftctl build
