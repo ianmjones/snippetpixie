@@ -16,20 +16,9 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-5-dev
-      - curl
-
-cache:
-  directories:
-    - /tmp/liftoff
-
-matrix:
-  include:
-    - env: DIST=juno
 
 install:
   - npm i -g @elementaryos/houston
 
 script:
   - houston ci
-    --distribution $DIST
-    --name-domain com.github.bytepixie.snippetpixie
