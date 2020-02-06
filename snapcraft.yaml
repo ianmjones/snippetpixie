@@ -25,8 +25,7 @@ icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 apps:
   snippetpixie:
     command: bin/desktop-launch $SNAP/usr/bin/com.github.bytepixie.snippetpixie
-    passthrough:
-      autostart: snippetpixie_snippetpixie.desktop
+    autostart: snippetpixie_snippetpixie.desktop
     desktop: usr/share/applications/com.github.bytepixie.snippetpixie.desktop
     environment:
       GSETTINGS_SCHEMA_DIR: $SNAP/usr/share/glib-2.0/schemas
