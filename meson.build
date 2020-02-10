@@ -26,16 +26,18 @@ executable(
     'src/WelcomeView.vala',
     asresources,
     dependencies: [
+        dependency('atspi-2', version: '>=2.0'),
+        dependency('gdk-x11-3.0'),
         dependency('gee-0.8'),
         dependency('glib-2.0'),
         dependency('gobject-2.0'),
-        dependency('gtk+-3.0'),
-        dependency('sqlite3'),
         dependency('granite', version: '>=0.5'),
-        dependency('x11', version: '>=1.0'),
-        dependency('atspi-2', version: '>=2.0'),
+        dependency('gtk+-3.0'),
         dependency('ibus-1.0'),
         dependency('json-glib-1.0'),
+        dependency('sqlite3'),
+        dependency('xtst'),
+        dependency('x11', version: '>=1.0'),
         meson.get_compiler('c').find_library('m', required : false)
     ],
     install: true

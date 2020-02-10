@@ -212,6 +212,35 @@ public class SnippetPixie.SnippetsManager : Object {
         return snippet;
     }
 
+    public int count_snippets_ending_with (string abbreviation) {
+        int count = 0;
+        Sqlite.Statement stmt;
+
+        const string query = "SELECT COUNT(DISTINCT id) FROM snippets WHERE abbreviation LIKE $ABR;";
+	    int ec = db.prepare_v2 (query, query.length, out stmt);
+	    if (ec != Sqlite.OK) {
+		    warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+		    return count;
+	    }
+
+        int param_position = stmt.bind_parameter_index ("$ABR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, "%" + abbreviation);
+
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            count = stmt.column_int (0);
+
+            // Return the value.
+            return count;
+		}
+		if (ec != Sqlite.DONE) {
+			warning ("Error fetching count of snippets ending with '%s': %s\n", abbreviation, db.errmsg ());
+            return count;
+        }
+
+        return count;
+    }
+
     public void add (Snippet snippet) {
         insert_snippet (snippet);
         refresh_snippets ();
