@@ -28,16 +28,20 @@ namespace SnippetPixie {
         private const string placeholder_delimiter_escaped = "$\\$";
 
         private static Application? _app = null;
+        private static bool app_running = false;
 
-        private bool app_running = false;
         private bool show = true;
         private bool snap = false;
         public MainWindow app_window { get; private set; }
 
         // For tracking keystrokes.
-        private Atspi.DeviceListenerCB listener_cb;
-        private Atspi.DeviceListener listener;
+        private Gdk.Window root_window;
+        private Gdk.Display display;
+        private Gdk.Seat seat;
+        private Gdk.Device keyboard;
+        private Gdk.EventMask event_mask;
         private Thread check_thread;
+        private bool listening = false;
         private bool checking = false;
 
         public SnippetsManager snippets_manager;
@@ -62,200 +66,114 @@ namespace SnippetPixie {
 
             if (show) {
                 build_ui ();
-            } 
+            }
 
             // We only want the one listener process.
-            if (app_running) {
-                return;
+            lock (app_running) {
+                if (app_running) {
+                    return;
+                }
+
+                app_running = true;
             }
-
-            app_running = true;
-
-            // Set up AT-SPI listeners.
-            Atspi.init();
-
-            if (Atspi.is_initialized () == false) {
-                message ("AT-SPI not initialized.");
-                quit ();
-            }
-
-            listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
-            listener = new Atspi.DeviceListener ((owned) listener_cb);
 
 			register_listeners ();
+			start_listening ();
         }
 
 		private void cleanup() {
 			debug ("cleanup");
-			if (app_running) {
-				//
-				// Tear-down all the AT-SPI listener resources etc.
-				//
-				deregister_listeners ();
 
-				var atspi_exit_code = Atspi.exit();
-
-				debug ("AT-SPI exit code is %d.", atspi_exit_code);
-			} // app_running
-		}
-
-		private void register_listeners () {
-            try {
-                // Single keystrokes.
-                Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Control.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Control + Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Control + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Control + Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod1 (Alt/Meta).
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod1 + Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod1 + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod1 + Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod2 (NumLock).
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod2 + Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod2 + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod2 + Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod3 (???).
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod3 + Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod3 + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod3 + Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod4 (Super/Menu).
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod4 + Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod4 + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod4 + Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod5 (ISO_Level3_Shift/Alt Gr).
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod5 + Shift.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod5 + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-                // Mod5 + Shift + Shift-Lock.
-                Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS|Atspi.KeyListenerSyncType.NOSYNC);
-            } catch (Error e) {
-                message ("Could not register keystroke listener: %s", e.message);
-                Atspi.exit ();
-                quit ();
-            }
-		}
-
-		private void deregister_listeners () {
-			try {
-				// Single keystrokes.
-				Atspi.deregister_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Control.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Control + Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Control + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Control + Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod1 (Alt/Meta).
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod1 + Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod1 + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod1 + Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod2 (NumLock).
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod2 + Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod2 + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod2 + Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod3 (???).
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod3 + Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod3 + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod3 + Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod4 (Super/Menu).
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod4 + Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod4 + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod4 + Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod5 (ISO_Level3_Shift/Alt Gr).
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod5 + Shift.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod5 + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-				// Mod5 + Shift + Shift-Lock.
-				Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-			} catch (Error e) {
-				message ("Could not deregister keystroke listener: %s", e.message);
-                Atspi.exit ();
-                quit ();
+            lock (app_running) {
+			    if (app_running) {
+			        stop_listening ();
+				    deregister_listeners ();
+			    } // app_running
 			}
 		}
 
-        [CCode (instance_pos = -1)]
-        private bool on_key_released_event (Atspi.DeviceEvent stroke) {
-            if (checking == true) {
-			    // Belts and braces as keystroke listener should be deregistered already.
-			    return false;
-		    }
+		private void register_listeners () {
+            debug ("Registering listener...");
 
-            debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
+            root_window = Gdk.get_default_root_window ();
 
-            if (
-                checking != true &&
-                stroke.is_text &&
-                stroke.event_string != null &&
-                snippets_manager.triggers != null &&
-                snippets_manager.triggers.size > 0 &&
-                snippets_manager.triggers.has_key (stroke.event_string)
-                ) {
-                debug ("!!! GOT A TRIGGER KEY MATCH !!!");
+            if (root_window == null) {
+                message ("Could not determine default root window.");
+                quit ();
+            }
 
-                // Let thread check for abbreviation after we've let the window have its keystroke.
-                check_thread = new Thread<bool> ("check_thread", triggered);
-            } // if something to check
+            // display = root_window.get_display ();
 
-            return false;
+            // if (display == null) {
+            //     message ("Could not determine default display.");
+            //     quit ();
+            // }
+
+            // seat = display.get_default_seat ();
+
+            // if (seat == null) {
+            //     message ("Could not determine default seat.");
+            //     quit ();
+            // }
+
+            // keyboard = seat.get_keyboard ();
+
+            // if (keyboard == null) {
+            //     message ("Could not determine default keyboard.");
+            //     quit ();
+            // }
+
+            // Make sure key release events are being reported by root window.
+            event_mask = root_window.get_source_events (Gdk.InputSource.KEYBOARD);
+            root_window.set_source_events (Gdk.InputSource.KEYBOARD, event_mask|Gdk.EventMask.KEY_RELEASE_MASK);
+
+            // Route events through our handler so we can catch trigger key releases.
+            Gdk.Event.handler_set (handle_event);
+		}
+
+		private void deregister_listeners () {
+		    // Return root window's event mask to how it was.
+		    // TODO: Maybe should check whether other changes have been added to event mask since grabbing mask at startup.
+            root_window.set_source_events (Gdk.InputSource.KEYBOARD, event_mask);
+		}
+
+        private void start_listening () {
+            lock (listening) {
+                listening = true;
+            }
+        }
+
+        private void stop_listening () {
+            lock (listening) {
+                listening = false;
+            }
         }
 
         [CCode (instance_pos = -1)]
+        private void handle_event (Gdk.Event? event) {
+            lock (listening) {
+                if (listening && event != null) {
+                    if (event.type == Gdk.EventType.KEY_RELEASE) {
+                        debug ("It's key release keyval '%u'", event.key.keyval);
+
+                        if (
+                            event.key.is_modifier == 0 &&
+                            event.key.length > 0 &&
+                            snippets_manager.triggers.has_key (event.key.str)
+                            ) {
+                            // Let thread check for abbreviation, while we let the target window have its keystroke.
+                            check_thread = new Thread<bool> ("check_thread", triggered);
+                        } // if something to check
+                    } else if (event.type == Gdk.EventType.NOTHING) {
+                        debug ("NOTHING");
+                    }
+                }
+            }
+
+            // Whether we've used it or not, let the target window get the event.
+            Gtk.main_do_event (event);
+        }
+
         private bool triggered () {
             var expanded = false;
 
@@ -264,7 +182,7 @@ namespace SnippetPixie {
 					checking = true;
 					debug ("Checking for abbreviation...");
 
-					deregister_listeners ();
+					stop_listening ();
 
 					var last_str = "";
 					var clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
@@ -284,7 +202,7 @@ namespace SnippetPixie {
 
                         if (str == null || str == last_str) {
 							debug ("Could not grow selection beyond '%s'.", last_str);
-    						last_str = str; // Forces cancel unset selection.
+    						last_str = str; // Forces cancel to unset selection.
 							break;
 						}
 
@@ -321,7 +239,7 @@ namespace SnippetPixie {
 					    cancel_selection (last_str);
 					}
 					checking = false;
-					register_listeners ();
+					start_listening ();
     			} // lock checking
 			} // not checking
 
@@ -642,7 +560,7 @@ namespace SnippetPixie {
          * https://github.com/davidmhewitt/clipped/blob/b00d44757cc2bf7bc9948d535668099db4ab9896/src/ClipboardManager.vala#L55
          */
         private void paste () {
-            // TODO: Ctrl-c isn't always the right thing to do, e.g. Terminal, or changed paste hot-key combination.
+            // TODO: Ctrl-v isn't always the right thing to do, e.g. Terminal, or changed paste hot-key combination.
             perform_key_event ("<Control>v", true, 100);
             perform_key_event ("<Control>v", false, 0);
         }
@@ -886,70 +804,72 @@ namespace SnippetPixie {
                 return 0;
             }
 
-            if (stop) {
-                command_line.print (_("Quitting…\n"));
-                var app = get_default ();
-                app.quit ();
-                return 0;
-            }
-
-            if (status) {
-                if (app_running) {
-                    command_line.print (_("Running.\n"));
+            lock (app_running) {
+                if (stop) {
+                    command_line.print (_("Quitting…\n"));
+                    var app = get_default ();
+                    app.quit ();
                     return 0;
-                } else {
-                    command_line.print (_("Not Running.\n"));
-                    return 1;
                 }
-            }
 
-            switch (autostart) {
-                case null:
-                    break;
-                case "on":
-                    update_autostart (true);
-                    return 0;
-                case "off":
-                    update_autostart (false);
-                    return 0;
-                case "status":
-                    if (get_autostart ()) {
-                        command_line.print ("on\n");
+                if (status) {
+                    if (app_running) {
+                        command_line.print (_("Running.\n"));
+                        return 0;
                     } else {
-                        command_line.print ("off\n");
+                        command_line.print (_("Not Running.\n"));
+                        return 1;
                     }
-                    return 0;
-                default:
-                    command_line.print (_("Invalid autostart value \"%s\".\n"), autostart);
-                    help = true;
-                    break;
-            }
-
-            if (export_file != null) {
-                if (snippets_manager == null) {
-                    snippets_manager = new SnippetsManager ();
                 }
 
-                return snippets_manager.export_to_file (export_file);
-            }
-
-            if (import_file != null) {
-                if (snippets_manager == null) {
-                    snippets_manager = new SnippetsManager ();
+                switch (autostart) {
+                    case null:
+                        break;
+                    case "on":
+                        update_autostart (true);
+                        return 0;
+                    case "off":
+                        update_autostart (false);
+                        return 0;
+                    case "status":
+                        if (get_autostart ()) {
+                            command_line.print ("on\n");
+                        } else {
+                            command_line.print ("off\n");
+                        }
+                        return 0;
+                    default:
+                        command_line.print (_("Invalid autostart value \"%s\".\n"), autostart);
+                        help = true;
+                        break;
                 }
 
-                return snippets_manager.import_from_file (import_file, force);
-            }
+                if (export_file != null) {
+                    if (snippets_manager == null) {
+                        snippets_manager = new SnippetsManager ();
+                    }
 
-            if (start) {
-                show = false;
-            }
+                    return snippets_manager.export_to_file (export_file);
+                }
 
-            // If we get here we're either showing the window or running the background process.
-            if ( show == false || ! app_running ) {
-                get_autostart ();
-                hold ();
-            }
+                if (import_file != null) {
+                    if (snippets_manager == null) {
+                        snippets_manager = new SnippetsManager ();
+                    }
+
+                    return snippets_manager.import_from_file (import_file, force);
+                }
+
+                if (start) {
+                    show = false;
+                }
+
+                // If we get here we're either showing the window or running the background process.
+                if ( show == false || ! app_running ) {
+                    get_autostart ();
+                    hold ();
+                }
+            } // lock app_running
 
             activate ();
 
@@ -976,7 +896,6 @@ namespace SnippetPixie {
             var exit_code = app.run (args);
 
 			debug ("Application terminated with exit code %d.", exit_code);
-
 			return exit_code;
         }
     }
