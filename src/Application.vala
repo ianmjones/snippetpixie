@@ -316,37 +316,30 @@ namespace SnippetPixie {
                     checking = true;
                     debug ("Checking for abbreviation...");
 
-                    // deregister_listeners ();
                     stop_listening ();
 
                     var last_str = "";
-                    var tries = 0;
+                    var tries = 1;
 
                     for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
-                        // if (pos == 1) {
-                        //     selection.clear ();
-                        // }
+                        if (pos == 1) {
+                            selection.clear ();
+                        }
 
                         grow_selection ();
                         Thread.yield ();
-                        Thread.usleep (200000);
+                        Thread.usleep (100000 * tries);
 
                         if (selection.wait_is_text_available () == false) {
                             debug ("Waiting a little longer for selection contents...");
                             Thread.yield ();
-                            Thread.usleep (200000);
+                            Thread.usleep (100000 * tries);
                         }
 
                         var str = selection.wait_for_text ();
                         debug ("Pos %d, Str '%s'", pos, str);
 
-                        if (str == null || str == last_str) {
-                            debug ("Could not grow selection beyond '%s'.", last_str);
-                            last_str = str; // Forces cancel to unset selection.
-                            break;
-                        }
-
-                        if (str.length > pos) {
+                        if (str == null || str == last_str || str.length > pos) {
                             tries++;
 
                             if (tries > 3) {
@@ -355,7 +348,7 @@ namespace SnippetPixie {
                                 break;
                             }
 
-                            debug ("Umm, some how we have more text than expected, starting again, attempt %d.", tries);
+                            debug ("Text different than expected, starting again, attempt #%d.", tries);
                             cancel_selection (str);
                             pos = 0;
                             continue;
@@ -396,7 +389,6 @@ namespace SnippetPixie {
                     }
 
                     checking = false;
-                    // register_listeners ();
                     start_listening ();
                 } // lock checking
             } // not checking
@@ -693,14 +685,8 @@ namespace SnippetPixie {
         }
 
         private void grow_selection () {
-            perform_key_event ("<Shift>Left", true, 10);
+            perform_key_event ("<Shift>Left", true, 1);
             perform_key_event ("<Shift>Left", false, 0);
-        }
-
-        private void copy_selection () {
-            // TODO: Ctrl-c isn't always the right thing to do, e.g. Terminal, or changed copy hot-key combination.
-            perform_key_event ("<Control>c", true, 10);
-            perform_key_event ("<Control>c", false, 0);
         }
 
         private void cancel_selection (string? str) {
@@ -708,7 +694,7 @@ namespace SnippetPixie {
 
             // TODO: In case Clipboard access screwy, more robust check would be to see if any text is selected.
             if (str == null || str.length > 0) {
-                perform_key_event ("Right", true, 10);
+                perform_key_event ("Right", true, 1);
                 perform_key_event ("Right", false, 0);
             }
         }
@@ -719,7 +705,7 @@ namespace SnippetPixie {
          */
         private void paste () {
             // TODO: Ctrl-v isn't always the right thing to do, e.g. Terminal, or changed paste hot-key combination.
-            perform_key_event ("<Control>v", true, 10);
+            perform_key_event ("<Control>v", true, 1);
             perform_key_event ("<Control>v", false, 0);
         }
 
