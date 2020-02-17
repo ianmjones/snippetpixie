@@ -85,9 +85,7 @@ If `$$@cursor$$` is entered more than once in a snippet's body or via snippet em
 
 ## Known Issues
 
-* Only works with accessible applications with simple(ish) text entry.
-* Does not work with Chromium/WebKit based browsers because they have "[very limited](https://www.chromium.org/developers/design-documents/accessibility#TOC-API-support)" support for [ATK on Linux](https://www.chromium.org/developers/accessibility/linux-accessibility).
-* Does not work with Electron based apps because they use Chrome under the hood.
+* Firefox loses focus on every keystroke, fixed by blacklisting it, hoping for permanent fix in future.
 
 ## Roadmap
 
@@ -115,7 +113,9 @@ You'll need the following dependencies to build:
 * libibus-1.0-dev
 * libjson-glib-dev
 * libsqlite3-dev
+* libwnck-3-dev
 * libx11-dev
+* libxtst-dev
 
 Run `meson build` to configure the build environment and then change to the build directory and run `ninja test` to build and run automated tests
 
