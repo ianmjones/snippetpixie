@@ -14,9 +14,10 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-5-dev
+      - libwnck-3-dev
+      - curl
 
 install:
-  - sudo apt-get install -qqy libwnck-3-dev
   - npm i -g @elementaryos/houston
 
 script:
