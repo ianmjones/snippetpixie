@@ -5,8 +5,6 @@ language: node_js
 node_js:
   - 10.17.0
 
-sudo: required
-
 services:
   - docker
 
@@ -16,9 +14,9 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-5-dev
-      - libwnck-3-dev
 
 install:
+  - sudo apt-get install -qqy libwnck-3-dev
   - npm i -g @elementaryos/houston
 
 script:
