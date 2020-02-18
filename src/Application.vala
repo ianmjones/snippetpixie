@@ -37,6 +37,7 @@ namespace SnippetPixie {
         // For tracking keystrokes.
         private Atspi.DeviceListenerCB listener_cb;
         private Atspi.DeviceListener listener;
+        private Atspi.KeyListenerSyncType listener_sync_type = Atspi.KeyListenerSyncType.ALL_WINDOWS;
         private static bool registered_listeners = false;
         private static bool listening = false;
         private Gtk.Clipboard selection;
@@ -51,6 +52,9 @@ namespace SnippetPixie {
 
         // Unsupported applications, i.e. should not expand in, or currently can't.
         private Gee.ArrayList<string> blacklist;
+
+        // Troublesome applications that should only be expanded in if they decide to play nice and emit events.
+        private Gee.ArrayList<string> greylist;
 
         public SnippetsManager snippets_manager;
 
@@ -96,7 +100,10 @@ namespace SnippetPixie {
             // TODO: Expose as option and save in settings.
             blacklist = new Gee.ArrayList<string> ();
             blacklist.add (this.application_id); // Reason: Do not want to expand snippets within app, gets messy!
-            blacklist.add ("Firefox"); // Reason: Inputs loose focus on every keystroke.
+
+            // TODO: Expose as option and save in settings.
+            greylist = new Gee.ArrayList<string> ();
+            greylist.add ("Firefox"); // Reason: Inputs loose focus on every keystroke.
 
             listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
             listener = new Atspi.DeviceListener ((owned) listener_cb);
@@ -127,7 +134,18 @@ namespace SnippetPixie {
                             if (blacklist.size > 0 && blacklist.contains (wnck_app.get_name ())) {
                                 debug ("Nope, not expanding snippets within %s!", wnck_app.get_name ());
                                 deregister_listeners ();
+                            } else if (greylist.size > 0 && greylist.contains (wnck_app.get_name ())) {
+                                debug ("Might not be expanding snippets within %s, we'll see.", wnck_app.get_name ());
+                                if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
+                                    deregister_listeners ();
+                                }
+                                listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
+                                register_listeners ();
                             } else {
+                                if (listener_sync_type != Atspi.KeyListenerSyncType.ALL_WINDOWS) {
+                                    deregister_listeners ();
+                                }
+                                listener_sync_type = Atspi.KeyListenerSyncType.ALL_WINDOWS;
                                 register_listeners ();
                             }
                         }
@@ -153,67 +171,68 @@ namespace SnippetPixie {
         }
 
         private void register_listeners () {
-            debug ("Registering listeners...");
-
             lock (registered_listeners) {
                 if (registered_listeners == false) {
+
+                    debug ("Registering listeners...");
+
                     try {
                         // Single keystrokes.
-                        Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Control.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Control + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Control + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Control + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod1 (Alt/Meta).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod1 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod1 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod1 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod2 (NumLock).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod2 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod2 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod2 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod3 (???).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod3 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod3 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod3 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod4 (Super/Menu).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod4 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod4 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod4 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod5 (ISO_Level3_Shift/Alt Gr).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod5 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod5 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                         // Mod5 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.ALL_WINDOWS);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
                     } catch (Error e) {
                         message ("Could not register keystroke listener: %s", e.message);
                         Atspi.exit ();
