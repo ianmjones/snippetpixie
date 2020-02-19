@@ -158,11 +158,11 @@ public class SnippetPixie.SnippetsManager : Object {
         Sqlite.Statement stmt;
 
         const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation, id;";
-	    int ec = db.prepare_v2 (query, query.length, out stmt);
-	    if (ec != Sqlite.OK) {
-		    warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
-		    return null;
-	    }
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
+            return null;
+        }
 
         var snippets = new Gee.ArrayList<Snippet?> ();
         while ((ec = stmt.step ()) == Sqlite.ROW) {
@@ -171,9 +171,9 @@ public class SnippetPixie.SnippetsManager : Object {
             snippet.abbreviation = stmt.column_text (1);
             snippet.body = stmt.column_text (2);
             snippets.add (snippet);
-		}
-		if (ec != Sqlite.DONE) {
-			warning ("Error fetching snippets: %s\n", db.errmsg ());
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error fetching snippets: %s\n", db.errmsg ());
             return null;
         }
 
@@ -184,11 +184,11 @@ public class SnippetPixie.SnippetsManager : Object {
         Sqlite.Statement stmt;
 
         const string query = "SELECT id, abbreviation, body FROM snippets WHERE abbreviation = $ABR ORDER BY id;";
-	    int ec = db.prepare_v2 (query, query.length, out stmt);
-	    if (ec != Sqlite.OK) {
-		    warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
-		    return null;
-	    }
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+            return null;
+        }
 
         int param_position = stmt.bind_parameter_index ("$ABR");
         assert (param_position > 0);
@@ -203,9 +203,9 @@ public class SnippetPixie.SnippetsManager : Object {
 
             // Return the first found, duplicates are ignored.
             return snippet;
-		}
-		if (ec != Sqlite.DONE) {
-			warning ("Error fetching snippet: %s\n", db.errmsg ());
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error fetching snippet: %s\n", db.errmsg ());
             return null;
         }
 
@@ -217,11 +217,11 @@ public class SnippetPixie.SnippetsManager : Object {
         Sqlite.Statement stmt;
 
         const string query = "SELECT COUNT(DISTINCT id) FROM snippets WHERE abbreviation LIKE $ABR;";
-	    int ec = db.prepare_v2 (query, query.length, out stmt);
-	    if (ec != Sqlite.OK) {
-		    warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
-		    return count;
-	    }
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+            return count;
+        }
 
         int param_position = stmt.bind_parameter_index ("$ABR");
         assert (param_position > 0);
@@ -232,13 +232,42 @@ public class SnippetPixie.SnippetsManager : Object {
 
             // Return the value.
             return count;
-		}
-		if (ec != Sqlite.DONE) {
-			warning ("Error fetching count of snippets ending with '%s': %s\n", abbreviation, db.errmsg ());
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error fetching count of snippets ending with '%s': %s\n", abbreviation, db.errmsg ());
             return count;
         }
 
         return count;
+    }
+
+    public int min_length_ending_with (string abbreviation) {
+        int min = 0;
+        Sqlite.Statement stmt;
+
+        const string query = "SELECT MIN(LENGTH(abbreviation)) FROM snippets WHERE abbreviation LIKE $ABR;";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+            return min;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$ABR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, "%" + abbreviation);
+
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            min = stmt.column_int (0);
+
+            // Return the value.
+            return min;
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error fetching minimum length of abbreviations ending with '%s': %s\n", abbreviation, db.errmsg ());
+            return min;
+        }
+
+        return min;
     }
 
     public void add (Snippet snippet) {

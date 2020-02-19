@@ -372,6 +372,7 @@ namespace SnippetPixie {
 
                     var last_str = "";
                     var tries = 1;
+                    var min = 1;
 
                     for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
                         if (pos == 1) {
@@ -379,6 +380,11 @@ namespace SnippetPixie {
                         }
 
                         grow_selection ();
+
+                        if (pos < min) {
+                            continue;
+                        }
+
                         Thread.yield ();
                         Thread.usleep (100000 * tries);
 
@@ -434,6 +440,10 @@ namespace SnippetPixie {
                             expanded = true;
                             break;
                         } // have matching abbreviation
+
+                        // We can can try and speed things up a bit by not waiting for async selection clipboard on every character.
+                        min = snippets_manager.min_length_ending_with (str);
+                        debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
                     } // step back through characters
 
                     if (expanded == false) {
