@@ -482,7 +482,8 @@ namespace SnippetPixie {
 
                             debug ("Text different than expected, starting again, attempt #%d.", tries);
                             cancel_selection (str);
-                            pos = 0;
+                            min = 1;
+                            pos = 1;
                             continue;
                         }
 
@@ -542,10 +543,6 @@ namespace SnippetPixie {
 
                     stop_listening ();
 
-                    var last_str = "";
-                    var tries = 1;
-                    var min = 1;
-
                     if (focused_controls.has_key (wnck_app.get_pid ()) == false) {
                         debug ("Focused control missing from app map, oops!");
                         checking = false;
@@ -566,21 +563,42 @@ namespace SnippetPixie {
                     }
                     debug ("Caret Offset %d", caret_offset);
 
-                    for (int pos = caret_offset; pos >= 0; pos--) {
-                        // Stop checking if we're already checking against a larger character set than in any abbreviation.
-                        if ((caret_offset - pos) > snippets_manager.max_abbr_len) {
-                            break;
+                    var last_str = "";
+                    var tries = 1;
+                    var min = 1;
+
+                    for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
+                        if (pos < min) {
+                            continue;
                         }
 
+                        var sel_start = caret_offset - pos + 1;
+                        var sel_end = caret_offset + 1;
                         var str = "";
 
                         try {
-                            str = ctrl.get_text (pos, caret_offset + 1);
+                            str = ctrl.get_text (sel_start, sel_end);
                         } catch (Error e) {
-                            message ("Could not get text between positions %d and %d: %s", pos, caret_offset, e.message);
+                            message ("Could not get text between positions %d and %d: %s", sel_start, sel_end, e.message);
                             break;
                         }
                         debug ("Pos %d, Str %s", pos, str);
+
+                        if (str == null || str == last_str || str.length > pos) {
+                            tries++;
+
+                            if (tries > 3) {
+                                debug ("Tried 3 times to get some text, giving up.");
+                                break;
+                            }
+
+                            debug ("Text different than expected, starting again, attempt #%d.", tries);
+                            min = 1;
+                            pos = 1;
+                            continue;
+                        }
+
+                        last_str = str;
 
                         if (snippets_manager.abbreviations.has_key (str)) {
                             debug ("IT'S AN ABBREVIATION!!!");
@@ -588,12 +606,12 @@ namespace SnippetPixie {
                             var focused_control = (Atspi.EditableText) focused_controls.get (wnck_app.get_pid ());
 
                             try {
-                                if (! focused_control.delete_text (pos, caret_offset + 1)) {
+                                if (! focused_control.delete_text (sel_start, sel_end)) {
                                     message ("Could not delete abbreviation string from text.");
                                     break;
                                 }
                             } catch (Error e) {
-                                message ("Could not delete abbreviation string from text between positions %d and %d: %s", pos, caret_offset, e.message);
+                                message ("Could not delete abbreviation string from text between positions %d and %d: %s", sel_start, sel_end, e.message);
                                 break;
                             }
 
@@ -606,23 +624,23 @@ namespace SnippetPixie {
                             body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
 
                             try {
-                                if (! focused_control.insert_text (pos, body, body.length)) {
+                                if (! focused_control.insert_text (sel_start, body, body.length)) {
                                     message ("Could not insert expanded snippet into text.");
                                     break;
                                 }
                             } catch (Error e) {
-                                message ("Could not insert expanded snippet into text at position %d: %s", pos, e.message);
+                                message ("Could not insert expanded snippet into text at position %d: %s", sel_start, e.message);
                                 break;
                             }
 
                             if (new_offset >= 0) {
                                 try {
-                                    if (! ((Atspi.Text) focused_control).set_caret_offset (pos + new_offset)) {
+                                    if (! ((Atspi.Text) focused_control).set_caret_offset (sel_start + new_offset)) {
                                         message ("Could not set new cursor position.");
                                         break;
                                     }
                                 } catch (Error e) {
-                                    message ("Could not set new cursor at position %d: %s", new_offset, e.message);
+                                    message ("Could not set new cursor at position %d: %s", sel_start + new_offset, e.message);
                                     break;
                                 }
                             }
@@ -630,6 +648,10 @@ namespace SnippetPixie {
                             expanded = true;
                             break;
                         } // have matching abbreviation
+
+                        // We can can try and speed things up a bit.
+                        min = snippets_manager.min_length_ending_with (str);
+                        debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
                     } // step back through characters
 
                     checking = false;
