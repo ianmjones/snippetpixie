@@ -60,6 +60,17 @@ namespace SnippetPixie {
         // Troublesome applications that should only be expanded in if they decide to play nice and emit events.
         private Gee.ArrayList<string> greylist;
 
+        // Clipboard data for save/restore.
+        private string clipboard_text;
+        private Gdk.Pixbuf? clipboard_image;
+
+        //
+        // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
+        //
+        // private bool clipboard_saved = false;
+        // private Gdk.Atom[]? clipboard_targets = null;
+        // private Gee.HashMap<Gdk.Atom,Gtk.SelectionData> clipboard_contents = new Gee.HashMap<Gdk.Atom,Gtk.SelectionData> ();
+
         public SnippetsManager snippets_manager;
 
         public Application () {
@@ -506,11 +517,15 @@ namespace SnippetPixie {
                             body = expand_snippet (body, ref new_offset, dt);
                             body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
 
+                            // Save current clipboard before we use it.
+                            save_clipboard ();
                             // Paste the text over the selected abbreviation text.
                             debug ("Setting clipboard with abbreviation body.");
                             clipboard.set_text (body, -1);
                             debug ("Pasting clipoard.");
                             paste ();
+                            // Restore clipboard from data saved before we useed it.
+                            restore_clipboard ();
 
                             expanded = true;
                             break;
@@ -531,6 +546,60 @@ namespace SnippetPixie {
             } // not checking
 
             return expanded;
+        }
+
+        private void save_clipboard () {
+            if (clipboard.wait_is_text_available ()) {
+                clipboard_text = clipboard.wait_for_text ();
+            } else {
+                clipboard_text = null;
+            }
+
+            if (clipboard.wait_is_image_available ()) {
+                clipboard_image = clipboard.wait_for_image ();
+            } else {
+                clipboard_image = null;
+            }
+
+            //
+            // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
+            //
+            // clipbaord_contents.clear ();
+            // clipboard_saved = clipboard.wait_for_targets (out clipboard_targets);
+
+            // if (clipboard_saved && clipboard_targets != null) {
+            //     foreach (var target in clipboard_targets) {
+            //         var data = clipboard.wait_for_contents (target);
+
+            //         if (data != null) {
+            //             clipboard_contents.set (target, data);
+            //         }
+            //     }
+            // }
+
+            clipboard.clear ();
+            Thread.yield ();
+            Thread.usleep (100000);
+        }
+
+        private void restore_clipboard () {
+            //
+            // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
+            //
+
+            Thread.yield ();
+            Thread.usleep (100000);
+            clipboard.clear ();
+
+            if (clipboard_text != null) {
+                clipboard.set_text (clipboard_text, -1);
+            }
+
+            if (clipboard_image != null) {
+                clipboard.set_image (clipboard_image);
+            }
+
+            clipboard.store ();
         }
 
         private bool editable_text_check () {
