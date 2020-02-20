@@ -50,6 +50,10 @@ namespace SnippetPixie {
         private Wnck.Window wnck_win;
         private Wnck.Application wnck_app;
 
+        // For tracking last/current focused editable text control per application.
+        private Atspi.EventListenerCB focused_event_listener_cb;
+        private Gee.HashMap<int,Atspi.EditableText> focused_controls;
+
         // Unsupported applications, i.e. should not expand in, or currently can't.
         private Gee.ArrayList<string> blacklist;
 
@@ -97,6 +101,9 @@ namespace SnippetPixie {
                 quit ();
             }
 
+            // Map of last focused editable text control with its application's PID.
+            focused_controls = new Gee.HashMap<int,Atspi.EditableText> ();
+
             // TODO: Expose as option and save in settings.
             blacklist = new Gee.ArrayList<string> ();
             blacklist.add (this.application_id); // Reason: Do not want to expand snippets within app, gets messy!
@@ -113,18 +120,13 @@ namespace SnippetPixie {
 
             wnck_screen = Wnck.Screen.get_default ();
 
-            //
-            // Use to async method of getting this info.
-            // See https://developer.gnome.org/libwnck/stable/getting-started.html#getting-started.examples.lazy-initialization
-            //
-            // Don't want expansion within Snippet Pixie, and also need to ensure non-accessible windows behave better.
-            //
             if (wnck_screen != null) {
+                //
+                // Don't want expansion within Snippet Pixie, and also need to ensure non-accessible windows behave better.
+                //
                 wnck_screen.active_window_changed.connect (() => {
                     wnck_win = wnck_screen.get_active_window ();
                     debug ("Active window changed.");
-                    // var time = new DateTime.now ();
-                    // win.activate ((uint32)time.to_unix ());
 
                     if (wnck_win != null) {
                         wnck_app = wnck_win.get_application ();
@@ -141,6 +143,13 @@ namespace SnippetPixie {
                                 }
                                 listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
                                 register_listeners ();
+                            } else if (focused_controls.has_key (wnck_app.get_pid ())) {
+                                debug ("Looks like we're returing to %s and previously had an editable text ctrl focused.", wnck_app.get_name ());
+                                if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
+                                    deregister_listeners ();
+                                }
+                                listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
+                                register_listeners ();
                             } else {
                                 if (listener_sync_type != Atspi.KeyListenerSyncType.ALL_WINDOWS) {
                                     deregister_listeners ();
@@ -149,6 +158,13 @@ namespace SnippetPixie {
                                 register_listeners ();
                             }
                         }
+                    }
+                });
+
+                // Cleanup any data associated with just closed application.
+                wnck_screen.application_closed.connect ((app) => {
+                    if (focused_controls.has_key (app.get_pid ())) {
+                        focused_controls.unset (app.get_pid ());
                     }
                 });
             } else {
@@ -239,6 +255,15 @@ namespace SnippetPixie {
                         quit ();
                     }
 
+                    try {
+                        focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
+                        Atspi.EventListener.register_from_callback ((owned) focused_event_listener_cb, "focus:");
+                    } catch (Error e) {
+                        message ("Could not register focus event listener: %s", e.message);
+                        Atspi.exit ();
+                        quit ();
+                    }
+
                     registered_listeners = true;
                     start_listening ();
                 } // registered_listeners false
@@ -316,6 +341,14 @@ namespace SnippetPixie {
                         Atspi.exit ();
                         quit ();
                     }
+
+                    try {
+                        Atspi.EventListener.deregister_from_callback ((owned) focused_event_listener_cb, "focus:");
+                    } catch (Error e) {
+                        message ("Could not deregister focus event listener: %s", e.message);
+                        Atspi.exit ();
+                        quit ();
+                    }
                 } // registered_listeners true
             } // lock registered_listeners
         }
@@ -332,6 +365,42 @@ namespace SnippetPixie {
                 listening = false;
             }
             debug ("Stopped listening.");
+        }
+
+        [CCode (instance_pos = -1)]
+        private bool on_focus (Atspi.Event event) {
+            try {
+                var app = event.source.get_application ();
+                debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, app.get_name ());
+
+                if (app.get_name () == this.application_id) {
+                    debug ("Nope, not monitoring within %s!", app.get_name ());
+                } else {
+                    // Whether we can get current control or not, cleanup last known control.
+                    if (focused_controls.has_key (wnck_app.get_pid ())) {
+                        focused_controls.unset (wnck_app.get_pid ());
+                    }
+
+                    // Try and grab editable control's handle.
+                    var focused_control = event.source.get_editable_text_iface ();
+
+                    if (focused_control != null) {
+                        debug ("Focused editable text control found.");
+                        focused_controls.set (wnck_app.get_pid (), focused_control);
+
+                        if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
+                            deregister_listeners ();
+                        }
+                        listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
+                        register_listeners ();
+                    }
+                }
+            } catch (Error e) {
+                message ("Could not get focused control: %s", e.message);
+                return false;
+            }
+
+            return false;
         }
 
         [CCode (instance_pos = -1)]
@@ -353,20 +422,25 @@ namespace SnippetPixie {
                 ) {
                 debug ("!!! GOT A TRIGGER KEY MATCH !!!");
 
-                // Let thread check for abbreviation, while we let the target window have its keystroke.
-                check_thread = new Thread<bool> ("check_thread", triggered);
+                if (focused_controls.has_key (wnck_app.get_pid ()) && listener_sync_type == Atspi.KeyListenerSyncType.NOSYNC) {
+                    // Let thread check for abbreviation, while we let the target window have its keystroke.
+                    check_thread = new Thread<bool> ("check_thread", editable_text_check);
+                } else {
+                    // Let thread check for abbreviation, while we let the target window have its keystroke.
+                    check_thread = new Thread<bool> ("check_thread", text_selection_check);
+                }
             } // if something to check
 
             return false;
         }
 
-        private bool triggered () {
+        private bool text_selection_check () {
             var expanded = false;
 
             if (checking != true) {
                 lock (checking) {
                     checking = true;
-                    debug ("Checking for abbreviation...");
+                    debug ("Checking for abbreviation via text selection...");
 
                     stop_listening ();
 
@@ -449,6 +523,114 @@ namespace SnippetPixie {
                     if (expanded == false) {
                         cancel_selection (last_str);
                     }
+
+                    checking = false;
+                    start_listening ();
+                } // lock checking
+            } // not checking
+
+            return expanded;
+        }
+
+        private bool editable_text_check () {
+            var expanded = false;
+
+            if (checking != true) {
+                lock (checking) {
+                    checking = true;
+                    debug ("Checking for abbreviation via editable text...");
+
+                    stop_listening ();
+
+                    var last_str = "";
+                    var tries = 1;
+                    var min = 1;
+
+                    if (focused_controls.has_key (wnck_app.get_pid ()) == false) {
+                        debug ("Focused control missing from app map, oops!");
+                        checking = false;
+                        start_listening ();
+                        return expanded;
+                    }
+
+                    var ctrl = (Atspi.Text) focused_controls.get (wnck_app.get_pid ());
+                    var caret_offset = 0;
+
+                    try {
+                        caret_offset = ctrl.get_caret_offset ();
+                    } catch (Error e) {
+                        message ("Could not get caret offset: %s", e.message);
+                        checking = false;
+                        start_listening ();
+                        return expanded;
+                    }
+                    debug ("Caret Offset %d", caret_offset);
+
+                    for (int pos = caret_offset; pos >= 0; pos--) {
+                        // Stop checking if we're already checking against a larger character set than in any abbreviation.
+                        if ((caret_offset - pos) > snippets_manager.max_abbr_len) {
+                            break;
+                        }
+
+                        var str = "";
+
+                        try {
+                            str = ctrl.get_text (pos, caret_offset + 1);
+                        } catch (Error e) {
+                            message ("Could not get text between positions %d and %d: %s", pos, caret_offset, e.message);
+                            break;
+                        }
+                        debug ("Pos %d, Str %s", pos, str);
+
+                        if (snippets_manager.abbreviations.has_key (str)) {
+                            debug ("IT'S AN ABBREVIATION!!!");
+
+                            var focused_control = (Atspi.EditableText) focused_controls.get (wnck_app.get_pid ());
+
+                            try {
+                                if (! focused_control.delete_text (pos, caret_offset + 1)) {
+                                    message ("Could not delete abbreviation string from text.");
+                                    break;
+                                }
+                            } catch (Error e) {
+                                message ("Could not delete abbreviation string from text between positions %d and %d: %s", pos, caret_offset, e.message);
+                                break;
+                            }
+
+                            var body = snippets_manager.abbreviations.get (str);
+
+                            // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
+                            var new_offset = -1;
+                            var dt = new DateTime.now_local ();
+                            body = expand_snippet (body, ref new_offset, dt);
+                            body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
+
+                            try {
+                                if (! focused_control.insert_text (pos, body, body.length)) {
+                                    message ("Could not insert expanded snippet into text.");
+                                    break;
+                                }
+                            } catch (Error e) {
+                                message ("Could not insert expanded snippet into text at position %d: %s", pos, e.message);
+                                break;
+                            }
+
+                            if (new_offset >= 0) {
+                                try {
+                                    if (! ((Atspi.Text) focused_control).set_caret_offset (pos + new_offset)) {
+                                        message ("Could not set new cursor position.");
+                                        break;
+                                    }
+                                } catch (Error e) {
+                                    message ("Could not set new cursor at position %d: %s", new_offset, e.message);
+                                    break;
+                                }
+                            }
+
+                            expanded = true;
+                            break;
+                        } // have matching abbreviation
+                    } // step back through characters
 
                     checking = false;
                     start_listening ();
