@@ -669,7 +669,13 @@ namespace SnippetPixie {
 
                         last_str = str;
 
-                        if (snippets_manager.abbreviations.has_key (str)) {
+                        var count = snippets_manager.count_snippets_ending_with (str);
+                        debug ("Count of abbreviations ending with '%s': %d", str, count);
+
+                        if (count < 1) {
+                            debug ("Nothing matched '%s'", str);
+                            break;
+                        } else if (snippets_manager.abbreviations.has_key (str)) {
                             debug ("IT'S AN ABBREVIATION!!!");
 
                             var focused_control = (Atspi.EditableText) focused_controls.get (wnck_app.get_pid ());
