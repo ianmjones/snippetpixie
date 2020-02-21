@@ -520,7 +520,7 @@ namespace SnippetPixie {
                         var str = selection.wait_for_text ();
                         debug ("Pos %d, Str '%s'", pos, str);
 
-                        if (str == null || str == last_str || str.length > pos) {
+                        if (str == null || str == last_str || str.char_count () > pos) {
                             tries++;
 
                             if (tries > 3) {
@@ -691,7 +691,7 @@ namespace SnippetPixie {
                         }
                         debug ("Pos %d, Str %s", pos, str);
 
-                        if (str == null || str == last_str || str.length > pos) {
+                        if (str == null || str == last_str || str.char_count () > pos) {
                             tries++;
 
                             if (tries > 3) {
