@@ -496,10 +496,12 @@ namespace SnippetPixie {
                     var last_str = "";
                     var tries = 1;
                     var min = 1;
+                    var last_min = 1;
 
                     for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
-                        if (pos == 1) {
+                        if (pos < 2) {
                             selection.clear ();
+                            debug ("Cleared selection.");
                         }
 
                         grow_selection ();
@@ -520,7 +522,7 @@ namespace SnippetPixie {
                         var str = selection.wait_for_text ();
                         debug ("Pos %d, Str '%s'", pos, str);
 
-                        if (str == null || str == last_str || str.char_count () > pos) {
+                        if (str == null || str == last_str || str.char_count () != pos) {
                             tries++;
 
                             if (tries > 3) {
@@ -531,12 +533,14 @@ namespace SnippetPixie {
 
                             debug ("Text different than expected, starting again, attempt #%d.", tries);
                             cancel_selection (str);
-                            min = 1;
-                            pos = 1;
+                            last_str = "";
+                            min = last_min;
+                            pos = 0;
                             continue;
                         }
 
                         last_str = str;
+                        last_min = min;
 
                         var count = snippets_manager.count_snippets_ending_with (str);
                         debug ("Count of abbreviations ending with '%s': %d", str, count);
@@ -673,6 +677,7 @@ namespace SnippetPixie {
                     var last_str = "";
                     var tries = 1;
                     var min = 1;
+                    var last_min = 1;
 
                     for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
                         if (pos < min) {
@@ -691,7 +696,7 @@ namespace SnippetPixie {
                         }
                         debug ("Pos %d, Str %s", pos, str);
 
-                        if (str == null || str == last_str || str.char_count () > pos) {
+                        if (str == null || str == last_str || str.char_count () != pos) {
                             tries++;
 
                             if (tries > 3) {
@@ -700,12 +705,14 @@ namespace SnippetPixie {
                             }
 
                             debug ("Text different than expected, starting again, attempt #%d.", tries);
-                            min = 1;
+                            last_str = "";
+                            min = last_min;
                             pos = 1;
                             continue;
                         }
 
                         last_str = str;
+                        last_min = min;
 
                         var count = snippets_manager.count_snippets_ending_with (str);
                         debug ("Count of abbreviations ending with '%s': %d", str, count);
@@ -1066,6 +1073,7 @@ namespace SnippetPixie {
         private void grow_selection () {
             perform_key_event ("<Shift>Left", true, 1);
             perform_key_event ("<Shift>Left", false, 0);
+            debug ("grow_selection end");
         }
 
         private void cancel_selection (string? str) {
@@ -1076,6 +1084,7 @@ namespace SnippetPixie {
                 perform_key_event ("Right", true, 1);
                 perform_key_event ("Right", false, 0);
             }
+            debug ("cancel_selection end");
         }
 
         /**
@@ -1086,6 +1095,7 @@ namespace SnippetPixie {
             // TODO: Ctrl-v isn't always the right thing to do, e.g. Terminal, or changed paste hot-key combination.
             perform_key_event ("<Control>v", true, 1);
             perform_key_event ("<Control>v", false, 0);
+            debug ("paste end");
         }
 
         /**
