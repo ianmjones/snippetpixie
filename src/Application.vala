@@ -118,6 +118,14 @@ namespace SnippetPixie {
             // TODO: Expose as option and save in settings.
             blacklist = new Gee.ArrayList<string> ();
             blacklist.add (this.application_id); // Reason: Do not want to expand snippets within app, gets messy!
+            blacklist.add ("io.elementary.terminal"); // Reason: Terminals not supported at present.
+            blacklist.add ("Alacritty"); // Reason: Terminals not supported at present.
+            blacklist.add ("konsole"); // Reason: Terminals not supported at present.
+            blacklist.add ("stterm"); // Reason: Terminals not supported at present.
+            blacklist.add ("Terminal"); // Reason: Terminals not supported at present.
+            blacklist.add ("terminator"); // Reason: Terminals not supported at present.
+            blacklist.add ("urxvt"); // Reason: Terminals not supported at present.
+            blacklist.add ("xterm"); // Reason: Terminals not supported at present.
 
             // TODO: Expose as option and save in settings.
             greylist = new Gee.ArrayList<string> ();
