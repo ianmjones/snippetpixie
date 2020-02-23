@@ -2,9 +2,12 @@ com.github.bytepixie.snippetpixie (1.3.0) xenial; urgency=medium
 
   * Vastly improved compatibility with a wide variety of applications.
   * Now works with Chrome, Chromium and Electron apps.
-  * Fixed Firefox losing focus on every keystroke by blacklisting it, hoping for permanent fix in future.
+  * Much faster abbreviation detection.
+  * Much nicer to the system in general.
+  * Alas, recent Firefox versions no longer compatible, hope to support in the future.
+  * A few terminal emulators blacklisted to avoid problems, hope to support in the future.
 
- -- Byte Pixie <hello@bytepixie.com>  Thu, 20 Feb 2020 12:34:56 +0000
+ -- Byte Pixie <hello@bytepixie.com>  Sun, 23 Feb 2020 12:34:56 +0000
 
 com.github.bytepixie.snippetpixie (1.2.2) xenial; urgency=medium
 

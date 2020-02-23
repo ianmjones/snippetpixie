@@ -86,6 +86,7 @@ If `$$@cursor$$` is entered more than once in a snippet's body or via snippet em
 ## Known Issues
 
 * Firefox loses focus on every keystroke, fixed by blacklisting it, hoping for permanent fix in future.
+* Terminal emulators are problematic, fixed by blacklisting a few popular ones, hoping for permanent fix in future.
 
 ## Roadmap
 

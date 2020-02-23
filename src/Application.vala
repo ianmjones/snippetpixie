@@ -152,6 +152,7 @@ namespace SnippetPixie {
                         debug ("Current app '%s'.", wnck_app.get_name () );
 
                         if (wnck_app != null) {
+                            // TODO: Use wildcard match, e.g. konsole prepends running command on name by default.
                             if (blacklist.size > 0 && blacklist.contains (wnck_app.get_name ())) {
                                 debug ("Nope, not expanding snippets within %s!", wnck_app.get_name ());
                                 deregister_listeners ();
