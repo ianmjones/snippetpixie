@@ -3,9 +3,7 @@
 language: node_js
 
 node_js:
-  - 10/*
-
-sudo: required
+  - 10.17.0
 
 services:
   - docker
@@ -16,20 +14,10 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-5-dev
-      - curl
-
-cache:
-  directories:
-    - /tmp/liftoff
-
-matrix:
-  include:
-    - env: DIST=juno
+      - libwnck-3-dev
 
 install:
   - npm i -g @elementaryos/houston
 
 script:
   - houston ci
-    --distribution $DIST
-    --name-domain com.github.bytepixie.snippetpixie

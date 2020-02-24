@@ -1,6 +1,6 @@
 name: snippetpixie
 base: core18
-version: 1.2.2
+version: 1.3.0
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
@@ -19,15 +19,13 @@ description: |
 
 grade: stable
 confinement: classic
-architectures:
-  - amd64
+architectures: [amd64, arm64, armhf]
 icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 
 apps:
   snippetpixie:
     command: bin/desktop-launch $SNAP/usr/bin/com.github.bytepixie.snippetpixie
-    passthrough:
-      autostart: snippetpixie_snippetpixie.desktop
+    autostart: snippetpixie_snippetpixie.desktop
     desktop: usr/share/applications/com.github.bytepixie.snippetpixie.desktop
     environment:
       GSETTINGS_SCHEMA_DIR: $SNAP/usr/share/glib-2.0/schemas
@@ -46,56 +44,51 @@ parts:
       - valac
       - desktop-file-utils
       - appstream
-      - libgtk-3-dev
-      - libglib2.0-dev
-      - libgee-0.8-dev
-      - libsqlite3-dev
-      - libgranite-dev
-      - libx11-dev
       - libatspi2.0-dev
+      - libgee-0.8-dev
+      - libglib2.0-dev
+      - libgranite-dev
+      - libgtk-3-dev
       - libibus-1.0-dev
       - libjson-glib-dev
+      - libsqlite3-dev
+      - libwnck-3-dev
+      - libxtst-dev
+      - libx11-dev
     stage-packages:
-      - libatk1.0-0
       - libatk-bridge2.0-0
+      - libatk1.0-0
       - libatspi2.0-0
       - libcairo-gobject2
       - libcairo2
       - libdatrie1
-      - libdbus-1-3
       - libepoxy0
-      - libexpat1
-      - libffi6
       - libfontconfig1
-      - libgcc1
-      - libgcrypt20
+      - libfreetype6
       - libgdk-pixbuf2.0-0
       - libgee-0.8-2
-      - libgpg-error0
       - libgraphite2-3
       - libgtk-3-0
       - libharfbuzz0b
-      - libblkid1
-      - liblz4-1
-      - liblzma5
-      - libmount1
-      - libpcre3
+      - libjson-glib-1.0-0
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libpangoft2-1.0-0
       - libpixman-1-0
       - libpng16-16
+      - libstartup-notification0
       - libthai0
-      - libselinux1
-      - libstdc++6
-      - libsystemd0
-      - libudev1
-      - libuuid1
       - libwayland-client0
       - libwayland-cursor0
-      - libwayland-egl1-mesa
+      - libwayland-egl1
+      - libwnck-3-0
       - libx11-6
+      - libx11-xcb1
       - libxau6
-      - libxcb1
       - libxcb-render0
       - libxcb-shm0
+      - libxcb-util1
+      - libxcb1
       - libxcomposite1
       - libxcursor1
       - libxdamage1
@@ -107,9 +100,8 @@ parts:
       - libxkbcommon0
       - libxrandr2
       - libxrender1
-      - zlib1g
-      - libjson-glib-1.0-0
-      - libsqlite3-0
+      - libxres1
+      - libxtst6
   granite:
     plugin: meson
     meson-parameters:

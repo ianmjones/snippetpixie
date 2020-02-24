@@ -4,6 +4,7 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name()), language:'c')
+add_global_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language:'c')
 
 asresources = gnome.compile_resources(
     'as-resources', 'data/' + meson.project_name() + '.gresource.xml',
@@ -26,16 +27,19 @@ executable(
     'src/WelcomeView.vala',
     asresources,
     dependencies: [
+        dependency('atspi-2', version: '>=2.0'),
+        dependency('gdk-x11-3.0'),
         dependency('gee-0.8'),
         dependency('glib-2.0'),
         dependency('gobject-2.0'),
-        dependency('gtk+-3.0'),
-        dependency('sqlite3'),
         dependency('granite', version: '>=0.5'),
-        dependency('x11', version: '>=1.0'),
-        dependency('atspi-2', version: '>=2.0'),
+        dependency('gtk+-3.0'),
         dependency('ibus-1.0'),
         dependency('json-glib-1.0'),
+        dependency('sqlite3'),
+        dependency('libwnck-3.0'),
+        dependency('xtst'),
+        dependency('x11', version: '>=1.0'),
         meson.get_compiler('c').find_library('m', required : false)
     ],
     install: true
