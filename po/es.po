@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-10 22:16+0000\n"
+"POT-Creation-Date: 2020-02-23 23:57+0000\n"
 "PO-Revision-Date: 2019-02-06 00:14+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,129 +17,129 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/Application.vala:333
+#: src/Application.vala:851
 msgid "snippet"
 msgstr ""
 
-#: src/Application.vala:375 src/Application.vala:493
+#: src/Application.vala:893 src/Application.vala:1011
 msgid "date"
 msgstr ""
 
-#: src/Application.vala:375 src/Application.vala:497
+#: src/Application.vala:893 src/Application.vala:1015
 msgid "time"
 msgstr ""
 
-#: src/Application.vala:409
+#: src/Application.vala:927
 #, c-format
 msgid ""
 "Date adjustment does not seem to have a positive or negative integer in "
 "placeholder '%1$s'."
 msgstr ""
 
-#: src/Application.vala:424
+#: src/Application.vala:942
 #, c-format
 msgid ""
 "Date adjustment number %1$d does not seem to start with a positive or "
 "negative integer in placeholder '%2$s'."
 msgstr ""
 
-#: src/Application.vala:455
+#: src/Application.vala:973
 #, c-format
 msgid ""
 "Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', "
 "'D', 'h', 'm' or 's' in placeholder '%2$s'."
 msgstr ""
 
-#: src/Application.vala:463 src/Application.vala:476
+#: src/Application.vala:981 src/Application.vala:994
 #, c-format
 msgid "Oops, date format '%1$s' could not be parsed."
 msgstr ""
 
-#: src/Application.vala:505
+#: src/Application.vala:1023
 msgid "clipboard"
 msgstr ""
 
-#: src/Application.vala:541
+#: src/Application.vala:1059
 msgid "cursor"
 msgstr ""
 
-#: src/Application.vala:929
+#: src/Application.vala:1306
 msgid "Show Snippet Pixie's window (default action)"
 msgstr ""
 
-#: src/Application.vala:930
+#: src/Application.vala:1307
 msgid "Start with no window"
 msgstr ""
 
-#: src/Application.vala:931
+#: src/Application.vala:1308
 msgid "Fully quit the application, including the background process"
 msgstr ""
 
-#: src/Application.vala:932
+#: src/Application.vala:1309
 msgid ""
 "Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
 msgstr ""
 
-#: src/Application.vala:933
+#: src/Application.vala:1310
 msgid ""
 "Shows status of the application, exits with status 0 if running, 1 if not"
 msgstr ""
 
-#: src/Application.vala:934
+#: src/Application.vala:1311
 msgid "Export snippets to file"
 msgstr ""
 
-#: src/Application.vala:935
+#: src/Application.vala:1312
 msgid ""
 "Import snippets from file, skips snippets where abbreviation already exists"
 msgstr ""
 
-#: src/Application.vala:935
+#: src/Application.vala:1312
 msgid "filename"
 msgstr ""
 
-#: src/Application.vala:936
+#: src/Application.vala:1313
 msgid ""
 "If used in conjunction with import, existing snippets with same abbreviation "
 "are updated"
 msgstr ""
 
-#: src/Application.vala:937
+#: src/Application.vala:1314
 msgid "Display version number"
 msgstr ""
 
-#: src/Application.vala:938
+#: src/Application.vala:1315
 msgid "Display this help"
 msgstr ""
 
-#: src/Application.vala:957
+#: src/Application.vala:1334
 #, c-format
 msgid "error: %s\n"
 msgstr ""
 
-#: src/Application.vala:958
+#: src/Application.vala:1335
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 
-#: src/Application.vala:973
+#: src/Application.vala:1351
 msgid "Quitting…\n"
 msgstr ""
 
-#: src/Application.vala:981
+#: src/Application.vala:1359
 msgid "Running.\n"
 msgstr ""
 
-#: src/Application.vala:984
+#: src/Application.vala:1362
 msgid "Not Running.\n"
 msgstr ""
 
-#: src/Application.vala:1006
+#: src/Application.vala:1384
 #, c-format
 msgid "Invalid autostart value \"%s\".\n"
 msgstr ""
 
-#: src/Application.vala:1051
+#: src/Application.vala:1430
 msgid "Cannot run without threads.\n"
 msgstr ""
 

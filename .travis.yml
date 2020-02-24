@@ -3,9 +3,7 @@
 language: node_js
 
 node_js:
-  - 10/*
-
-sudo: required
+  - 10.17.0
 
 services:
   - docker
@@ -16,6 +14,7 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-5-dev
+      - libwnck-3-dev
 
 install:
   - npm i -g @elementaryos/houston

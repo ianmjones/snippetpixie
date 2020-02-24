@@ -85,9 +85,8 @@ If you do use a trailing space as your trigger character you might find it usefu
 
 # LIMITATIONS
 
-- Only works with accessible applications with simple(ish) text entry.
-- Does not work with Chromium/WebKit based browsers because they have "very limited support" for ATK on Linux (see https://www.chromium.org/developers/design-documents/accessibility#TOC-API-support & https://www.chromium.org/developers/accessibility/linux-accessibility).
-- Does not work with Electron based apps because they use Chrome under the hood.
+- Firefox loses focus on every keystroke, fixed by blacklisting it, hoping for permanent fix in future.
+- Terminal emulators are problematic, fixed by blacklisting a few popular ones, hoping for permanent fix in future.
 
 # SEE ALSO
 
