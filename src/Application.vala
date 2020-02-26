@@ -673,6 +673,9 @@ namespace SnippetPixie {
                     var ctrl = (Atspi.Text) focused_controls.get (wnck_app.get_pid ());
                     var caret_offset = 0;
 
+                    Thread.yield ();
+                    Thread.usleep (100000);
+
                     try {
                         caret_offset = ctrl.get_caret_offset ();
                     } catch (Error e) {
@@ -693,8 +696,8 @@ namespace SnippetPixie {
                             continue;
                         }
 
-                        var sel_start = caret_offset - pos + 1;
-                        var sel_end = caret_offset + 1;
+                        var sel_start = caret_offset - pos;
+                        var sel_end = caret_offset;
                         var str = "";
 
                         try {
@@ -716,7 +719,7 @@ namespace SnippetPixie {
                             debug ("Text different than expected, starting again, attempt #%d.", tries);
                             last_str = "";
                             min = last_min;
-                            pos = 1;
+                            pos = 0;
                             continue;
                         }
 
