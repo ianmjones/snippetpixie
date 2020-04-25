@@ -569,14 +569,37 @@ namespace SnippetPixie {
                             body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
 
                             // Save current clipboard before we use it.
-                            save_clipboard ();
+                            //save_clipboard (); // FIXME: Clipboard subsystem keeps sending restored clipboard instead of our abbreviation body.
+
                             // Paste the text over the selected abbreviation text.
                             debug ("Setting clipboard with abbreviation body.");
                             clipboard.set_text (body, -1);
-                            debug ("Pasting clipoard.");
+
+                            // Wait until clipboard definitely has the expected contents before pasting.
+                            Thread.yield ();
+                            Thread.usleep (100000);
+
+                            if (clipboard.wait_is_text_available () == false) {
+                                debug ("Waiting a little longer for clipboard contents to be set...");
+                                Thread.yield ();
+                                Thread.usleep (100000);
+                            }
+
+                            var clip_str = clipboard.wait_for_text ();
+                            debug ("Clipboard set to:- '%s'", clip_str);
+
+                            if (clip_str != body) {
+                                debug ("Clipboard contents not set to abbreviation body, having another go...");
+                                clipboard.set_text (body, -1);
+                                Thread.yield ();
+                                Thread.usleep (100000);
+                            }
+
+                            debug ("Pasting clipboard.");
                             paste ();
-                            // Restore clipboard from data saved before we useed it.
-                            restore_clipboard ();
+
+                            // Restore clipboard from data saved before we used it.
+                            //restore_clipboard (); // FIXME: Clipboard subsystem keeps sending restored clipboard instead of our abbreviation body.
 
                             expanded = true;
                             break;
