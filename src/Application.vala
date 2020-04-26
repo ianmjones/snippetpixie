@@ -61,8 +61,8 @@ namespace SnippetPixie {
         private Gee.ArrayList<string> greylist;
 
         // Clipboard data for save/restore.
-        private string clipboard_text;
-        private Gdk.Pixbuf? clipboard_image;
+        //private string clipboard_text;
+        //private Gdk.Pixbuf? clipboard_image;
 
         //
         // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
@@ -622,6 +622,9 @@ namespace SnippetPixie {
             return expanded;
         }
 
+        /*
+         * TODO: Restore if method that does not occaisionally overwrite abbreviation found.
+         *
         private void save_clipboard () {
             if (clipboard.wait_is_text_available ()) {
                 clipboard_text = clipboard.wait_for_text ();
@@ -675,6 +678,7 @@ namespace SnippetPixie {
 
             clipboard.store ();
         }
+        */
 
         private bool editable_text_check () {
             var expanded = false;
