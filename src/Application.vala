@@ -61,8 +61,8 @@ namespace SnippetPixie {
         private Gee.ArrayList<string> greylist;
 
         // Clipboard data for save/restore.
-        //private string clipboard_text;
-        //private Gdk.Pixbuf? clipboard_image;
+        private string clipboard_text;
+        private Gdk.Pixbuf? clipboard_image;
 
         //
         // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
@@ -569,7 +569,8 @@ namespace SnippetPixie {
                             body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
 
                             // Save current clipboard before we use it.
-                            //save_clipboard (); // FIXME: Clipboard subsystem keeps sending restored clipboard instead of our abbreviation body.
+                            save_clipboard ();
+                            clipboard.clear ();
 
                             // Paste the text over the selected abbreviation text.
                             debug ("Setting clipboard with abbreviation body.");
@@ -598,9 +599,6 @@ namespace SnippetPixie {
                             debug ("Pasting clipboard.");
                             paste ();
 
-                            // Restore clipboard from data saved before we used it.
-                            //restore_clipboard (); // FIXME: Clipboard subsystem keeps sending restored clipboard instead of our abbreviation body.
-
                             expanded = true;
                             break;
                         } // have matching abbreviation
@@ -619,12 +617,14 @@ namespace SnippetPixie {
                 } // lock checking
             } // not checking
 
+            if (expanded == true) {
+                // Restore clipboard from data saved before we used it.
+                restore_clipboard ();
+            }
+
             return expanded;
         }
 
-        /*
-         * TODO: Restore if method that does not occaisionally overwrite abbreviation found.
-         *
         private void save_clipboard () {
             if (clipboard.wait_is_text_available ()) {
                 clipboard_text = clipboard.wait_for_text ();
@@ -664,9 +664,19 @@ namespace SnippetPixie {
             // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
             //
 
+            if (clipboard_text == null && clipboard_image == null) {
+                return;
+            }
+
             Thread.yield ();
-            Thread.usleep (100000);
-            clipboard.clear ();
+            Thread.usleep (1000000);
+
+            if (selection.wait_is_text_available () == true) {
+                // Paste not happened?
+                debug ("Waiting a little longer before trying clipboard restore...");
+                Thread.yield ();
+                Thread.usleep (1000000);
+            }
 
             if (clipboard_text != null) {
                 clipboard.set_text (clipboard_text, -1);
@@ -677,8 +687,8 @@ namespace SnippetPixie {
             }
 
             clipboard.store ();
+            debug ("Restored clipboard.");
         }
-        */
 
         private bool editable_text_check () {
             var expanded = false;
