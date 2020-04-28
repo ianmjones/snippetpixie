@@ -23,6 +23,10 @@ namespace SnippetPixie {
         public const string ID = "com.github.bytepixie.snippetpixie";
         public const string VERSION = "1.3.1";
 
+        private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND;
+        private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
+        private const ulong SLEEP_INTERVAL_LONG = SLEEP_INTERVAL * 20;
+
         private const string placeholder_delimiter = "$$";
         private const string placeholder_macro = "@";
         private const string placeholder_delimiter_escaped = "$\\$";
@@ -513,19 +517,16 @@ namespace SnippetPixie {
                             debug ("Cleared selection.");
                         }
 
-                        grow_selection ();
+                        grow_selection (tries);
 
                         if (pos < min) {
                             continue;
                         }
 
-                        Thread.yield ();
-                        Thread.usleep (100000 * tries);
-
                         if (selection.wait_is_text_available () == false) {
                             debug ("Waiting a little longer for selection contents...");
                             Thread.yield ();
-                            Thread.usleep (100000 * tries);
+                            Thread.usleep (SLEEP_INTERVAL_RETRY * tries);
                         }
 
                         var str = selection.wait_for_text ();
@@ -534,8 +535,8 @@ namespace SnippetPixie {
                         if (str == null || str == last_str || str.char_count () != pos) {
                             tries++;
 
-                            if (tries > 3) {
-                                debug ("Tried 3 times to get some text, giving up.");
+                            if (tries > 10) {
+                                debug ("Tried 10 times to get some text, giving up.");
                                 last_str = str; // Forces cancel to unset selection.
                                 break;
                             }
@@ -570,7 +571,6 @@ namespace SnippetPixie {
 
                             // Save current clipboard before we use it.
                             save_clipboard ();
-                            clipboard.clear ();
 
                             // Paste the text over the selected abbreviation text.
                             debug ("Setting clipboard with abbreviation body.");
@@ -578,12 +578,12 @@ namespace SnippetPixie {
 
                             // Wait until clipboard definitely has the expected contents before pasting.
                             Thread.yield ();
-                            Thread.usleep (100000);
+                            Thread.usleep (SLEEP_INTERVAL);
 
                             if (clipboard.wait_is_text_available () == false) {
                                 debug ("Waiting a little longer for clipboard contents to be set...");
                                 Thread.yield ();
-                                Thread.usleep (100000);
+                                Thread.usleep (SLEEP_INTERVAL_RETRY);
                             }
 
                             var clip_str = clipboard.wait_for_text ();
@@ -593,7 +593,7 @@ namespace SnippetPixie {
                                 debug ("Clipboard contents not set to abbreviation body, having another go...");
                                 clipboard.set_text (body, -1);
                                 Thread.yield ();
-                                Thread.usleep (100000);
+                                Thread.usleep (SLEEP_INTERVAL_RETRY);
                             }
 
                             debug ("Pasting clipboard.");
@@ -656,7 +656,7 @@ namespace SnippetPixie {
 
             clipboard.clear ();
             Thread.yield ();
-            Thread.usleep (100000);
+            Thread.usleep (SLEEP_INTERVAL);
         }
 
         private void restore_clipboard () {
@@ -669,13 +669,24 @@ namespace SnippetPixie {
             }
 
             Thread.yield ();
-            Thread.usleep (1000000);
+            Thread.usleep (SLEEP_INTERVAL_LONG);
 
-            if (selection.wait_is_text_available () == true) {
-                // Paste not happened?
-                debug ("Waiting a little longer before trying clipboard restore...");
-                Thread.yield ();
-                Thread.usleep (1000000);
+            var selection_clear = false;
+            for (int tries = 0; tries < 5; tries++) {
+                if (selection.wait_is_text_available () == true) {
+                    // Paste not happened?
+                    debug ("Waiting a little longer before trying clipboard restore...");
+                    Thread.yield ();
+                    Thread.usleep (SLEEP_INTERVAL_RETRY);
+                } else {
+                    selection_clear = true;
+                    break;
+                }
+            }
+
+            if (selection_clear == false) {
+                debug ("Selection hasn't cleared, not restoring clipboard.");
+                return;
             }
 
             if (clipboard_text != null) {
@@ -710,8 +721,7 @@ namespace SnippetPixie {
                     var ctrl = (Atspi.Text) focused_controls.get (wnck_app.get_pid ());
                     var caret_offset = 0;
 
-                    Thread.yield ();
-                    Thread.usleep (100000);
+                    Thread.usleep (SLEEP_INTERVAL);
 
                     try {
                         caret_offset = ctrl.get_caret_offset ();
@@ -1119,20 +1129,32 @@ namespace SnippetPixie {
             return false;
         }
 
-        private void grow_selection () {
-            perform_key_event ("<Shift>Left", true, 1);
+        private void grow_selection (int tries) {
+            debug ("grow_selection start");
+
+            perform_key_event ("<Shift>Left", true, 0);
             perform_key_event ("<Shift>Left", false, 0);
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL * tries);
+
             debug ("grow_selection end");
         }
 
         private void cancel_selection (string? str) {
+            debug ("cancel_selection start");
+
             perform_key_event ("<Shift>", false, 0);
 
             // TODO: In case Clipboard access screwy, more robust check would be to see if any text is selected.
             if (str == null || str.length > 0) {
-                perform_key_event ("Right", true, 1);
+                perform_key_event ("Right", true, 0);
                 perform_key_event ("Right", false, 0);
             }
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL);
+
             debug ("cancel_selection end");
         }
 
@@ -1141,9 +1163,15 @@ namespace SnippetPixie {
          * https://github.com/davidmhewitt/clipped/blob/b00d44757cc2bf7bc9948d535668099db4ab9896/src/ClipboardManager.vala#L55
          */
         private void paste () {
+            debug ("paste start");
+
             // TODO: Ctrl-v isn't always the right thing to do, e.g. Terminal, or changed paste hot-key combination.
-            perform_key_event ("<Control>v", true, 1);
+            perform_key_event ("<Control>v", true, 0);
             perform_key_event ("<Control>v", false, 0);
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL);
+
             debug ("paste end");
         }
 
