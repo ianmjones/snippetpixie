@@ -721,6 +721,7 @@ namespace SnippetPixie {
                     var ctrl = (Atspi.Text) focused_controls.get (wnck_app.get_pid ());
                     var caret_offset = 0;
 
+                    Thread.yield ();
                     Thread.usleep (SLEEP_INTERVAL);
 
                     try {
