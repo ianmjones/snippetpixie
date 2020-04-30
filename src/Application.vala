@@ -509,19 +509,27 @@ namespace SnippetPixie {
                     var last_str = "";
                     var tries = 1;
                     var min = 1;
-                    var last_min = 1;
+                    var last_min = min;
+                    var max = snippets_manager.max_abbr_len;
 
-                    for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
+                    for (int pos = 1; pos <= max; pos++) {
                         if (pos < 2) {
                             selection.clear ();
                             debug ("Cleared selection.");
                         }
 
-                        grow_selection (tries);
+                        var grow_count = 1;
 
                         if (pos < min) {
-                            continue;
+                            grow_count = min - pos + 1;
+                            pos = min;
+                            debug ("New grow count: %d", grow_count);
                         }
+
+                        grow_selection (grow_count, tries);
+
+                        Thread.yield ();
+                        Thread.usleep (SLEEP_INTERVAL);
 
                         if (selection.wait_is_text_available () == false) {
                             debug ("Waiting a little longer for selection contents...");
@@ -543,6 +551,7 @@ namespace SnippetPixie {
 
                             debug ("Text different than expected, starting again, attempt #%d.", tries);
                             cancel_selection (str);
+
                             last_str = "";
                             min = last_min;
                             pos = 0;
@@ -606,6 +615,8 @@ namespace SnippetPixie {
                         // We can can try and speed things up a bit by not waiting for async selection clipboard on every character.
                         min = snippets_manager.min_length_ending_with (str);
                         debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
+                        max = snippets_manager.max_length_ending_with (str);
+                        debug ("Maximum length of abbreviations ending with '%s': %d", str, max);
                     } // step back through characters
 
                     if (expanded == false) {
@@ -614,13 +625,13 @@ namespace SnippetPixie {
 
                     checking = false;
                     start_listening ();
+
+                    if (expanded == true) {
+                        // Restore clipboard from data saved before we used it.
+                        restore_clipboard ();
+                    }
                 } // lock checking
             } // not checking
-
-            if (expanded == true) {
-                // Restore clipboard from data saved before we used it.
-                restore_clipboard ();
-            }
 
             return expanded;
         }
@@ -653,10 +664,6 @@ namespace SnippetPixie {
             //         }
             //     }
             // }
-
-            clipboard.clear ();
-            Thread.yield ();
-            Thread.usleep (SLEEP_INTERVAL);
         }
 
         private void restore_clipboard () {
@@ -669,10 +676,10 @@ namespace SnippetPixie {
             }
 
             Thread.yield ();
-            Thread.usleep (SLEEP_INTERVAL_LONG);
+            Thread.usleep (SLEEP_INTERVAL);
 
             var selection_clear = false;
-            for (int tries = 0; tries < 5; tries++) {
+            for (int tries = 0; tries < 3; tries++) {
                 if (selection.wait_is_text_available () == true) {
                     // Paste not happened?
                     debug ("Waiting a little longer before trying clipboard restore...");
@@ -1130,11 +1137,13 @@ namespace SnippetPixie {
             return false;
         }
 
-        private void grow_selection (int tries) {
+        private void grow_selection (int count, int tries) {
             debug ("grow_selection start");
 
-            perform_key_event ("<Shift>Left", true, 0);
-            perform_key_event ("<Shift>Left", false, 0);
+            for (int num = 0; num < count; num++) {
+                perform_key_event ("<Shift>Left", true, 0);
+                perform_key_event ("<Shift>Left", false, 0);
+            }
 
             Thread.yield ();
             Thread.usleep (SLEEP_INTERVAL * tries);
