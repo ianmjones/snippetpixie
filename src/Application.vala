@@ -505,6 +505,7 @@ namespace SnippetPixie {
                     debug ("Checking for abbreviation via text selection...");
 
                     stop_listening ();
+                    release_keys ();
 
                     var last_str = "";
                     var tries = 1;
@@ -1135,6 +1136,25 @@ namespace SnippetPixie {
             }
 
             return false;
+        }
+
+        private void release_keys () {
+            debug ("release_keys start");
+
+            perform_key_event ("<Shift_L>", false, 0);
+            perform_key_event ("<Shift_R>", false, 0);
+            perform_key_event ("<Control_L>", false, 0);
+            perform_key_event ("<Control_R>", false, 0);
+            perform_key_event ("<Mod1>", false, 0);
+            perform_key_event ("<Mod2>", false, 0);
+            perform_key_event ("<Mod3>", false, 0);
+            perform_key_event ("<Mod4>", false, 0);
+            perform_key_event ("<Mod5>", false, 0);
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL);
+
+            debug ("release_keys end");
         }
 
         private void grow_selection (int count, int tries) {
