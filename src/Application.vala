@@ -514,11 +514,6 @@ namespace SnippetPixie {
                     var max = snippets_manager.max_abbr_len;
 
                     for (int pos = 1; pos <= max; pos++) {
-                        if (pos < 2) {
-                            selection.clear ();
-                            debug ("Cleared selection.");
-                        }
-
                         var grow_count = 1;
 
                         if (pos < min) {
@@ -1181,6 +1176,8 @@ namespace SnippetPixie {
                 perform_key_event ("Right", true, 0);
                 perform_key_event ("Right", false, 0);
             }
+
+            selection.clear ();
 
             Thread.yield ();
             Thread.usleep (SLEEP_INTERVAL);
