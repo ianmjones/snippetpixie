@@ -504,7 +504,7 @@ namespace SnippetPixie {
                     checking = true;
                     debug ("Checking for abbreviation via text selection...");
 
-                    deregister_listeners ();
+                    stop_listening ();
                     release_keys ();
 
                     var last_str = "";
@@ -623,7 +623,7 @@ namespace SnippetPixie {
                     }
 
                     checking = false;
-                    register_listeners ();
+                    start_listening ();
                 } // lock checking
             } // not checking
 
@@ -712,12 +712,12 @@ namespace SnippetPixie {
                     checking = true;
                     debug ("Checking for abbreviation via editable text...");
 
-                    deregister_listeners ();
+                    stop_listening ();
 
                     if (focused_controls.has_key (wnck_app.get_pid ()) == false) {
                         debug ("Focused control missing from app map, oops!");
                         checking = false;
-                        register_listeners ();
+                        start_listening ();
                         return expanded;
                     }
 
@@ -732,7 +732,7 @@ namespace SnippetPixie {
                     } catch (Error e) {
                         message ("Could not get caret offset: %s", e.message);
                         checking = false;
-                        register_listeners ();
+                        start_listening ();
                         return expanded;
                     }
                     debug ("Caret Offset %d", caret_offset);
@@ -838,7 +838,7 @@ namespace SnippetPixie {
                     } // step back through characters
 
                     checking = false;
-                    register_listeners ();
+                    start_listening ();
                 } // lock checking
             } // not checking
 
