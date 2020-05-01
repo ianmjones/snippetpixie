@@ -211,8 +211,8 @@ namespace SnippetPixie {
         }
 
         private void register_listeners () {
-            lock (registered_listeners) {
-                if (registered_listeners == false) {
+            if (registered_listeners == false) {
+                lock (registered_listeners) {
 
                     debug ("Registering listeners...");
 
@@ -309,15 +309,15 @@ namespace SnippetPixie {
 
                     registered_listeners = true;
                     start_listening ();
-                } // registered_listeners false
-            } // lock registered_listeners
+                } // lock registered_listeners
+            } // registered_listeners false
         }
 
         private void deregister_listeners () {
             stop_listening ();
 
-            lock (registered_listeners) {
-                if (registered_listeners == true) {
+            if (registered_listeners == true) {
+                lock (registered_listeners) {
                     registered_listeners = false;
 
                     debug ("Deregistering listeners...");
@@ -411,8 +411,8 @@ namespace SnippetPixie {
                         Atspi.exit ();
                         quit ();
                     }
-                } // registered_listeners true
-            } // lock registered_listeners
+                } // lock registered_listeners
+            } // registered_listeners true
         }
 
         private void start_listening () {
@@ -504,7 +504,7 @@ namespace SnippetPixie {
                     checking = true;
                     debug ("Checking for abbreviation via text selection...");
 
-                    stop_listening ();
+                    deregister_listeners ();
                     release_keys ();
 
                     var last_str = "";
@@ -620,17 +620,15 @@ namespace SnippetPixie {
                         debug ("Maximum length of abbreviations ending with '%s': %d", str, max);
                     } // step back through characters
 
-                    if (expanded == false) {
+                    if (expanded == true) {
+                        // Restore clipboard from data saved before we used it.
+                        restore_clipboard ();
+                    } else {
                         cancel_selection (last_str);
                     }
 
                     checking = false;
-                    start_listening ();
-
-                    if (expanded == true) {
-                        // Restore clipboard from data saved before we used it.
-                        restore_clipboard ();
-                    }
+                    register_listeners ();
                 } // lock checking
             } // not checking
 
@@ -671,8 +669,10 @@ namespace SnippetPixie {
             //
             // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
             //
+            debug ("Restoring clipboard...");
 
             if (clipboard_text == null && clipboard_image == null) {
+                debug ("No clipboard saved, not restoring clipboard.");
                 return;
             }
 
@@ -717,12 +717,12 @@ namespace SnippetPixie {
                     checking = true;
                     debug ("Checking for abbreviation via editable text...");
 
-                    stop_listening ();
+                    deregister_listeners ();
 
                     if (focused_controls.has_key (wnck_app.get_pid ()) == false) {
                         debug ("Focused control missing from app map, oops!");
                         checking = false;
-                        start_listening ();
+                        register_listeners ();
                         return expanded;
                     }
 
@@ -737,7 +737,7 @@ namespace SnippetPixie {
                     } catch (Error e) {
                         message ("Could not get caret offset: %s", e.message);
                         checking = false;
-                        start_listening ();
+                        register_listeners ();
                         return expanded;
                     }
                     debug ("Caret Offset %d", caret_offset);
@@ -843,7 +843,7 @@ namespace SnippetPixie {
                     } // step back through characters
 
                     checking = false;
-                    start_listening ();
+                    register_listeners ();
                 } // lock checking
             } // not checking
 
