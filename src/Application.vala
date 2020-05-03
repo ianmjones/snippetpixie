@@ -23,7 +23,7 @@ namespace SnippetPixie {
         public const string ID = "com.github.bytepixie.snippetpixie";
         public const string VERSION = "1.3.1";
 
-        private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND;
+        private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND * 10;
         private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
         private const ulong SLEEP_INTERVAL_LONG = SLEEP_INTERVAL * 20;
 
@@ -506,6 +506,7 @@ namespace SnippetPixie {
 
                     stop_listening ();
                     release_keys ();
+                    selection.clear ();
 
                     var last_str = "";
                     var tries = 1;
@@ -525,7 +526,7 @@ namespace SnippetPixie {
                         grow_selection (grow_count, tries);
 
                         Thread.yield ();
-                        Thread.usleep (SLEEP_INTERVAL);
+                        Thread.usleep (SLEEP_INTERVAL * tries);
 
                         if (selection.wait_is_text_available () == false) {
                             debug ("Waiting a little longer for selection contents...");
@@ -1169,7 +1170,7 @@ namespace SnippetPixie {
         private void cancel_selection (string? str) {
             debug ("cancel_selection start");
 
-            perform_key_event ("<Shift>", false, 0);
+            release_keys ();
 
             // TODO: In case Clipboard access screwy, more robust check would be to see if any text is selected.
             if (str == null || str.length > 0) {
