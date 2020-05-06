@@ -248,7 +248,7 @@ public class SnippetPixie.SnippetsManager : Object {
         const string query = "SELECT MIN(LENGTH(abbreviation)) FROM snippets WHERE abbreviation LIKE $ABR;";
         int ec = db.prepare_v2 (query, query.length, out stmt);
         if (ec != Sqlite.OK) {
-            warning ("Error preparing to fetch snippet: %s\n", db.errmsg ());
+            warning ("Error preparing to fetch minimum length of abbreviations with ending: %s\n", db.errmsg ());
             return min;
         }
 
@@ -268,6 +268,35 @@ public class SnippetPixie.SnippetsManager : Object {
         }
 
         return min;
+    }
+
+    public int max_length_ending_with (string abbreviation) {
+        int max = 0;
+        Sqlite.Statement stmt;
+
+        const string query = "SELECT MAX(LENGTH(abbreviation)) FROM snippets WHERE abbreviation LIKE $ABR;";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to fetch maximum length of abbreviations with ending: %s\n", db.errmsg ());
+            return max;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$ABR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, "%" + abbreviation);
+
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            max = stmt.column_int (0);
+
+            // Return the value.
+            return max;
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error fetching maximum length of abbreviations ending with '%s': %s\n", abbreviation, db.errmsg ());
+            return max;
+        }
+
+        return max;
     }
 
     public void add (Snippet snippet) {
