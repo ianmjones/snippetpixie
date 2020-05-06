@@ -21,7 +21,11 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.3.1";
+        public const string VERSION = "1.3.2";
+
+        private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND * 10;
+        private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
+        private const ulong SLEEP_INTERVAL_LONG = SLEEP_INTERVAL * 20;
 
         private const string placeholder_delimiter = "$$";
         private const string placeholder_macro = "@";
@@ -207,21 +211,21 @@ namespace SnippetPixie {
         }
 
         private void register_listeners () {
-            lock (registered_listeners) {
-                if (registered_listeners == false) {
+            if (registered_listeners == false) {
+                lock (registered_listeners) {
 
                     debug ("Registering listeners...");
 
                     try {
                         // Single keystrokes.
-                        Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
 
                         // Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
 
                         /*
                          * As far as I can tell, Ctrl can't be used to produce any characters.
@@ -229,13 +233,13 @@ namespace SnippetPixie {
                          * Have left code in for the time being, in case someone comes up with a good reason it's needed.
                          *
                         // Control.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Control + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Control + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Control + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                          */
 
                         /*
@@ -244,50 +248,50 @@ namespace SnippetPixie {
                          * Have left code in for the time being, in case someone comes up with a good reason it's needed.
                          *
                         // Mod1 (Alt/Meta).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod1 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod1 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod1 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                          */
 
                         // Mod2 (NumLock).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod2 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod2 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod2 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
 
                         // Mod3 (???).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod3 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod3 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod3 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
 
                         // Mod4 (Super/Menu).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod4 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod4 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod4 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
 
                         // Mod5 (ISO_Level3_Shift/Alt Gr).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod5 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod5 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod5 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type);
+                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                     } catch (Error e) {
                         message ("Could not register keystroke listener: %s", e.message);
                         Atspi.exit ();
@@ -305,15 +309,15 @@ namespace SnippetPixie {
 
                     registered_listeners = true;
                     start_listening ();
-                } // registered_listeners false
-            } // lock registered_listeners
+                } // lock registered_listeners
+            } // registered_listeners false
         }
 
         private void deregister_listeners () {
             stop_listening ();
 
-            lock (registered_listeners) {
-                if (registered_listeners == true) {
+            if (registered_listeners == true) {
+                lock (registered_listeners) {
                     registered_listeners = false;
 
                     debug ("Deregistering listeners...");
@@ -407,8 +411,8 @@ namespace SnippetPixie {
                         Atspi.exit ();
                         quit ();
                     }
-                } // registered_listeners true
-            } // lock registered_listeners
+                } // lock registered_listeners
+            } // registered_listeners true
         }
 
         private void start_listening () {
@@ -501,31 +505,33 @@ namespace SnippetPixie {
                     debug ("Checking for abbreviation via text selection...");
 
                     stop_listening ();
+                    release_keys ();
+                    selection.clear ();
 
                     var last_str = "";
                     var tries = 1;
                     var min = 1;
-                    var last_min = 1;
+                    var last_min = min;
+                    var max = snippets_manager.max_abbr_len;
 
-                    for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
-                        if (pos < 2) {
-                            selection.clear ();
-                            debug ("Cleared selection.");
-                        }
-
-                        grow_selection ();
+                    for (int pos = 1; pos <= max; pos++) {
+                        var grow_count = 1;
 
                         if (pos < min) {
-                            continue;
+                            grow_count = min - pos + 1;
+                            pos = min;
+                            debug ("New grow count: %d", grow_count);
                         }
 
+                        grow_selection (grow_count, tries);
+
                         Thread.yield ();
-                        Thread.usleep (100000 * tries);
+                        Thread.usleep (SLEEP_INTERVAL * tries);
 
                         if (selection.wait_is_text_available () == false) {
                             debug ("Waiting a little longer for selection contents...");
                             Thread.yield ();
-                            Thread.usleep (100000 * tries);
+                            Thread.usleep (SLEEP_INTERVAL_RETRY * tries);
                         }
 
                         var str = selection.wait_for_text ();
@@ -534,14 +540,15 @@ namespace SnippetPixie {
                         if (str == null || str == last_str || str.char_count () != pos) {
                             tries++;
 
-                            if (tries > 3) {
-                                debug ("Tried 3 times to get some text, giving up.");
+                            if (tries > 10) {
+                                debug ("Tried 10 times to get some text, giving up.");
                                 last_str = str; // Forces cancel to unset selection.
                                 break;
                             }
 
                             debug ("Text different than expected, starting again, attempt #%d.", tries);
                             cancel_selection (str);
+
                             last_str = "";
                             min = last_min;
                             pos = 0;
@@ -570,13 +577,33 @@ namespace SnippetPixie {
 
                             // Save current clipboard before we use it.
                             save_clipboard ();
+
                             // Paste the text over the selected abbreviation text.
                             debug ("Setting clipboard with abbreviation body.");
                             clipboard.set_text (body, -1);
-                            debug ("Pasting clipoard.");
+
+                            // Wait until clipboard definitely has the expected contents before pasting.
+                            Thread.yield ();
+                            Thread.usleep (SLEEP_INTERVAL);
+
+                            if (clipboard.wait_is_text_available () == false) {
+                                debug ("Waiting a little longer for clipboard contents to be set...");
+                                Thread.yield ();
+                                Thread.usleep (SLEEP_INTERVAL_RETRY);
+                            }
+
+                            var clip_str = clipboard.wait_for_text ();
+                            debug ("Clipboard set to:- '%s'", clip_str);
+
+                            if (clip_str != body) {
+                                debug ("Clipboard contents not set to abbreviation body, having another go...");
+                                clipboard.set_text (body, -1);
+                                Thread.yield ();
+                                Thread.usleep (SLEEP_INTERVAL_RETRY);
+                            }
+
+                            debug ("Pasting clipboard.");
                             paste ();
-                            // Restore clipboard from data saved before we useed it.
-                            restore_clipboard ();
 
                             expanded = true;
                             break;
@@ -585,9 +612,14 @@ namespace SnippetPixie {
                         // We can can try and speed things up a bit by not waiting for async selection clipboard on every character.
                         min = snippets_manager.min_length_ending_with (str);
                         debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
+                        max = snippets_manager.max_length_ending_with (str);
+                        debug ("Maximum length of abbreviations ending with '%s': %d", str, max);
                     } // step back through characters
 
-                    if (expanded == false) {
+                    if (expanded == true) {
+                        // Restore clipboard from data saved before we used it.
+                        restore_clipboard ();
+                    } else {
                         cancel_selection (last_str);
                     }
 
@@ -627,20 +659,39 @@ namespace SnippetPixie {
             //         }
             //     }
             // }
-
-            clipboard.clear ();
-            Thread.yield ();
-            Thread.usleep (100000);
         }
 
         private void restore_clipboard () {
             //
             // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
             //
+            debug ("Restoring clipboard...");
+
+            if (clipboard_text == null && clipboard_image == null) {
+                debug ("No clipboard saved, not restoring clipboard.");
+                return;
+            }
 
             Thread.yield ();
-            Thread.usleep (100000);
-            clipboard.clear ();
+            Thread.usleep (SLEEP_INTERVAL);
+
+            var selection_clear = false;
+            for (int tries = 0; tries < 3; tries++) {
+                if (selection.wait_is_text_available () == true) {
+                    // Paste not happened?
+                    debug ("Waiting a little longer before trying clipboard restore...");
+                    Thread.yield ();
+                    Thread.usleep (SLEEP_INTERVAL_RETRY);
+                } else {
+                    selection_clear = true;
+                    break;
+                }
+            }
+
+            if (selection_clear == false) {
+                debug ("Selection hasn't cleared, not restoring clipboard.");
+                return;
+            }
 
             if (clipboard_text != null) {
                 clipboard.set_text (clipboard_text, -1);
@@ -651,6 +702,7 @@ namespace SnippetPixie {
             }
 
             clipboard.store ();
+            debug ("Restored clipboard.");
         }
 
         private bool editable_text_check () {
@@ -674,7 +726,7 @@ namespace SnippetPixie {
                     var caret_offset = 0;
 
                     Thread.yield ();
-                    Thread.usleep (100000);
+                    Thread.usleep (SLEEP_INTERVAL);
 
                     try {
                         caret_offset = ctrl.get_caret_offset ();
@@ -1082,20 +1134,55 @@ namespace SnippetPixie {
             return false;
         }
 
-        private void grow_selection () {
-            perform_key_event ("<Shift>Left", true, 1);
-            perform_key_event ("<Shift>Left", false, 0);
+        private void release_keys () {
+            debug ("release_keys start");
+
+            perform_key_event ("<Shift_L>", false, 0);
+            perform_key_event ("<Shift_R>", false, 0);
+            perform_key_event ("<Control_L>", false, 0);
+            perform_key_event ("<Control_R>", false, 0);
+            perform_key_event ("<Mod1>", false, 0);
+            perform_key_event ("<Mod2>", false, 0);
+            perform_key_event ("<Mod3>", false, 0);
+            perform_key_event ("<Mod4>", false, 0);
+            perform_key_event ("<Mod5>", false, 0);
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL);
+
+            debug ("release_keys end");
+        }
+
+        private void grow_selection (int count, int tries) {
+            debug ("grow_selection start");
+
+            for (int num = 0; num < count; num++) {
+                perform_key_event ("<Shift>Left", true, 0);
+                perform_key_event ("<Shift>Left", false, 0);
+            }
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL * tries);
+
             debug ("grow_selection end");
         }
 
         private void cancel_selection (string? str) {
-            perform_key_event ("<Shift>", false, 0);
+            debug ("cancel_selection start");
+
+            release_keys ();
 
             // TODO: In case Clipboard access screwy, more robust check would be to see if any text is selected.
             if (str == null || str.length > 0) {
-                perform_key_event ("Right", true, 1);
+                perform_key_event ("Right", true, 0);
                 perform_key_event ("Right", false, 0);
             }
+
+            selection.clear ();
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL);
+
             debug ("cancel_selection end");
         }
 
@@ -1104,9 +1191,15 @@ namespace SnippetPixie {
          * https://github.com/davidmhewitt/clipped/blob/b00d44757cc2bf7bc9948d535668099db4ab9896/src/ClipboardManager.vala#L55
          */
         private void paste () {
+            debug ("paste start");
+
             // TODO: Ctrl-v isn't always the right thing to do, e.g. Terminal, or changed paste hot-key combination.
-            perform_key_event ("<Control>v", true, 1);
+            perform_key_event ("<Control>v", true, 0);
             perform_key_event ("<Control>v", false, 0);
+
+            Thread.yield ();
+            Thread.usleep (SLEEP_INTERVAL);
+
             debug ("paste end");
         }
 
