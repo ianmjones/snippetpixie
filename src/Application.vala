@@ -168,7 +168,7 @@ namespace SnippetPixie {
                                 listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
                                 register_listeners ();
                             } else if (focused_controls.has_key (wnck_app.get_pid ())) {
-                                debug ("Looks like we're returing to %s and previously had an editable text ctrl focused.", wnck_app.get_name ());
+                                debug ("Looks like we're returning to %s and previously had an editable text ctrl focused.", wnck_app.get_name ());
                                 if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
                                     deregister_listeners ();
                                 }
