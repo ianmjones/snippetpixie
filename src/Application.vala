@@ -68,13 +68,6 @@ namespace SnippetPixie {
         private string clipboard_text;
         private Gdk.Pixbuf? clipboard_image;
 
-        //
-        // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
-        //
-        // private bool clipboard_saved = false;
-        // private Gdk.Atom[]? clipboard_targets = null;
-        // private Gee.HashMap<Gdk.Atom,Gtk.SelectionData> clipboard_contents = new Gee.HashMap<Gdk.Atom,Gtk.SelectionData> ();
-
         public SnippetsManager snippets_manager;
 
         public Application () {
@@ -227,36 +220,6 @@ namespace SnippetPixie {
                         // Shift + Shift-Lock.
                         Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
 
-                        /*
-                         * As far as I can tell, Ctrl can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Control.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Control + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Control + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Control + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                         */
-
-                        /*
-                         * As far as I can tell, left Alt can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Mod1 (Alt/Meta).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod1 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod1 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod1 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                         */
-
                         // Mod2 (NumLock).
                         Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod2 + Shift.
@@ -265,36 +228,6 @@ namespace SnippetPixie {
                         Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
                         // Mod2 + Shift + Shift-Lock.
                         Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-
-                        /*
-                         * As far as I can tell, Mod3 can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Mod3 (???).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod3 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod3 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod3 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        */
-
-                        /*
-                         * As far as I can tell, Mod4 can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Mod4 (Super/Menu).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod4 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod4 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod4 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        */
 
                         // Mod5 (ISO_Level3_Shift/Alt Gr).
                         Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
@@ -345,36 +278,6 @@ namespace SnippetPixie {
                         // Shift + Shift-Lock.
                         Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
 
-                        /*
-                         * As far as I can tell, Ctrl can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Control.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Control + Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Control + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Control + Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.CONTROL_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                         */
-
-                        /*
-                         * As far as I can tell, left Alt can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Mod1 (Alt/Meta).
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod1 + Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod1 + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod1 + Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD1_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                         */
-
                         // Mod2 (NumLock).
                         Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
                         // Mod2 + Shift.
@@ -383,36 +286,6 @@ namespace SnippetPixie {
                         Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
                         // Mod2 + Shift + Shift-Lock.
                         Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-
-                        /*
-                         * As far as I can tell, Mod3 can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Mod3 (???).
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod3 + Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod3 + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod3 + Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD3_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        */
-
-                        /*
-                         * As far as I can tell, Mod4 can't be used to produce any characters.
-                         * To avoid clashing with things we're not registering any listeners for it.
-                         * Have left code in for the time being, in case someone comes up with a good reason it's needed.
-                         *
-                        // Mod4 (Super/Menu).
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod4 + Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod4 + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod4 + Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD4_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        */
 
                         // Mod5 (ISO_Level3_Shift/Alt Gr).
                         Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
@@ -667,28 +540,9 @@ namespace SnippetPixie {
             } else {
                 clipboard_image = null;
             }
-
-            //
-            // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
-            //
-            // clipbaord_contents.clear ();
-            // clipboard_saved = clipboard.wait_for_targets (out clipboard_targets);
-
-            // if (clipboard_saved && clipboard_targets != null) {
-            //     foreach (var target in clipboard_targets) {
-            //         var data = clipboard.wait_for_contents (target);
-
-            //         if (data != null) {
-            //             clipboard_contents.set (target, data);
-            //         }
-            //     }
-            // }
         }
 
         private void restore_clipboard () {
-            //
-            // TODO: Implement save/restore of all clipboard formats with switch to `wait_for_targets`, `wait_for_contents` & `set_with_data`.
-            //
             debug ("Restoring clipboard...");
 
             if (clipboard_text == null && clipboard_image == null) {
