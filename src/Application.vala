@@ -265,7 +265,7 @@ namespace SnippetPixie {
                 lock (registered_listeners) {
                     registered_listeners = false;
 
-                    debug ("Deregistering listeners...");
+                    debug ("De-registering listeners...");
 
                     try {
                         // Single keystrokes.

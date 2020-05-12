@@ -406,14 +406,14 @@ public class SnippetPixie.SnippetsManager : Object {
         unowned Json.Object obj = node.get_object ();
 
         if (!obj.has_member ("generator")) {
-            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'genenerator' element.");
+            throw new SnippetPixieError.INVALID_FORMAT ("Missing 'generator' element.");
         }
 
         var generator = obj.get_string_member ("generator");
         print ("Generator: '%s'\n", generator);
 
         if (generator != Application.ID) {
-            throw new SnippetPixieError.INVALID_FORMAT ("Invalid 'genenerator' element value.");
+            throw new SnippetPixieError.INVALID_FORMAT ("Invalid 'generator' element value.");
         }
 
         if (!obj.has_member ("version")) {
