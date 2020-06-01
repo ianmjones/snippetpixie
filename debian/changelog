@@ -1,3 +1,9 @@
+com.github.bytepixie.snippetpixie (1.3.3) xenial; urgency=medium
+
+  * Fixed Snippet Pixie stopping Super+[other-key] from working.
+
+ -- Byte Pixie <hello@bytepixie.com>  Mon, 01 Jun 2020 13:31:33 +0000
+
 com.github.bytepixie.snippetpixie (1.3.2) xenial; urgency=medium
 
   * Improved speed of abbreviation expansion.
