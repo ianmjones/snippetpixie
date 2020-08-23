@@ -55,6 +55,11 @@ namespace SnippetPixie {
 
         // For tracking window events that mean focused control has likely changed.
         private Atspi.EventListenerCB window_deactivated_event_listener_cb;
+        private Atspi.EventListenerCB window_minimize_event_listener_cb;
+        private Atspi.EventListenerCB window_shade_event_listener_cb;
+        private Atspi.EventListenerCB window_lower_event_listener_cb;
+        private Atspi.EventListenerCB window_close_event_listener_cb;
+        private Atspi.EventListenerCB window_desktop_destroy_event_listener_cb;
 
         public SnippetsManager snippets_manager;
 
@@ -117,6 +122,16 @@ namespace SnippetPixie {
             try {
                 window_deactivated_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
                 Atspi.EventListener.register_from_callback ((owned) window_deactivated_event_listener_cb, "window:deactivate");
+                window_minimize_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_minimize_event_listener_cb, "window:minimize");
+                window_shade_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_shade_event_listener_cb, "window:shade");
+                window_lower_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_lower_event_listener_cb, "window:lower");
+                window_close_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_close_event_listener_cb, "window:close");
+                window_desktop_destroy_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_desktop_destroy_event_listener_cb, "window:desktop-destroy");
             } catch (Error e) {
                 message ("Could not register window deactivated event listener: %s", e.message);
                 Atspi.exit ();
@@ -135,6 +150,11 @@ namespace SnippetPixie {
                         Atspi.EventListener.deregister_from_callback ((owned) focused_event_listener_cb, "focus:");
                         Atspi.EventListener.deregister_from_callback ((owned) text_changed_event_listener_cb, "object:text-changed:insert");
                         Atspi.EventListener.deregister_from_callback ((owned) window_deactivated_event_listener_cb, "window:deactivate");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_minimize_event_listener_cb, "window:minimize");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_shade_event_listener_cb, "window:shade");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_lower_event_listener_cb, "window:lower");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_close_event_listener_cb, "window:close");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_desktop_destroy_event_listener_cb, "window:desktop-destroy");
                     } catch (Error e) {
                         message ("Could not deregister focus or window event listener: %s", e.message);
                         Atspi.exit ();
@@ -282,7 +302,7 @@ namespace SnippetPixie {
                         register_listeners ();
 
                         // If new control found because of keystroke, check whether trigger key.
-                        if (event.type == "object:text-changed:insert") {
+                        if (event.type == "object:text-changed:insert" && event.any_data.get_string ().length > 0) {
                             debug ("&&& VALUE INSERTED: '%s'", event.any_data.get_string ());
                             check_trigger (event.any_data.get_string ().substring (-1));
                         }
