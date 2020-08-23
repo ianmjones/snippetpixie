@@ -41,32 +41,25 @@ namespace SnippetPixie {
         // For tracking keystrokes.
         private Atspi.DeviceListenerCB listener_cb;
         private Atspi.DeviceListener listener;
-        private Atspi.KeyListenerSyncType listener_sync_type = Atspi.KeyListenerSyncType.ALL_WINDOWS;
-        private static bool registered_listeners = false;
+        private static bool listeners_registered = false;
         private static bool listening = false;
         private Gtk.Clipboard selection;
         private Gtk.Clipboard clipboard;
         private Thread check_thread;
         private static bool checking = false;
 
-        // For tracking active window.
-        private Wnck.Screen wnck_screen;
-        private Wnck.Window wnck_win;
-        private Wnck.Application wnck_app;
-
-        // For tracking last/current focused editable text control per application.
+        // For tracking current focused editable text control.
         private Atspi.EventListenerCB focused_event_listener_cb;
-        private Gee.HashMap<int,Atspi.EditableText> focused_controls;
+        private Atspi.EventListenerCB text_changed_event_listener_cb;
+        private Atspi.EditableText? focused_control = null;
 
-        // Unsupported applications, i.e. should not expand in, or currently can't.
-        private Gee.ArrayList<string> blacklist;
-
-        // Troublesome applications that should only be expanded in if they decide to play nice and emit events.
-        private Gee.ArrayList<string> greylist;
-
-        // Clipboard data for save/restore.
-        private string clipboard_text;
-        private Gdk.Pixbuf? clipboard_image;
+        // For tracking window events that mean focused control has likely changed.
+        private Atspi.EventListenerCB window_deactivated_event_listener_cb;
+        private Atspi.EventListenerCB window_minimize_event_listener_cb;
+        private Atspi.EventListenerCB window_shade_event_listener_cb;
+        private Atspi.EventListenerCB window_lower_event_listener_cb;
+        private Atspi.EventListenerCB window_close_event_listener_cb;
+        private Atspi.EventListenerCB window_desktop_destroy_event_listener_cb;
 
         public SnippetsManager snippets_manager;
 
@@ -109,93 +102,64 @@ namespace SnippetPixie {
                 quit ();
             }
 
-            // Map of last focused editable text control with its application's PID.
-            focused_controls = new Gee.HashMap<int,Atspi.EditableText> ();
-
-            // TODO: Expose as option and save in settings.
-            blacklist = new Gee.ArrayList<string> ();
-            blacklist.add (this.application_id); // Reason: Do not want to expand snippets within app, gets messy!
-            blacklist.add ("io.elementary.terminal"); // Reason: Terminals not supported at present.
-            blacklist.add ("Alacritty"); // Reason: Terminals not supported at present.
-            blacklist.add ("konsole"); // Reason: Terminals not supported at present.
-            blacklist.add ("stterm"); // Reason: Terminals not supported at present.
-            blacklist.add ("Terminal"); // Reason: Terminals not supported at present.
-            blacklist.add ("terminator"); // Reason: Terminals not supported at present.
-            blacklist.add ("urxvt"); // Reason: Terminals not supported at present.
-            blacklist.add ("xterm"); // Reason: Terminals not supported at present.
-
-            // TODO: Expose as option and save in settings.
-            greylist = new Gee.ArrayList<string> ();
-            greylist.add ("Firefox"); // Reason: Inputs loose focus on every keystroke.
-
             listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
             listener = new Atspi.DeviceListener ((owned) listener_cb);
 
             selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
             clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
 
-            wnck_screen = Wnck.Screen.get_default ();
+            try {
+                focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
+                Atspi.EventListener.register_from_callback ((owned) focused_event_listener_cb, "focus:");
+                text_changed_event_listener_cb = (Atspi.EventListenerCB) on_focus;
+                Atspi.EventListener.register_from_callback ((owned) text_changed_event_listener_cb, "object:text-changed:insert");
+            } catch (Error e) {
+                message ("Could not register focus event listener: %s", e.message);
+                Atspi.exit ();
+                quit ();
+            }
 
-            if (wnck_screen != null) {
-                //
-                // Don't want expansion within Snippet Pixie, and also need to ensure non-accessible windows behave better.
-                //
-                wnck_screen.active_window_changed.connect (() => {
-                    wnck_win = wnck_screen.get_active_window ();
-                    debug ("Active window changed.");
-
-                    if (wnck_win != null) {
-                        wnck_app = wnck_win.get_application ();
-                        debug ("Current app '%s'.", wnck_app.get_name () );
-
-                        if (wnck_app != null) {
-                            // TODO: Use wildcard match, e.g. konsole prepends running command on name by default.
-                            if (blacklist.size > 0 && blacklist.contains (wnck_app.get_name ())) {
-                                debug ("Nope, not expanding snippets within %s!", wnck_app.get_name ());
-                                deregister_listeners ();
-                            } else if (greylist.size > 0 && greylist.contains (wnck_app.get_name ())) {
-                                debug ("Might not be expanding snippets within %s, we'll see.", wnck_app.get_name ());
-                                if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
-                                    deregister_listeners ();
-                                }
-                                listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
-                                register_listeners ();
-                            } else if (focused_controls.has_key (wnck_app.get_pid ())) {
-                                debug ("Looks like we're returning to %s and previously had an editable text ctrl focused.", wnck_app.get_name ());
-                                if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
-                                    deregister_listeners ();
-                                }
-                                listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
-                                register_listeners ();
-                            } else {
-                                if (listener_sync_type != Atspi.KeyListenerSyncType.ALL_WINDOWS) {
-                                    deregister_listeners ();
-                                }
-                                listener_sync_type = Atspi.KeyListenerSyncType.ALL_WINDOWS;
-                                register_listeners ();
-                            }
-                        }
-                    }
-                });
-
-                // Cleanup any data associated with just closed application.
-                wnck_screen.application_closed.connect ((app) => {
-                    if (focused_controls.has_key (app.get_pid ())) {
-                        focused_controls.unset (app.get_pid ());
-                    }
-                });
-            } else {
-                debug ("Could not get default screen object for monitoring windows, bailing.");
+            try {
+                window_deactivated_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_deactivated_event_listener_cb, "window:deactivate");
+                window_minimize_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_minimize_event_listener_cb, "window:minimize");
+                window_shade_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_shade_event_listener_cb, "window:shade");
+                window_lower_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_lower_event_listener_cb, "window:lower");
+                window_close_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_close_event_listener_cb, "window:close");
+                window_desktop_destroy_event_listener_cb = (Atspi.EventListenerCB) on_window_deactivate;
+                Atspi.EventListener.register_from_callback ((owned) window_desktop_destroy_event_listener_cb, "window:desktop-destroy");
+            } catch (Error e) {
+                message ("Could not register window deactivated event listener: %s", e.message);
+                Atspi.exit ();
                 quit ();
             }
         }
 
-        private void cleanup() {
+        private void cleanup () {
             debug ("cleanup");
 
             lock (app_running) {
                 if (app_running) {
                     deregister_listeners ();
+
+                    try {
+                        Atspi.EventListener.deregister_from_callback ((owned) focused_event_listener_cb, "focus:");
+                        Atspi.EventListener.deregister_from_callback ((owned) text_changed_event_listener_cb, "object:text-changed:insert");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_deactivated_event_listener_cb, "window:deactivate");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_minimize_event_listener_cb, "window:minimize");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_shade_event_listener_cb, "window:shade");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_lower_event_listener_cb, "window:lower");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_close_event_listener_cb, "window:close");
+                        Atspi.EventListener.deregister_from_callback ((owned) window_desktop_destroy_event_listener_cb, "window:desktop-destroy");
+                    } catch (Error e) {
+                        message ("Could not deregister focus or window event listener: %s", e.message);
+                        Atspi.exit ();
+                        quit ();
+                    }
 
                     var atspi_exit_code = Atspi.exit();
                     debug ("AT-SPI exit code is %d.", atspi_exit_code);
@@ -204,112 +168,101 @@ namespace SnippetPixie {
         }
 
         private void register_listeners () {
-            if (registered_listeners == false) {
-                lock (registered_listeners) {
+            lock (listeners_registered) {
+                if (listeners_registered) {
+                    return;
+                }
+                if (focused_control == null) {
+                    return;
+                }
 
-                    debug ("Registering listeners...");
+                debug ("Registering listeners...");
 
-                    try {
-                        // Single keystrokes.
-                        Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
+                try {
+                    // Single keystrokes.
+                    Atspi.register_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
 
-                        // Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
+                    // Shift.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Shift-Lock.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Shift + Shift-Lock.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
 
-                        // Mod2 (NumLock).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod2 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod2 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod2 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod2 (NumLock).
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod2 + Shift.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod2 + Shift-Lock.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod2 + Shift + Shift-Lock.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
 
-                        // Mod5 (ISO_Level3_Shift/Alt Gr).
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod5 + Shift.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod5 + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                        // Mod5 + Shift + Shift-Lock.
-                        Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, listener_sync_type | Atspi.KeyListenerSyncType.NOSYNC);
-                    } catch (Error e) {
-                        message ("Could not register keystroke listener: %s", e.message);
-                        Atspi.exit ();
-                        quit ();
-                    }
+                    // Mod5 (ISO_Level3_Shift/Alt Gr).
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod5 + Shift.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod5 + Shift-Lock.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                    // Mod5 + Shift + Shift-Lock.
+                    Atspi.register_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT, Atspi.KeyListenerSyncType.NOSYNC);
+                } catch (Error e) {
+                    message ("Could not register keystroke listener: %s", e.message);
+                    Atspi.exit ();
+                    quit ();
+                }
 
-                    try {
-                        focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
-                        Atspi.EventListener.register_from_callback ((owned) focused_event_listener_cb, "focus:");
-                    } catch (Error e) {
-                        message ("Could not register focus event listener: %s", e.message);
-                        Atspi.exit ();
-                        quit ();
-                    }
-
-                    registered_listeners = true;
-                    start_listening ();
-                } // lock registered_listeners
-            } // registered_listeners false
+                listeners_registered = true;
+                start_listening ();
+            } // lock listeners_registered
         }
 
         private void deregister_listeners () {
             stop_listening ();
 
-            if (registered_listeners == true) {
-                lock (registered_listeners) {
-                    registered_listeners = false;
+            lock (listeners_registered) {
+                if (listeners_registered != true) {
+                    return;
+                }
+                focused_control = null;
+                listeners_registered = false;
 
-                    debug ("De-registering listeners...");
+                debug ("De-registering listeners...");
 
-                    try {
-                        // Single keystrokes.
-                        Atspi.deregister_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT);
+                try {
+                    // Single keystrokes.
+                    Atspi.deregister_keystroke_listener (listener, null, 0, Atspi.EventType.KEY_RELEASED_EVENT);
 
-                        // Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Shift.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Shift-Lock.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Shift + Shift-Lock.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
 
-                        // Mod2 (NumLock).
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod2 + Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod2 + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod2 + Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod2 (NumLock).
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod2 + Shift.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod2 + Shift-Lock.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod2 + Shift + Shift-Lock.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD2_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
 
-                        // Mod5 (ISO_Level3_Shift/Alt Gr).
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod5 + Shift.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod5 + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                        // Mod5 + Shift + Shift-Lock.
-                        Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
-                    } catch (Error e) {
-                        message ("Could not deregister keystroke listener: %s", e.message);
-                        Atspi.exit ();
-                        quit ();
-                    }
-
-                    try {
-                        Atspi.EventListener.deregister_from_callback ((owned) focused_event_listener_cb, "focus:");
-                    } catch (Error e) {
-                        message ("Could not deregister focus event listener: %s", e.message);
-                        Atspi.exit ();
-                        quit ();
-                    }
-                } // lock registered_listeners
-            } // registered_listeners true
+                    // Mod5 (ISO_Level3_Shift/Alt Gr).
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod5 + Shift.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod5 + Shift-Lock.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                    // Mod5 + Shift + Shift-Lock.
+                    Atspi.deregister_keystroke_listener (listener, null, IBus.ModifierType.MOD5_MASK | IBus.ModifierType.SHIFT_MASK | IBus.ModifierType.LOCK_MASK, Atspi.EventType.KEY_RELEASED_EVENT);
+                } catch (Error e) {
+                    message ("Could not deregister keystroke listener: %s", e.message);
+                    Atspi.exit ();
+                    quit ();
+                }
+            } // lock listeners_registered
         }
 
         private void start_listening () {
@@ -329,397 +282,217 @@ namespace SnippetPixie {
         [CCode (instance_pos = -1)]
         private bool on_focus (Atspi.Event event) {
             try {
+                // Quick shortcut out if control not changed.
+                if (focused_control != null && focused_control == event.source) {
+                    return false;
+                }
+
                 var app = event.source.get_application ();
                 debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, app.get_name ());
 
                 if (app.get_name () == this.application_id) {
                     debug ("Nope, not monitoring within %s!", app.get_name ());
+                    deregister_listeners ();
                 } else {
-                    // Whether we can get current control or not, cleanup last known control.
-                    if (focused_controls.has_key (wnck_app.get_pid ())) {
-                        focused_controls.unset (wnck_app.get_pid ());
-                    }
-
                     // Try and grab editable control's handle.
-                    var focused_control = event.source.get_editable_text_iface ();
+                    focused_control = event.source.get_editable_text_iface ();
 
                     if (focused_control != null) {
                         debug ("Focused editable text control found.");
-                        focused_controls.set (wnck_app.get_pid (), focused_control);
-
-                        if (listener_sync_type != Atspi.KeyListenerSyncType.NOSYNC) {
-                            deregister_listeners ();
-                        }
-                        listener_sync_type = Atspi.KeyListenerSyncType.NOSYNC;
                         register_listeners ();
+
+                        // If new control found because of keystroke, check whether trigger key.
+                        if (event.type == "object:text-changed:insert" && event.any_data.get_string ().length > 0) {
+                            debug ("&&& VALUE INSERTED: '%s'", event.any_data.get_string ());
+                            check_trigger (event.any_data.get_string ().substring (-1));
+                        }
+                    } else {
+                        debug ("Focused editable text control not found.");
+                        deregister_listeners ();
                     }
                 }
             } catch (Error e) {
                 message ("Could not get focused control: %s", e.message);
-                return false;
+                deregister_listeners ();
             }
 
             return false;
         }
 
         [CCode (instance_pos = -1)]
-        private bool on_key_released_event (Atspi.DeviceEvent stroke) {
-            // Belts and braces check to make sure we stop handling events while checking for potential abbreviation.
-            if (listening == false || checking == true) {
-                return false;
-            }
+        private bool on_window_deactivate (Atspi.Event event) {
+            debug ("<<< WINDOW DEACTIVATE EVENT Type ='%s', Source: '%s'", event.type, event.source.name);
 
+            deregister_listeners ();
+
+            return false;
+        }
+
+        [CCode (instance_pos = -1)]
+        private bool on_key_released_event (Atspi.DeviceEvent stroke) {
             debug ("*** KEY EVENT ID = '%u', Str = '%s'", stroke.id, stroke.event_string);
 
-            if (
-                checking != true &&
-                stroke.is_text &&
-                stroke.event_string != null &&
-                snippets_manager.triggers != null &&
-                snippets_manager.triggers.size > 0 &&
-                snippets_manager.triggers.has_key (stroke.event_string)
-                ) {
-                debug ("!!! GOT A TRIGGER KEY MATCH !!!");
-
-                if (focused_controls.has_key (wnck_app.get_pid ()) && listener_sync_type == Atspi.KeyListenerSyncType.NOSYNC) {
-                    // Let thread check for abbreviation, while we let the target window have its keystroke.
-                    check_thread = new Thread<bool> ("check_thread", editable_text_check);
-                } else {
-                    // Let thread check for abbreviation, while we let the target window have its keystroke.
-                    check_thread = new Thread<bool> ("check_thread", text_selection_check);
-                }
+            if (stroke.is_text && stroke.event_string != null) {
+                check_trigger (stroke.event_string);
             } // if something to check
 
             return false;
         }
 
-        private bool text_selection_check () {
-            var expanded = false;
+        private void check_trigger (string trigger) {
+            if (
+                listening == true &&
+                checking == false &&
+                focused_control != null &&
+                snippets_manager.triggers != null &&
+                snippets_manager.triggers.size > 0 &&
+                snippets_manager.triggers.has_key (trigger)
+                ) {
+                debug ("!!! GOT A TRIGGER KEY MATCH !!!");
 
-            if (checking != true) {
-                lock (checking) {
-                    checking = true;
-                    debug ("Checking for abbreviation via text selection...");
-
-                    stop_listening ();
-                    release_keys ();
-                    selection.clear ();
-
-                    var last_str = "";
-                    var tries = 1;
-                    var min = 1;
-                    var last_min = min;
-                    var max = snippets_manager.max_abbr_len;
-
-                    for (int pos = 1; pos <= max; pos++) {
-                        var grow_count = 1;
-
-                        if (pos < min) {
-                            grow_count = min - pos + 1;
-                            pos = min;
-                            debug ("New grow count: %d", grow_count);
-                        }
-
-                        grow_selection (grow_count, tries);
-
-                        Thread.yield ();
-                        Thread.usleep (SLEEP_INTERVAL * tries);
-
-                        if (selection.wait_is_text_available () == false) {
-                            debug ("Waiting a little longer for selection contents...");
-                            Thread.yield ();
-                            Thread.usleep (SLEEP_INTERVAL_RETRY * tries);
-                        }
-
-                        var str = selection.wait_for_text ();
-                        debug ("Pos %d, Str '%s'", pos, str);
-
-                        if (str == null || str == last_str || str.char_count () != pos) {
-                            tries++;
-
-                            if (tries > 10) {
-                                debug ("Tried 10 times to get some text, giving up.");
-                                last_str = str; // Forces cancel to unset selection.
-                                break;
-                            }
-
-                            debug ("Text different than expected, starting again, attempt #%d.", tries);
-                            cancel_selection (str);
-
-                            last_str = "";
-                            min = last_min;
-                            pos = 0;
-                            continue;
-                        }
-
-                        last_str = str;
-                        last_min = min;
-
-                        var count = snippets_manager.count_snippets_ending_with (str);
-                        debug ("Count of abbreviations ending with '%s': %d", str, count);
-
-                        if (count < 1) {
-                            debug ("Nothing matched '%s'", str);
-                            break;
-                        } else if (snippets_manager.abbreviations.has_key (str)) {
-                            debug ("IT'S AN ABBREVIATION!!!");
-
-                            var body = snippets_manager.abbreviations.get (str);
-
-                            // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
-                            var new_offset = -1;
-                            var dt = new DateTime.now_local ();
-                            body = expand_snippet (body, ref new_offset, dt);
-                            body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
-
-                            // Save current clipboard before we use it.
-                            save_clipboard ();
-
-                            // Paste the text over the selected abbreviation text.
-                            debug ("Setting clipboard with abbreviation body.");
-                            clipboard.set_text (body, -1);
-
-                            // Wait until clipboard definitely has the expected contents before pasting.
-                            Thread.yield ();
-                            Thread.usleep (SLEEP_INTERVAL);
-
-                            if (clipboard.wait_is_text_available () == false) {
-                                debug ("Waiting a little longer for clipboard contents to be set...");
-                                Thread.yield ();
-                                Thread.usleep (SLEEP_INTERVAL_RETRY);
-                            }
-
-                            var clip_str = clipboard.wait_for_text ();
-                            debug ("Clipboard set to:- '%s'", clip_str);
-
-                            if (clip_str != body) {
-                                debug ("Clipboard contents not set to abbreviation body, having another go...");
-                                clipboard.set_text (body, -1);
-                                Thread.yield ();
-                                Thread.usleep (SLEEP_INTERVAL_RETRY);
-                            }
-
-                            debug ("Pasting clipboard.");
-                            paste ();
-
-                            expanded = true;
-                            break;
-                        } // have matching abbreviation
-
-                        // We can can try and speed things up a bit by not waiting for async selection clipboard on every character.
-                        min = snippets_manager.min_length_ending_with (str);
-                        debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
-                        max = snippets_manager.max_length_ending_with (str);
-                        debug ("Maximum length of abbreviations ending with '%s': %d", str, max);
-                    } // step back through characters
-
-                    if (expanded == true) {
-                        // Restore clipboard from data saved before we used it.
-                        restore_clipboard ();
-                    } else {
-                        cancel_selection (last_str);
-                    }
-
-                    checking = false;
-                    start_listening ();
-                } // lock checking
-            } // not checking
-
-            return expanded;
-        }
-
-        private void save_clipboard () {
-            if (clipboard.wait_is_text_available ()) {
-                clipboard_text = clipboard.wait_for_text ();
-            } else {
-                clipboard_text = null;
-            }
-
-            if (clipboard.wait_is_image_available ()) {
-                clipboard_image = clipboard.wait_for_image ();
-            } else {
-                clipboard_image = null;
-            }
-        }
-
-        private void restore_clipboard () {
-            debug ("Restoring clipboard...");
-
-            if (clipboard_text == null && clipboard_image == null) {
-                debug ("No clipboard saved, not restoring clipboard.");
-                return;
-            }
-
-            Thread.yield ();
-            Thread.usleep (SLEEP_INTERVAL);
-
-            var selection_clear = false;
-            for (int tries = 0; tries < 3; tries++) {
-                if (selection.wait_is_text_available () == true) {
-                    // Paste not happened?
-                    debug ("Waiting a little longer before trying clipboard restore...");
-                    Thread.yield ();
-                    Thread.usleep (SLEEP_INTERVAL_RETRY);
-                } else {
-                    selection_clear = true;
-                    break;
-                }
-            }
-
-            if (selection_clear == false) {
-                debug ("Selection hasn't cleared, not restoring clipboard.");
-                return;
-            }
-
-            if (clipboard_text != null) {
-                clipboard.set_text (clipboard_text, -1);
-            }
-
-            if (clipboard_image != null) {
-                clipboard.set_image (clipboard_image);
-            }
-
-            clipboard.store ();
-            debug ("Restored clipboard.");
+                // Let thread check for abbreviation, while we let the target window have its keystroke.
+                check_thread = new Thread<bool> ("check_thread", editable_text_check);
+            } // if something to check
         }
 
         private bool editable_text_check () {
             var expanded = false;
 
-            if (checking != true) {
-                lock (checking) {
-                    checking = true;
-                    debug ("Checking for abbreviation via editable text...");
+            lock (checking) {
+                if (checking == true) {
+                    return expanded;
+                }
+                checking = true;
+                debug ("Checking for abbreviation via editable text...");
 
-                    stop_listening ();
+                stop_listening ();
 
-                    if (focused_controls.has_key (wnck_app.get_pid ()) == false) {
-                        debug ("Focused control missing from app map, oops!");
-                        checking = false;
-                        start_listening ();
-                        return expanded;
-                    }
-
-                    var ctrl = (Atspi.Text) focused_controls.get (wnck_app.get_pid ());
-                    var caret_offset = 0;
-
-                    Thread.yield ();
-                    Thread.usleep (SLEEP_INTERVAL);
-
-                    try {
-                        caret_offset = ctrl.get_caret_offset ();
-                    } catch (Error e) {
-                        message ("Could not get caret offset: %s", e.message);
-                        checking = false;
-                        start_listening ();
-                        return expanded;
-                    }
-                    debug ("Caret Offset %d", caret_offset);
-
-                    var last_str = "";
-                    var tries = 1;
-                    var min = 1;
-                    var last_min = 1;
-
-                    for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
-                        if (pos < min) {
-                            continue;
-                        }
-
-                        var sel_start = caret_offset - pos;
-                        var sel_end = caret_offset;
-                        var str = "";
-
-                        try {
-                            str = ctrl.get_text (sel_start, sel_end);
-                        } catch (Error e) {
-                            message ("Could not get text between positions %d and %d: %s", sel_start, sel_end, e.message);
-                            break;
-                        }
-                        debug ("Pos %d, Str %s", pos, str);
-
-                        if (str == null || str == last_str || str.char_count () != pos) {
-                            tries++;
-
-                            if (tries > 3) {
-                                debug ("Tried 3 times to get some text, giving up.");
-                                break;
-                            }
-
-                            debug ("Text different than expected, starting again, attempt #%d.", tries);
-                            last_str = "";
-                            min = last_min;
-                            pos = 0;
-                            continue;
-                        }
-
-                        last_str = str;
-                        last_min = min;
-
-                        var count = snippets_manager.count_snippets_ending_with (str);
-                        debug ("Count of abbreviations ending with '%s': %d", str, count);
-
-                        if (count < 1) {
-                            debug ("Nothing matched '%s'", str);
-                            break;
-                        } else if (snippets_manager.abbreviations.has_key (str)) {
-                            debug ("IT'S AN ABBREVIATION!!!");
-
-                            var focused_control = (Atspi.EditableText) focused_controls.get (wnck_app.get_pid ());
-
-                            try {
-                                if (! focused_control.delete_text (sel_start, sel_end)) {
-                                    message ("Could not delete abbreviation string from text.");
-                                    break;
-                                }
-                            } catch (Error e) {
-                                message ("Could not delete abbreviation string from text between positions %d and %d: %s", sel_start, sel_end, e.message);
-                                break;
-                            }
-
-                            var body = snippets_manager.abbreviations.get (str);
-
-                            // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
-                            var new_offset = -1;
-                            var dt = new DateTime.now_local ();
-                            body = expand_snippet (body, ref new_offset, dt);
-                            body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
-
-                            try {
-                                if (! focused_control.insert_text (sel_start, body, body.length)) {
-                                    message ("Could not insert expanded snippet into text.");
-                                    break;
-                                }
-                            } catch (Error e) {
-                                message ("Could not insert expanded snippet into text at position %d: %s", sel_start, e.message);
-                                break;
-                            }
-
-                            if (new_offset >= 0) {
-                                try {
-                                    if (! ((Atspi.Text) focused_control).set_caret_offset (sel_start + new_offset)) {
-                                        message ("Could not set new cursor position.");
-                                        break;
-                                    }
-                                } catch (Error e) {
-                                    message ("Could not set new cursor at position %d: %s", sel_start + new_offset, e.message);
-                                    break;
-                                }
-                            }
-
-                            expanded = true;
-                            break;
-                        } // have matching abbreviation
-
-                        // We can can try and speed things up a bit.
-                        min = snippets_manager.min_length_ending_with (str);
-                        debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
-                    } // step back through characters
-
+                if (focused_control == null) {
+                    debug ("No focused control, oops!");
                     checking = false;
                     start_listening ();
-                } // lock checking
-            } // not checking
+                    return expanded;
+                }
+
+                var ctrl = (Atspi.Text) focused_control;
+                var caret_offset = 0;
+
+                Thread.yield ();
+                Thread.usleep (SLEEP_INTERVAL);
+
+                try {
+                    caret_offset = ctrl.get_caret_offset ();
+                } catch (Error e) {
+                    message ("Could not get caret offset: %s", e.message);
+                    checking = false;
+                    start_listening ();
+                    return expanded;
+                }
+                debug ("Caret Offset %d", caret_offset);
+
+                var last_str = "";
+                var tries = 1;
+                var min = 1;
+                var last_min = 1;
+
+                for (int pos = 1; pos <= snippets_manager.max_abbr_len; pos++) {
+                    if (pos < min) {
+                        continue;
+                    }
+
+                    var sel_start = caret_offset - pos;
+                    var sel_end = caret_offset;
+                    var str = "";
+
+                    try {
+                        str = ctrl.get_text (sel_start, sel_end);
+                    } catch (Error e) {
+                        message ("Could not get text between positions %d and %d: %s", sel_start, sel_end, e.message);
+                        break;
+                    }
+                    debug ("Pos %d, Str %s", pos, str);
+
+                    if (str == null || str == last_str || str.char_count () != pos) {
+                        tries++;
+
+                        if (tries > 3) {
+                            debug ("Tried 3 times to get some text, giving up.");
+                            break;
+                        }
+
+                        debug ("Text different than expected, starting again, attempt #%d.", tries);
+                        last_str = "";
+                        min = last_min;
+                        pos = 0;
+                        continue;
+                    }
+
+                    last_str = str;
+                    last_min = min;
+
+                    var count = snippets_manager.count_snippets_ending_with (str);
+                    debug ("Count of abbreviations ending with '%s': %d", str, count);
+
+                    if (count < 1) {
+                        debug ("Nothing matched '%s'", str);
+                        break;
+                    } else if (snippets_manager.abbreviations.has_key (str)) {
+                        debug ("IT'S AN ABBREVIATION!!!");
+
+                        var editable_ctrl = (Atspi.EditableText) focused_control;
+
+                        try {
+                            if (! editable_ctrl.delete_text (sel_start, sel_end)) {
+                                message ("Could not delete abbreviation string from text.");
+                                break;
+                            }
+                        } catch (Error e) {
+                            message ("Could not delete abbreviation string from text between positions %d and %d: %s", sel_start, sel_end, e.message);
+                            break;
+                        }
+
+                        var body = snippets_manager.abbreviations.get (str);
+
+                        // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
+                        var new_offset = -1;
+                        var dt = new DateTime.now_local ();
+                        body = expand_snippet (body, ref new_offset, dt);
+                        body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
+
+                        try {
+                            if (! editable_ctrl.insert_text (sel_start, body, body.length)) {
+                                message ("Could not insert expanded snippet into text.");
+                                break;
+                            }
+                        } catch (Error e) {
+                            message ("Could not insert expanded snippet into text at position %d: %s", sel_start, e.message);
+                            break;
+                        }
+
+                        if (new_offset >= 0) {
+                            try {
+                                if (! ((Atspi.Text) editable_ctrl).set_caret_offset (sel_start + new_offset)) {
+                                    message ("Could not set new cursor position.");
+                                    break;
+                                }
+                            } catch (Error e) {
+                                message ("Could not set new cursor at position %d: %s", sel_start + new_offset, e.message);
+                                break;
+                            }
+                        }
+
+                        expanded = true;
+                        break;
+                    } // have matching abbreviation
+
+                    // We can can try and speed things up a bit.
+                    min = snippets_manager.min_length_ending_with (str);
+                    debug ("Minimum length of abbreviations ending with '%s': %d", str, min);
+                } // step back through characters
+
+                checking = false;
+                start_listening ();
+            } // lock checking
 
             return expanded;
         }

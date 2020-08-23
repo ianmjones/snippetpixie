@@ -4,7 +4,6 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name()), language:'c')
-add_global_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language:'c')
 
 asresources = gnome.compile_resources(
     'as-resources', 'data/' + meson.project_name() + '.gresource.xml',
@@ -37,7 +36,6 @@ executable(
         dependency('ibus-1.0'),
         dependency('json-glib-1.0'),
         dependency('sqlite3'),
-        dependency('libwnck-3.0'),
         dependency('xtst'),
         dependency('x11', version: '>=1.0'),
         meson.get_compiler('c').find_library('m', required : false)

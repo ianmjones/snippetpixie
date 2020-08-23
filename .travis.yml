@@ -14,7 +14,6 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-5-dev
-      - libwnck-3-dev
 
 install:
   - npm i -g @elementaryos/houston
