@@ -15,7 +15,6 @@ Build-Depends: appstream,
                libibus-1.0-dev,
                libjson-glib-dev,
                libsqlite3-dev,
-               libwnck-3-dev,
                libxtst-dev,
                libx11-dev
 Standards-Version: 3.9.3

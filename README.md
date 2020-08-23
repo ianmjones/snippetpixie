@@ -116,7 +116,6 @@ You'll need the following dependencies to build:
 * libibus-1.0-dev
 * libjson-glib-dev
 * libsqlite3-dev
-* libwnck-3-dev
 * libx11-dev
 * libxtst-dev
 

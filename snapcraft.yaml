@@ -52,7 +52,6 @@ parts:
       - libibus-1.0-dev
       - libjson-glib-dev
       - libsqlite3-dev
-      - libwnck-3-dev
       - libxtst-dev
       - libx11-dev
     stage-packages:
@@ -81,7 +80,6 @@ parts:
       - libwayland-client0
       - libwayland-cursor0
       - libwayland-egl1
-      - libwnck-3-0
       - libx11-6
       - libx11-xcb1
       - libxau6
