@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.3.4-dev";
+        public const string VERSION = "1.4.0-dev";
 
         private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND * 10;
         private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
@@ -35,16 +35,17 @@ namespace SnippetPixie {
         private static bool app_running = false;
 
         private bool show = true;
+        private bool search_and_paste = false;
         private bool snap = false;
         public MainWindow app_window { get; private set; }
+        private SearchAndPasteWindow? search_and_paste_window = null;
+        private Snippet? snippet_to_paste = null;
 
         // For tracking keystrokes.
         private Atspi.DeviceListenerCB listener_cb;
         private Atspi.DeviceListener listener;
         private static bool listeners_registered = false;
         private static bool listening = false;
-        private Gtk.Clipboard selection;
-        private Gtk.Clipboard clipboard;
         private Thread check_thread;
         private static bool checking = false;
 
@@ -79,10 +80,28 @@ namespace SnippetPixie {
         protected override void activate () {
             if (snippets_manager == null) {
                 snippets_manager = new SnippetsManager ();
+
+                window_removed.connect ((closed_window) => {
+                    if (snippet_to_paste != null && snippet_to_paste.body.strip ().length > 0) {
+                        // Before trying to paste the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
+                        // NOTE: For paste method we do not support placing cursor.
+                        var new_offset = -1;
+                        var dt = new DateTime.now_local ();
+                        var body = expand_snippet (snippet_to_paste.body, ref new_offset, dt);
+                        body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
+                        Gtk.Clipboard.get_default (Gdk.Display.get_default ()).set_text (body, -1);
+                        paste ();
+                    }
+                    if (closed_window == search_and_paste_window) {
+                        close_search_and_paste_window ();
+                    }
+                });
             }
 
             if (show) {
-                build_ui ();
+                show_window ();
+            } else if (search_and_paste) {
+                show_search_and_paste_window ();
             }
 
             // We only want the one listener process.
@@ -104,9 +123,6 @@ namespace SnippetPixie {
 
             listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
             listener = new Atspi.DeviceListener ((owned) listener_cb);
-
-            selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
-            clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
 
             try {
                 focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
@@ -137,6 +153,9 @@ namespace SnippetPixie {
                 Atspi.exit ();
                 quit ();
             }
+
+            // Register shortcut for paste method.
+            set_default_shortcut ();
         }
 
         private void cleanup () {
@@ -785,56 +804,23 @@ namespace SnippetPixie {
             return false;
         }
 
-        private void release_keys () {
-            debug ("release_keys start");
+        private void set_default_shortcut () {
+            var cmd = ID + " --search-and-paste";
+            var keystroke = "<Control><Alt>space";
 
-            perform_key_event ("<Shift_L>", false, 0);
-            perform_key_event ("<Shift_R>", false, 0);
-            perform_key_event ("<Control_L>", false, 0);
-            perform_key_event ("<Control_R>", false, 0);
-            perform_key_event ("<Mod1>", false, 0);
-            perform_key_event ("<Mod2>", false, 0);
-            perform_key_event ("<Mod3>", false, 0);
-            perform_key_event ("<Mod4>", false, 0);
-            perform_key_event ("<Mod5>", false, 0);
+            CustomShortcutSettings.init ();
 
-            Thread.yield ();
-            Thread.usleep (SLEEP_INTERVAL);
-
-            debug ("release_keys end");
-        }
-
-        private void grow_selection (int count, int tries) {
-            debug ("grow_selection start");
-
-            for (int num = 0; num < count; num++) {
-                perform_key_event ("<Shift>Left", true, 0);
-                perform_key_event ("<Shift>Left", false, 0);
+            foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
+                if (shortcut.command == cmd) {
+                    return;
+                }
             }
 
-            Thread.yield ();
-            Thread.usleep (SLEEP_INTERVAL * tries);
-
-            debug ("grow_selection end");
-        }
-
-        private void cancel_selection (string? str) {
-            debug ("cancel_selection start");
-
-            release_keys ();
-
-            // TODO: In case Clipboard access screwy, more robust check would be to see if any text is selected.
-            if (str == null || str.length > 0) {
-                perform_key_event ("Right", true, 0);
-                perform_key_event ("Right", false, 0);
+            var shortcut = CustomShortcutSettings.create_shortcut ();
+            if (shortcut != null) {
+                CustomShortcutSettings.edit_shortcut (shortcut, keystroke);
+                CustomShortcutSettings.edit_command (shortcut, cmd);
             }
-
-            selection.clear ();
-
-            Thread.yield ();
-            Thread.usleep (SLEEP_INTERVAL);
-
-            debug ("cancel_selection end");
         }
 
         /**
@@ -880,7 +866,7 @@ namespace SnippetPixie {
             }
         }
 
-        private void build_ui () {
+        private void show_window () {
             if (get_windows ().length () > 0) {
                 get_windows ().data.present ();
                 return;
@@ -907,6 +893,66 @@ namespace SnippetPixie {
                     app_window.destroy ();
                 }
             });
+        }
+
+        private void show_search_and_paste_window () {
+            snippet_to_paste = null;
+            string? selected_text = "";
+            var selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+
+            if (selection.wait_is_text_available ()) {
+                selected_text = selection.wait_for_text ();
+
+                if (selected_text == null) {
+                    selected_text = "";
+                }
+            }
+
+            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.snippets, selected_text);
+            add_window (search_and_paste_window);
+
+            search_and_paste_window.search_changed.connect ((text) => {
+                if (text == "") {
+                    // TODO: Record and use most recently used.
+                    refresh_search_and_paste_snippets (snippets_manager.snippets);
+                } else {
+                    refresh_search_and_paste_snippets (snippets_manager.search_snippets (text));
+                }
+            });
+
+            // Sometimes wingpanel will focus out the window on startup, so wait 200ms
+            // before connecting the focus out handler
+            Timeout.add (200, () => {
+                search_and_paste_window.focus_out_event.connect (() => {
+                    close_search_and_paste_window ();
+                    return false;
+                });
+
+                return false;
+            });
+
+            search_and_paste_window.paste_snippet.connect ((snippet) => {
+                snippet_to_paste = snippet;
+            });
+        }
+
+        private void refresh_search_and_paste_snippets (Gee.ArrayList<Snippet?> snippets) {
+            search_and_paste_window.clear_list ();
+            foreach (var snippet in snippets) {
+                search_and_paste_window.add_snippet (snippet);
+            }
+        }
+
+        private void close_search_and_paste_window () {
+            if (search_and_paste_window != null) {
+                Timeout.add (250, () => {
+                    search_and_paste_window.destroy ();
+                    search_and_paste_window = null;
+                    return false;
+                });
+            }
+
+            snippet_to_paste = null;
         }
 
         private void save_ui_settings () {
@@ -1039,6 +1085,7 @@ namespace SnippetPixie {
             }
 
             show = true;
+            search_and_paste = false;
             bool start = false;
             bool stop = false;
             string autostart = null;
@@ -1049,17 +1096,18 @@ namespace SnippetPixie {
             bool version = false;
             bool help = false;
 
-            OptionEntry[] options = new OptionEntry[10];
+            OptionEntry[] options = new OptionEntry[11];
             options[0] = { "show", 0, 0, OptionArg.NONE, ref show, _("Show Snippet Pixie's window (default action)"), null };
-            options[1] = { "start", 0, 0, OptionArg.NONE, ref start, _("Start with no window"), null };
-            options[2] = { "stop", 0, 0, OptionArg.NONE, ref stop, _("Fully quit the application, including the background process"), null };
-            options[3] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, _("Turn auto start of Snippet Pixie on login, on, off, or show status of setting"), "{on|off|status}" };
-            options[4] = { "status", 0, 0, OptionArg.NONE, ref status, _("Shows status of the application, exits with status 0 if running, 1 if not"), null };
-            options[5] = { "export", 'e', 0, OptionArg.FILENAME, ref export_file, _("Export snippets to file"), "filename" };
-            options[6] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, _("Import snippets from file, skips snippets where abbreviation already exists"), _("filename") };
-            options[7] = { "force", 0, 0, OptionArg.NONE, ref force, _("If used in conjunction with import, existing snippets with same abbreviation are updated"), null };
-            options[8] = { "version", 0, 0, OptionArg.NONE, ref version, _("Display version number"), null };
-            options[9] = { "help", 'h', 0, OptionArg.NONE, ref help, _("Display this help"), null };
+            options[1] = { "search-and-paste", 0, 0, OptionArg.NONE, ref search_and_paste, _("Show Snippet Pixie's quick search and paste window"), null };
+            options[2] = { "start", 0, 0, OptionArg.NONE, ref start, _("Start with no window"), null };
+            options[3] = { "stop", 0, 0, OptionArg.NONE, ref stop, _("Fully quit the application, including the background process"), null };
+            options[4] = { "autostart", 0, 0, OptionArg.STRING, ref autostart, _("Turn auto start of Snippet Pixie on login, on, off, or show status of setting"), "{on|off|status}" };
+            options[5] = { "status", 0, 0, OptionArg.NONE, ref status, _("Shows status of the application, exits with status 0 if running, 1 if not"), null };
+            options[6] = { "export", 'e', 0, OptionArg.FILENAME, ref export_file, _("Export snippets to file"), "filename" };
+            options[7] = { "import", 'i', 0, OptionArg.FILENAME, ref import_file, _("Import snippets from file, skips snippets where abbreviation already exists"), _("filename") };
+            options[8] = { "force", 0, 0, OptionArg.NONE, ref force, _("If used in conjunction with import, existing snippets with same abbreviation are updated"), null };
+            options[9] = { "version", 0, 0, OptionArg.NONE, ref version, _("Display version number"), null };
+            options[10] = { "help", 'h', 0, OptionArg.NONE, ref help, _("Display this help"), null };
 
             // We have to make an extra copy of the array, since .parse assumes
             // that it can remove strings from the array without freeing them.
@@ -1149,7 +1197,7 @@ namespace SnippetPixie {
                     return snippets_manager.import_from_file (import_file, force);
                 }
 
-                if (start) {
+                if (start || search_and_paste) {
                     show = false;
                 }
 

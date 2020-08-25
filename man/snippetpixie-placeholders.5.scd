@@ -58,6 +58,8 @@ Adding *$$@cursor$$* to a snippet's body will put the cursor in its place after 
 
 If *$$@cursor$$* is entered more than once in a snippet's body or via snippet embedding, then the last occurrence of the cursor placeholder wins.
 
+The @cursor placeholder does not work when using the shortcut to open the search and paste window rather than auto-expansion.
+
 # SEE ALSO
 
 snippetpixie(1)

@@ -20,6 +20,8 @@ Save your often used text snippets and then expand them whenever you type their 
 
 For example:- "spr`" expands to "Snippet Pixie rules!"
 
+For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is `Ctrl`+`Alt`+`Space`) for opening a search window that pastes the selected snippet.
+
 Supports [placeholders](#placeholders):-
 
 * **[Date/Time](#date):** Insert the current or calculated date/time with configurable format.
@@ -30,6 +32,8 @@ Supports [placeholders](#placeholders):-
 ![Snippet Pixie Edit Screen](data/screenshot.png?raw=true)
 
 ![Snippet Pixie Welcome Screen](data/screenshot-2.png?raw=true)
+
+![Snippet Pixie Search and Paste Shortcut Window](data/screenshot-3.png?raw=true)
 
 ## Placeholders
 
@@ -87,8 +91,9 @@ If `$$@cursor$$` is entered more than once in a snippet's body or via snippet em
 
 ## Known Issues
 
-* Firefox loses focus on every keystroke, fixed by blacklisting it, hoping for permanent fix in future.
-* Terminal emulators are problematic, fixed by blacklisting a few popular ones, hoping for permanent fix in future.
+* Auto-expansion only works on accessible applications, use the shortcut to open the search and paste window for other applications such as browsers and Electron based apps.
+* Auto-expansion does not work in terminals, but the shortcut method works with terminals that accept `Ctrl`+`v` for paste such as the elementary OS terminal.
+* The cursor placeholder is not supported when using the shortcut method rather than auto-expansion.
 
 ## Roadmap
 

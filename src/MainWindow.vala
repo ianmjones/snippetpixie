@@ -44,7 +44,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         Object (
             application: application,
             height_request: 600,
-            icon_name: "com.github.bytepixie.snippetpixie",
+            icon_name: Application.ID,
             resizable: true,
             title: "Snippet Pixie",
             width_request: 800
@@ -56,7 +56,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         actions.add_action_entries (action_entries, this);
         insert_action_group ("win", actions);
 
-        settings = new Settings ("com.github.bytepixie.snippetpixie");
+        settings = new Settings (Application.ID);
 
         var window_x = settings.get_int ("window-x");
         var window_y = settings.get_int ("window-y");

@@ -15,6 +15,8 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 *com.github.bytepixie.snippetpixie* [*--show*]
 
+*com.github.bytepixie.snippetpixie* *--search-and-paste*
+
 *com.github.bytepixie.snippetpixie* *--start*
 
 *com.github.bytepixie.snippetpixie* *--stop*
@@ -35,6 +37,13 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 *--show*
 	Show Snippet Pixie's window (default action).
+
+*--search-and-paste*
+	Show Snippet Pixie's quick search and paste window.
+
+	A default shortcut of *Ctrl*+*Alt*+*Space* for using the search and replace window is installed on first run.
+
+	You should change this to your preferred shortcut via your operating system's settings UI or files.
 
 *--start*
 	Start with no window.
@@ -85,8 +94,9 @@ If you do use a trailing space as your trigger character you might find it usefu
 
 # LIMITATIONS
 
-- Firefox loses focus on every keystroke, fixed by blacklisting it, hoping for permanent fix in future.
-- Terminal emulators are problematic, fixed by blacklisting a few popular ones, hoping for permanent fix in future.
+- Auto-expansion only works on accessible applications, use the shortcut to open the search and paste window for other applications such as browsers and Electron based apps.
+- Auto-expansion does not work in terminals, but the shortcut method works with terminals that accept *Ctrl*+*v* for paste such as the elementary OS terminal.
+- The cursor placeholder is not supported when using the shortcut method rather than auto-expansion.
 
 # SEE ALSO
 

@@ -212,6 +212,45 @@ public class SnippetPixie.SnippetsManager : Object {
         return snippet;
     }
 
+    public Gee.ArrayList<Snippet>? search_snippets (string term) {
+        Sqlite.Statement stmt;
+
+        const string query = "
+            SELECT id, abbreviation, body
+            FROM snippets
+            WHERE abbreviation LIKE $ABR
+            OR body LIKE $BODY
+            ORDER BY abbreviation, id;
+        ";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
+            return null;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$ABR");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, "%" + term + "%");
+        param_position = stmt.bind_parameter_index ("$BODY");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, "%" + term + "%");
+
+        var snippets = new Gee.ArrayList<Snippet?> ();
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            Snippet snippet = new Snippet ();
+            snippet.id = stmt.column_int (0);
+            snippet.abbreviation = stmt.column_text (1);
+            snippet.body = stmt.column_text (2);
+            snippets.add (snippet);
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error fetching snippets: %s\n", db.errmsg ());
+            return null;
+        }
+
+        return snippets;
+    }
+
     public int count_snippets_ending_with (string abbreviation) {
         int count = 0;
         Sqlite.Statement stmt;

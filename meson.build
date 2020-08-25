@@ -24,6 +24,11 @@ executable(
     'src/Utils.vala',
     'src/ViewStack.vala',
     'src/WelcomeView.vala',
+    'src/Settings/CustomShortcutSettings.vala',
+    'src/SearchAndPasteWindow.vala',
+    'src/SearchAndPasteList.vala',
+    'src/SearchAndPasteListRow.vala',
+    'src/SearchAndPasteAlertView.vala',
     asresources,
     dependencies: [
         dependency('atspi-2', version: '>=2.0'),

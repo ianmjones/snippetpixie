@@ -9,6 +9,7 @@
   <description>
     <p>Save your often used text snippets and then expand them whenever you type their abbreviation.</p>
     <p>For example:- "spr`" expands to "Snippet Pixie rules!"</p>
+    <p>For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is Ctrl+Alt+Space) for opening a search window that pastes the selected snippet.</p>
     <p>Supports placeholders:-</p>
     <ul>
       <li>Date/Time: Insert the current or calculated date/time with configurable format.</li>
@@ -143,6 +144,9 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/bytepixie/snippetpixie/master/data/screenshot-2.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/bytepixie/snippetpixie/master/data/screenshot-3.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1">
