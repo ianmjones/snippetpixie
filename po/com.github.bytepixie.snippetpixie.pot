@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-23 23:57+0000\n"
+"POT-Creation-Date: 2020-08-25 23:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,129 +17,133 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/Application.vala:851
+#: src/Application.vala:576
 msgid "snippet"
 msgstr ""
 
-#: src/Application.vala:893 src/Application.vala:1011
+#: src/Application.vala:618 src/Application.vala:736
 msgid "date"
 msgstr ""
 
-#: src/Application.vala:893 src/Application.vala:1015
+#: src/Application.vala:618 src/Application.vala:740
 msgid "time"
 msgstr ""
 
-#: src/Application.vala:927
+#: src/Application.vala:652
 #, c-format
 msgid ""
 "Date adjustment does not seem to have a positive or negative integer in "
 "placeholder '%1$s'."
 msgstr ""
 
-#: src/Application.vala:942
+#: src/Application.vala:667
 #, c-format
 msgid ""
 "Date adjustment number %1$d does not seem to start with a positive or "
 "negative integer in placeholder '%2$s'."
 msgstr ""
 
-#: src/Application.vala:973
+#: src/Application.vala:698
 #, c-format
 msgid ""
 "Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', "
 "'D', 'h', 'm' or 's' in placeholder '%2$s'."
 msgstr ""
 
-#: src/Application.vala:981 src/Application.vala:994
+#: src/Application.vala:706 src/Application.vala:719
 #, c-format
 msgid "Oops, date format '%1$s' could not be parsed."
 msgstr ""
 
-#: src/Application.vala:1023
+#: src/Application.vala:748
 msgid "clipboard"
 msgstr ""
 
-#: src/Application.vala:1059
+#: src/Application.vala:784
 msgid "cursor"
 msgstr ""
 
-#: src/Application.vala:1306
+#: src/Application.vala:1100
 msgid "Show Snippet Pixie's window (default action)"
 msgstr ""
 
-#: src/Application.vala:1307
+#: src/Application.vala:1101
+msgid "Show Snippet Pixie's quick search and paste window"
+msgstr ""
+
+#: src/Application.vala:1102
 msgid "Start with no window"
 msgstr ""
 
-#: src/Application.vala:1308
+#: src/Application.vala:1103
 msgid "Fully quit the application, including the background process"
 msgstr ""
 
-#: src/Application.vala:1309
+#: src/Application.vala:1104
 msgid ""
 "Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
 msgstr ""
 
-#: src/Application.vala:1310
+#: src/Application.vala:1105
 msgid ""
 "Shows status of the application, exits with status 0 if running, 1 if not"
 msgstr ""
 
-#: src/Application.vala:1311
+#: src/Application.vala:1106
 msgid "Export snippets to file"
 msgstr ""
 
-#: src/Application.vala:1312
+#: src/Application.vala:1107
 msgid ""
 "Import snippets from file, skips snippets where abbreviation already exists"
 msgstr ""
 
-#: src/Application.vala:1312
+#: src/Application.vala:1107
 msgid "filename"
 msgstr ""
 
-#: src/Application.vala:1313
+#: src/Application.vala:1108
 msgid ""
 "If used in conjunction with import, existing snippets with same abbreviation "
 "are updated"
 msgstr ""
 
-#: src/Application.vala:1314
+#: src/Application.vala:1109
 msgid "Display version number"
 msgstr ""
 
-#: src/Application.vala:1315
+#: src/Application.vala:1110
 msgid "Display this help"
 msgstr ""
 
-#: src/Application.vala:1334
+#: src/Application.vala:1129
 #, c-format
 msgid "error: %s\n"
 msgstr ""
 
-#: src/Application.vala:1335
+#: src/Application.vala:1130
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 
-#: src/Application.vala:1351
+#: src/Application.vala:1146
 msgid "Quitting…\n"
 msgstr ""
 
-#: src/Application.vala:1359
+#: src/Application.vala:1154
 msgid "Running.\n"
 msgstr ""
 
-#: src/Application.vala:1362
+#: src/Application.vala:1157
 msgid "Not Running.\n"
 msgstr ""
 
-#: src/Application.vala:1384
+#: src/Application.vala:1179
 #, c-format
 msgid "Invalid autostart value \"%s\".\n"
 msgstr ""
 
-#: src/Application.vala:1430
+#: src/Application.vala:1225
 msgid "Cannot run without threads.\n"
 msgstr ""
 
