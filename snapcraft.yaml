@@ -1,6 +1,6 @@
 name: snippetpixie
 base: core18
-version: 1.3.4-dev
+version: 1.4.0-dev
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.

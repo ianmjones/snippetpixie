@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.3.4-dev";
+        public const string VERSION = "1.4.0-dev";
 
         private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND * 10;
         private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
