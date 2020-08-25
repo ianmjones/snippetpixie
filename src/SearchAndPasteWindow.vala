@@ -44,7 +44,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     private SearchAndPasteAlertView empty_alert;
     private Gtk.SearchEntry search_headerbar;
 
-    public SearchAndPasteWindow (Gee.ArrayList<Snippet?> snippets) {
+    public SearchAndPasteWindow (Gee.ArrayList<Snippet?> snippets, string selected_text) {
         icon_name = Application.ID;
 
         set_keep_above (true);
@@ -55,6 +55,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         search_headerbar = new Gtk.SearchEntry ();
         search_headerbar.placeholder_text = _("Search Snippets\u2026");
         search_headerbar.hexpand = true;
+        search_headerbar.text = selected_text;
         search_headerbar.key_press_event.connect ((event) => {
             switch (event.keyval) {
                 case Gdk.Key.Escape:

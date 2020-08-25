@@ -46,8 +46,6 @@ namespace SnippetPixie {
         private Atspi.DeviceListener listener;
         private static bool listeners_registered = false;
         private static bool listening = false;
-        private Gtk.Clipboard selection;
-        private Gtk.Clipboard clipboard;
         private Thread check_thread;
         private static bool checking = false;
 
@@ -125,9 +123,6 @@ namespace SnippetPixie {
 
             listener_cb = (Atspi.DeviceListenerCB) on_key_released_event;
             listener = new Atspi.DeviceListener ((owned) listener_cb);
-
-            selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
-            clipboard = Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD);
 
             try {
                 focused_event_listener_cb = (Atspi.EventListenerCB) on_focus;
@@ -902,7 +897,18 @@ namespace SnippetPixie {
 
         private void show_search_and_paste_window () {
             snippet_to_paste = null;
-            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.snippets);
+            string? selected_text = "";
+            var selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
+
+            if (selection.wait_is_text_available ()) {
+                selected_text = selection.wait_for_text ();
+
+                if (selected_text == null) {
+                    selected_text = "";
+                }
+            }
+
+            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.snippets, selected_text);
             add_window (search_and_paste_window);
 
             search_and_paste_window.search_changed.connect ((text) => {
