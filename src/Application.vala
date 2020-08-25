@@ -806,7 +806,7 @@ namespace SnippetPixie {
 
         private void set_default_shortcut () {
             var cmd = ID + " --search-and-paste";
-            var keystroke = "<Super><Alt>space";
+            var keystroke = "<Control><Alt>space";
 
             CustomShortcutSettings.init ();
 
