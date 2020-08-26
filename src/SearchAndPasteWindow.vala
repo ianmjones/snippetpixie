@@ -171,7 +171,6 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         set_titlebar (search_headerbar);
 
         show_all ();
-        get_action_area ().visible = false;
     }
 
     public void add_snippet (Snippet snippet) {

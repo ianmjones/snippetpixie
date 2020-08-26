@@ -812,6 +812,7 @@ namespace SnippetPixie {
 
             foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
                 if (shortcut.command == cmd) {
+                    debug ("Found shortcut: %s, for command: %s, in schema: %s", shortcut.shortcut, shortcut.command, shortcut.relocatable_schema);
                     return;
                 }
             }
