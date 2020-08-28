@@ -29,7 +29,7 @@
       <description>If turned on, then Snippet Pixie will monitor keystrokes in accessible applications and expand an abbreviation when its last character is entered</description>
     </key>
     <key name="search-selected-text" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Should Snippet Pixie's search and paste search box be populated with selected text?</summary>
       <description>If turned on, when Snippet Pixie's shortcut is used to open the search and paste window, the last selected text will be used for the initial snippet search</description>
     </key>
