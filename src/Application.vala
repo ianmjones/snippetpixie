@@ -957,7 +957,7 @@ namespace SnippetPixie {
         }
 
         private void save_ui_settings () {
-            var settings = new Settings ("com.github.bytepixie.snippetpixie");
+            var settings = new Settings (ID);
 
             int window_x, window_y;
             app_window.get_position (out window_x, out window_y);
