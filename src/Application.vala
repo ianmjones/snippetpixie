@@ -34,6 +34,8 @@ namespace SnippetPixie {
         private static Application? _app = null;
         private static bool app_running = false;
 
+        private Settings settings = new Settings (ID);
+
         private bool show = true;
         private bool search_and_paste = false;
         private bool snap = false;
@@ -957,8 +959,6 @@ namespace SnippetPixie {
         }
 
         private void save_ui_settings () {
-            var settings = new Settings (ID);
-
             int window_x, window_y;
             app_window.get_position (out window_x, out window_y);
             settings.set_int ("window-x", window_x);
