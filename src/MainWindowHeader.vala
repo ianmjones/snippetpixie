@@ -40,16 +40,13 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         search_entry.placeholder_text = _("Search Snippets");
         */
 
-        // Preferences menu etc.
+        // Main menu.
         var auto_expand_menuitem = new Gtk.ModelButton ();
         auto_expand_menuitem.text = _("Auto expand snippets");
         auto_expand_menuitem.action_name = MainWindow.ACTION_PREFIX + "auto-expand";
-        var search_selected_text_menuitem = new Gtk.ModelButton ();
-        search_selected_text_menuitem.text = _("Search selected text");
-        search_selected_text_menuitem.action_name = MainWindow.ACTION_PREFIX + "search-selected-text";
-        var focus_search_menuitem = new Gtk.ModelButton ();
-        focus_search_menuitem.text = _("Focus search box");
-        focus_search_menuitem.action_name = MainWindow.ACTION_PREFIX + "focus-search";
+        var shortcut_sub_menuitem = new Gtk.ModelButton ();
+        shortcut_sub_menuitem.text = _("Shortcut");
+        shortcut_sub_menuitem.menu_name = "shortcut";
         var import_menuitem = new Gtk.ModelButton ();
         import_menuitem.text = _("Import snippets…");
         import_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
@@ -60,22 +57,43 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         about_menuitem.text = _("About…");
         about_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ABOUT;
 
-        var popover_grid = new Gtk.Grid ();
-        popover_grid.margin_top = popover_grid.margin_bottom = 3;
-        popover_grid.orientation = Gtk.Orientation.VERTICAL;
-        popover_grid.add (auto_expand_menuitem);
-        //popover_grid.add (shortcut_menuitem);
-        popover_grid.add (search_selected_text_menuitem);
-        popover_grid.add (focus_search_menuitem);
-        popover_grid.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
-        popover_grid.add (import_menuitem);
-        popover_grid.add (export_menuitem);
-        popover_grid.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
-        popover_grid.add (about_menuitem);
-        popover_grid.show_all ();
+        var main_menu = new Gtk.Grid ();
+        main_menu.margin_top = main_menu.margin_bottom = 3;
+        main_menu.orientation = Gtk.Orientation.VERTICAL;
+        main_menu.add (auto_expand_menuitem);
+        main_menu.add (shortcut_sub_menuitem);
+        main_menu.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
+        main_menu.add (import_menuitem);
+        main_menu.add (export_menuitem);
+        main_menu.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
+        main_menu.add (about_menuitem);
+        main_menu.show_all ();
 
-        var popover = new Gtk.Popover (null);
-        popover.add (popover_grid);
+        // Shortcut submenu.
+        var shortcut_menuitem = new Gtk.ModelButton ();
+        shortcut_menuitem.text = _("Shortcut");
+        shortcut_menuitem.menu_name = "main";
+        shortcut_menuitem.centered = true;
+        shortcut_menuitem.inverted = true;
+        var search_selected_text_menuitem = new Gtk.ModelButton ();
+        search_selected_text_menuitem.text = _("Search selected text");
+        search_selected_text_menuitem.action_name = MainWindow.ACTION_PREFIX + "search-selected-text";
+        var focus_search_menuitem = new Gtk.ModelButton ();
+        focus_search_menuitem.text = _("Focus search box");
+        focus_search_menuitem.action_name = MainWindow.ACTION_PREFIX + "focus-search";
+
+        var shortcut_menu = new Gtk.Grid ();
+        shortcut_menu.margin_top = shortcut_menu.margin_bottom = 3;
+        shortcut_menu.orientation = Gtk.Orientation.VERTICAL;
+        shortcut_menu.add (shortcut_menuitem);
+        shortcut_menu.add (search_selected_text_menuitem);
+        shortcut_menu.add (focus_search_menuitem);
+        shortcut_menu.show_all ();
+
+        var popover = new Gtk.PopoverMenu ();
+        popover.add (main_menu);
+        popover.add (shortcut_menu);
+        popover.child_set_property (shortcut_menu, "submenu", "shortcut");
 
         var menu_button = new Gtk.MenuButton ();
         menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
