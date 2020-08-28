@@ -901,13 +901,16 @@ namespace SnippetPixie {
         private void show_search_and_paste_window () {
             snippet_to_paste = null;
             string? selected_text = "";
-            var selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
 
-            if (selection.wait_is_text_available ()) {
-                selected_text = selection.wait_for_text ();
+            if (settings.get_boolean ("search-selected-text")) {
+                var selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
 
-                if (selected_text == null) {
-                    selected_text = "";
+                if (selection.wait_is_text_available ()) {
+                    selected_text = selection.wait_for_text ();
+
+                    if (selected_text == null) {
+                        selected_text = "";
+                    }
                 }
             }
 
