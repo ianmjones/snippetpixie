@@ -50,6 +50,7 @@ namespace SnippetPixie {
         private static bool listening = false;
         private Thread check_thread;
         private static bool checking = false;
+        private bool auto_expand = true;
 
         // For tracking current focused editable text control.
         private Atspi.EventListenerCB focused_event_listener_cb;
@@ -158,6 +159,15 @@ namespace SnippetPixie {
 
             // Register shortcut for paste method.
             set_default_shortcut ();
+
+            // Are we auto expanding too?
+            settings.changed["auto-expand"].connect (() => {
+                auto_expand = settings.get_boolean ("auto-expand");
+
+                // Ensure focused_control is re-evaluated and listeners potentially (de)registered.
+                focused_control = null;
+            });
+            auto_expand = settings.get_boolean ("auto-expand");
         }
 
         private void cleanup () {
@@ -189,6 +199,11 @@ namespace SnippetPixie {
         }
 
         private void register_listeners () {
+            if (! auto_expand) {
+                debug ("register_listeners: auto expand turned off.");
+                return;
+            }
+
             lock (listeners_registered) {
                 if (listeners_registered) {
                     return;
