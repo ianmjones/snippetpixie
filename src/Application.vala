@@ -84,6 +84,9 @@ namespace SnippetPixie {
             if (snippets_manager == null) {
                 snippets_manager = new SnippetsManager ();
 
+                // Register shortcut for paste method.
+                set_default_shortcut ();
+
                 window_removed.connect ((closed_window) => {
                     if (snippet_to_paste != null && snippet_to_paste.body.strip ().length > 0) {
                         // Before trying to paste the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
@@ -156,9 +159,6 @@ namespace SnippetPixie {
                 Atspi.exit ();
                 quit ();
             }
-
-            // Register shortcut for paste method.
-            set_default_shortcut ();
 
             // Are we auto expanding too?
             settings.changed["auto-expand"].connect (() => {
@@ -823,7 +823,7 @@ namespace SnippetPixie {
 
         private void set_default_shortcut () {
             var cmd = ID + " --search-and-paste";
-            var keystroke = "<Control><Alt>space";
+            var keystroke = "<Control>grave";
 
             CustomShortcutSettings.init ();
 

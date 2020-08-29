@@ -82,12 +82,35 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         focus_search_menuitem.text = _("Focus search box");
         focus_search_menuitem.action_name = MainWindow.ACTION_PREFIX + "focus-search";
 
+        var accel = "";
+        string? accel_path = null;
+
+        CustomShortcutSettings.init ();
+        foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
+            if (shortcut.command == Application.ID + " --search-and-paste") {
+                accel = shortcut.shortcut;
+                accel_path = shortcut.relocatable_schema;
+            }
+        }
+
+        var shortcut_label = create_label (_("Shortcut:"));
+        var shortcut_entry = new Widgets.ShortcutEntry (accel);
+        shortcut_entry.halign = Gtk.Align.END;
+        shortcut_entry.margin_end = 12;
+        shortcut_entry.shortcut_changed.connect ((new_shortcut) => {
+            if (accel_path != null) {
+                CustomShortcutSettings.edit_shortcut (accel_path, new_shortcut);
+            }
+        });
+
         var shortcut_menu = new Gtk.Grid ();
         shortcut_menu.margin_top = shortcut_menu.margin_bottom = 3;
         shortcut_menu.orientation = Gtk.Orientation.VERTICAL;
-        shortcut_menu.add (shortcut_menuitem);
-        shortcut_menu.add (search_selected_text_menuitem);
-        shortcut_menu.add (focus_search_menuitem);
+        shortcut_menu.attach (shortcut_menuitem, 0, 0, 2);
+        shortcut_menu.attach (shortcut_label, 0, 1);
+        shortcut_menu.attach (shortcut_entry, 1, 1);
+        shortcut_menu.attach (search_selected_text_menuitem, 0, 2, 2);
+        shortcut_menu.attach (focus_search_menuitem, 0, 3, 2);
         shortcut_menu.show_all ();
 
         var popover = new Gtk.PopoverMenu ();
@@ -109,4 +132,14 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         set_title ("Snippet Pixie");
         show_all ();
      }
+
+    private Gtk.Label create_label (string text) {
+        var label = new Gtk.Label (text);
+        label.hexpand = true;
+        label.halign = Gtk.Align.START;
+        label.margin_start = 15;
+        label.margin_end = 3;
+
+        return label;
+    }
 }
