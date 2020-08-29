@@ -25,6 +25,8 @@ executable(
     'src/ViewStack.vala',
     'src/WelcomeView.vala',
     'src/Settings/CustomShortcutSettings.vala',
+    'src/Settings/Shortcut.vala',
+    'src/Widgets/ShortcutEntry.vala',
     'src/SearchAndPasteWindow.vala',
     'src/SearchAndPasteList.vala',
     'src/SearchAndPasteListRow.vala',

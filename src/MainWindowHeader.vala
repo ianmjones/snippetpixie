@@ -40,24 +40,87 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         search_entry.placeholder_text = _("Search Snippets");
         */
 
-        // Preferences menu etc.
-        var import_menuitem = new Gtk.MenuItem.with_label (_("Import snippets…"));
+        // Main menu.
+        var auto_expand_menuitem = new Gtk.ModelButton ();
+        auto_expand_menuitem.text = _("Auto expand snippets");
+        auto_expand_menuitem.action_name = MainWindow.ACTION_PREFIX + "auto-expand";
+        var shortcut_sub_menuitem = new Gtk.ModelButton ();
+        shortcut_sub_menuitem.text = _("Shortcut");
+        shortcut_sub_menuitem.menu_name = "shortcut";
+        var import_menuitem = new Gtk.ModelButton ();
+        import_menuitem.text = _("Import snippets…");
         import_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
-        var export_menuitem = new Gtk.MenuItem.with_label (_("Export snippets…"));
+        var export_menuitem = new Gtk.ModelButton ();
+        export_menuitem.text = _("Export snippets…");
         export_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
-        var about_menuitem = new Gtk.MenuItem.with_label (_("About…"));
+        var about_menuitem = new Gtk.ModelButton ();
+        about_menuitem.text = _("About…");
         about_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ABOUT;
 
-        var menu = new Gtk.Menu ();
-        menu.append (import_menuitem);
-        menu.append (export_menuitem);
-        menu.append (new Gtk.SeparatorMenuItem ());
-        menu.append (about_menuitem);
-        menu.show_all ();
+        var main_menu = new Gtk.Grid ();
+        main_menu.margin_top = main_menu.margin_bottom = 3;
+        main_menu.orientation = Gtk.Orientation.VERTICAL;
+        main_menu.add (auto_expand_menuitem);
+        main_menu.add (shortcut_sub_menuitem);
+        main_menu.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
+        main_menu.add (import_menuitem);
+        main_menu.add (export_menuitem);
+        main_menu.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
+        main_menu.add (about_menuitem);
+        main_menu.show_all ();
+
+        // Shortcut submenu.
+        var shortcut_menuitem = new Gtk.ModelButton ();
+        shortcut_menuitem.text = _("Shortcut");
+        shortcut_menuitem.menu_name = "main";
+        shortcut_menuitem.centered = true;
+        shortcut_menuitem.inverted = true;
+        var search_selected_text_menuitem = new Gtk.ModelButton ();
+        search_selected_text_menuitem.text = _("Search selected text");
+        search_selected_text_menuitem.action_name = MainWindow.ACTION_PREFIX + "search-selected-text";
+        var focus_search_menuitem = new Gtk.ModelButton ();
+        focus_search_menuitem.text = _("Focus search box");
+        focus_search_menuitem.action_name = MainWindow.ACTION_PREFIX + "focus-search";
+
+        var accel = "";
+        string? accel_path = null;
+
+        CustomShortcutSettings.init ();
+        foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
+            if (shortcut.command == Application.ID + " --search-and-paste") {
+                accel = shortcut.shortcut;
+                accel_path = shortcut.relocatable_schema;
+            }
+        }
+
+        var shortcut_label = create_label (_("Shortcut:"));
+        var shortcut_entry = new Widgets.ShortcutEntry (accel);
+        shortcut_entry.halign = Gtk.Align.END;
+        shortcut_entry.margin_end = 12;
+        shortcut_entry.shortcut_changed.connect ((new_shortcut) => {
+            if (accel_path != null) {
+                CustomShortcutSettings.edit_shortcut (accel_path, new_shortcut);
+            }
+        });
+
+        var shortcut_menu = new Gtk.Grid ();
+        shortcut_menu.margin_top = shortcut_menu.margin_bottom = 3;
+        shortcut_menu.orientation = Gtk.Orientation.VERTICAL;
+        shortcut_menu.attach (shortcut_menuitem, 0, 0, 2);
+        shortcut_menu.attach (shortcut_label, 0, 1);
+        shortcut_menu.attach (shortcut_entry, 1, 1);
+        shortcut_menu.attach (search_selected_text_menuitem, 0, 2, 2);
+        shortcut_menu.attach (focus_search_menuitem, 0, 3, 2);
+        shortcut_menu.show_all ();
+
+        var popover = new Gtk.PopoverMenu ();
+        popover.add (main_menu);
+        popover.add (shortcut_menu);
+        popover.child_set_property (shortcut_menu, "submenu", "shortcut");
 
         var menu_button = new Gtk.MenuButton ();
         menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
-        menu_button.popup = menu;
+        menu_button.popover = popover;
         menu_button.valign = Gtk.Align.CENTER;
 
         show_close_button = true;
@@ -69,4 +132,14 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         set_title ("Snippet Pixie");
         show_all ();
      }
+
+    private Gtk.Label create_label (string text) {
+        var label = new Gtk.Label (text);
+        label.hexpand = true;
+        label.halign = Gtk.Align.START;
+        label.margin_start = 15;
+        label.margin_end = 3;
+
+        return label;
+    }
 }

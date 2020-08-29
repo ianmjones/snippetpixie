@@ -34,6 +34,8 @@ namespace SnippetPixie {
         private static Application? _app = null;
         private static bool app_running = false;
 
+        private Settings settings = new Settings (ID);
+
         private bool show = true;
         private bool search_and_paste = false;
         private bool snap = false;
@@ -48,6 +50,7 @@ namespace SnippetPixie {
         private static bool listening = false;
         private Thread check_thread;
         private static bool checking = false;
+        private bool auto_expand = true;
 
         // For tracking current focused editable text control.
         private Atspi.EventListenerCB focused_event_listener_cb;
@@ -80,6 +83,9 @@ namespace SnippetPixie {
         protected override void activate () {
             if (snippets_manager == null) {
                 snippets_manager = new SnippetsManager ();
+
+                // Register shortcut for paste method.
+                set_default_shortcut ();
 
                 window_removed.connect ((closed_window) => {
                     if (snippet_to_paste != null && snippet_to_paste.body.strip ().length > 0) {
@@ -154,8 +160,14 @@ namespace SnippetPixie {
                 quit ();
             }
 
-            // Register shortcut for paste method.
-            set_default_shortcut ();
+            // Are we auto expanding too?
+            settings.changed["auto-expand"].connect (() => {
+                auto_expand = settings.get_boolean ("auto-expand");
+
+                // Ensure focused_control is re-evaluated and listeners potentially (de)registered.
+                focused_control = null;
+            });
+            auto_expand = settings.get_boolean ("auto-expand");
         }
 
         private void cleanup () {
@@ -187,6 +199,11 @@ namespace SnippetPixie {
         }
 
         private void register_listeners () {
+            if (! auto_expand) {
+                debug ("register_listeners: auto expand turned off.");
+                return;
+            }
+
             lock (listeners_registered) {
                 if (listeners_registered) {
                     return;
@@ -806,7 +823,7 @@ namespace SnippetPixie {
 
         private void set_default_shortcut () {
             var cmd = ID + " --search-and-paste";
-            var keystroke = "<Control><Alt>space";
+            var keystroke = "<Control>grave";
 
             CustomShortcutSettings.init ();
 
@@ -897,15 +914,23 @@ namespace SnippetPixie {
         }
 
         private void show_search_and_paste_window () {
+            if (search_and_paste_window != null) {
+                close_search_and_paste_window ();
+                return;
+            }
+
             snippet_to_paste = null;
             string? selected_text = "";
-            var selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
 
-            if (selection.wait_is_text_available ()) {
-                selected_text = selection.wait_for_text ();
+            if (settings.get_boolean ("search-selected-text")) {
+                var selection = Gtk.Clipboard.get (Gdk.SELECTION_PRIMARY);
 
-                if (selected_text == null) {
-                    selected_text = "";
+                if (selection.wait_is_text_available ()) {
+                    selected_text = selection.wait_for_text ();
+
+                    if (selected_text == null) {
+                        selected_text = "";
+                    }
                 }
             }
 
@@ -957,8 +982,6 @@ namespace SnippetPixie {
         }
 
         private void save_ui_settings () {
-            var settings = new Settings ("com.github.bytepixie.snippetpixie");
-
             int window_x, window_y;
             app_window.get_position (out window_x, out window_y);
             settings.set_int ("window-x", window_x);

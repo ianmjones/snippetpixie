@@ -23,6 +23,21 @@
       <summary>Most recent height of Snippet Pixie</summary>
       <description>Most recent height of Snippet Pixie</description>
     </key>
+    <key name="auto-expand" type="b">
+      <default>true</default>
+      <summary>Should Snippet Pixie auto-expand typed abbreviations?</summary>
+      <description>If turned on, then Snippet Pixie will monitor keystrokes in accessible applications and expand an abbreviation when its last character is entered</description>
+    </key>
+    <key name="search-selected-text" type="b">
+      <default>false</default>
+      <summary>Should Snippet Pixie's search and paste search box be populated with selected text?</summary>
+      <description>If turned on, when Snippet Pixie's shortcut is used to open the search and paste window, the last selected text will be used for the initial snippet search</description>
+    </key>
+    <key name="focus-search" type="b">
+      <default>true</default>
+      <summary>Should Snippet Pixie's search and paste search box be focused when opened?</summary>
+      <description>If turned on, when Snippet Pixie's shortcut is used to open the search and paste window, the search box will have focus and any initial search text will be selected</description>
+    </key>
   </schema>
 </schemalist>
 

@@ -43,6 +43,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     private Gtk.Stack stack;
     private SearchAndPasteAlertView empty_alert;
     private Gtk.SearchEntry search_headerbar;
+    private Settings settings = new Settings (Application.ID);
 
     public SearchAndPasteWindow (Gee.ArrayList<Snippet?> snippets, string selected_text) {
         icon_name = Application.ID;
@@ -171,6 +172,10 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         set_titlebar (search_headerbar);
 
         show_all ();
+
+        if (settings.get_boolean ("focus-search")) {
+            search_headerbar.grab_focus ();
+        }
     }
 
     public void add_snippet (Snippet snippet) {
