@@ -94,7 +94,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         }
 
         var shortcut_label = create_label (_("Shortcut:"));
-        var shortcut_entry = new Widgets.ShortcutEntry (accel);
+        var shortcut_entry = new ShortcutEntry (accel);
         shortcut_entry.halign = Gtk.Align.END;
         shortcut_entry.margin_end = 12;
         shortcut_entry.shortcut_changed.connect ((new_shortcut) => {

@@ -14,7 +14,7 @@
 * with this program. If not, see http://www.gnu.org/licenses/.
 */
 
-public class SnippetPixie.Widgets.ShortcutEntry : Gtk.TreeView {
+public class SnippetPixie.ShortcutEntry : Gtk.TreeView {
 
     public signal void shortcut_changed (string new_shortcut);
 

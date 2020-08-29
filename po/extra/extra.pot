@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: extra\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 23:09+0100\n"
+"POT-Creation-Date: 2020-08-29 22:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,193 +38,200 @@ msgid "For example:- \"spr`\" expands to \"Snippet Pixie rules!\""
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:12
+msgid ""
+"For non-accessible applications such as browsers and Electron apps, there's "
+"a shortcut (default is Ctrl+Alt+Space) for opening a search window that "
+"pastes the selected snippet."
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:13
 msgid "Supports placeholders:-"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:14
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:82
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:15
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:83
 msgid ""
 "Date/Time: Insert the current or calculated date/time with configurable "
 "format."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:15
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:83
-msgid "Clipboard: Insert the text contents of the clipboard."
-msgstr ""
-
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:16
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:84
-msgid "Snippets: Insert snippets in your snippets!"
+msgid "Clipboard: Insert the text contents of the clipboard."
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:17
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:85
+msgid "Snippets: Insert snippets in your snippets!"
+msgstr ""
+
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:18
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:86
 msgid ""
 "Cursor: Set where the cursor should end up after the snippet has expanded."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:19
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
 msgid ""
 "All placeholders are delimited (wrapped) by \"$$\", with the placeholder "
 "name starting with an \"@\" symbol."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:20
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:21
 msgid "For example, today's date can be inserted with \"$$@date$$\"."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:29
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
 msgid "Fixed Snippet Pixie stopping Super+[other-key] from working."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:36
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:37
 msgid "Improved speed of abbreviation expansion."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:37
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:38
 msgid "Fixed abbreviations randomly stopping to expand."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:38
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:39
 msgid "Fixed reliability of abbreviations being recognised."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:39
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:40
 msgid "Fixed abbreviations sometimes expanding with clipboard's contents."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:46
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:47
 msgid "Fixed abbreviations sometimes not expanding."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:53
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:54
 msgid "Vastly improved compatibility with a wide variety of applications."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:54
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:55
 msgid "Now works with Chrome, Chromium and Electron apps."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:55
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:56
 msgid "Much faster abbreviation detection."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:56
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:57
 msgid "Much nicer to the system in general."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:57
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:58
 msgid ""
 "Alas, recent Firefox versions no longer compatible, hope to support in the "
 "future."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:58
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:59
 msgid ""
 "A few terminal emulators blacklisted to avoid problems, hope to support in "
 "the future."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:65
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:66
 msgid "Added man pages for snippetpixie and snippetpixie-placeholders."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:66
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:67
 msgid "Minor fixes for compile time warnings."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:73
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:74
 msgid "Various fixes for snap."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:74
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:75
 msgid ""
 "Updated credits to use GitHub handles and add Nathan as a translator (long "
 "overdue)!"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:80
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:81
 msgid "Added support for placeholders."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:92
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:93
 msgid "Improved active window/control detection when switching via Alt-Tab."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:99
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:100
 msgid "Improved performance, compatibility, and stability."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:100
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:101
 msgid "Added French translations. Huge thanks to @NathanBnm on GitHub! 🇨🇵️"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:107
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:108
 msgid "Added ability to export snippets to a JSON file via menu button."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:108
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:109
 msgid ""
 "Added ability to export snippets to a JSON file via `--export` or `-e` CLI "
 "options."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:109
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:110
 msgid ""
 "Added ability to import snippets from an exported JSON file via menu button "
 "or welcome screen. Shocking! 😱"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:110
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:111
 msgid ""
 "Added ability to import snippets from an exported JSON file via `--import` "
 "or `-i` CLI options. Bet you didn't see that coming! 😉"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:117
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:118
 msgid "1.0 Release!"
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:118
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:119
 msgid "Added Snippet Pixie to login startup items by default."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:119
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:120
 msgid ""
 "Added --autostart={on|off|status} option to CLI for turning autostart on, "
 "off, or getting settings status."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:120
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:121
 msgid "Changed body field to select all text when tabbed into."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:127
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:128
 msgid ""
 "Fixed crash when an application with a large number of controls was "
 "activated."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:128
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:129
 msgid ""
 "Fixed problem with snippets sometimes not expanding when returning to an "
 "application."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:129
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:130
 msgid "Added a splash of colour to the window header."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:130
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:131
 msgid "Added a new application icon."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:136
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:137
 msgid "Initial pre-release."
 msgstr ""
 
-#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:180
+#: data/com.github.bytepixie.snippetpixie.appdata.xml.in:181
 msgid "Byte Pixie"
 msgstr ""
 
