@@ -23,6 +23,8 @@ namespace SnippetPixie {
         public const string ID = "com.github.bytepixie.snippetpixie";
         public const string VERSION = "1.4.0";
 
+        public string SEARCH_AND_PASTE_CMD = "";
+
         private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND * 10;
         private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
         private const ulong SLEEP_INTERVAL_LONG = SLEEP_INTERVAL * 20;
@@ -822,13 +824,16 @@ namespace SnippetPixie {
         }
 
         private void set_default_shortcut () {
-            var cmd = ID + " --search-and-paste";
+            if (SEARCH_AND_PASTE_CMD.length == 0) {
+                return;
+            }
+
             var keystroke = "<Control>grave";
 
             CustomShortcutSettings.init ();
 
             foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
-                if (shortcut.command == cmd) {
+                if (shortcut.command == SEARCH_AND_PASTE_CMD) {
                     debug ("Found shortcut: %s, for command: %s, in schema: %s", shortcut.shortcut, shortcut.command, shortcut.relocatable_schema);
                     return;
                 }
@@ -837,7 +842,7 @@ namespace SnippetPixie {
             var shortcut = CustomShortcutSettings.create_shortcut ();
             if (shortcut != null) {
                 CustomShortcutSettings.edit_shortcut (shortcut, keystroke);
-                CustomShortcutSettings.edit_command (shortcut, cmd);
+                CustomShortcutSettings.edit_command (shortcut, SEARCH_AND_PASTE_CMD);
             }
         }
 
@@ -1106,6 +1111,7 @@ namespace SnippetPixie {
 
             if (snap_env != null && snap_env.contains ("snippetpixie")) {
                 snap = true;
+                SEARCH_AND_PASTE_CMD = "snippetpixie --search-and-paste";
             }
 
             show = true;
@@ -1254,6 +1260,7 @@ namespace SnippetPixie {
             X.init_threads ();
 
             var app = get_default ();
+            app.SEARCH_AND_PASTE_CMD = Path.get_basename (args[0]) + " --search-and-paste";
             var exit_code = app.run (args);
 
             debug ("Application terminated with exit code %d.", exit_code);
