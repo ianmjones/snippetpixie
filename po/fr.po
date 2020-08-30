@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 23:09+0100\n"
+"POT-Creation-Date: 2020-08-30 15:59+0100\n"
 "PO-Revision-Date: 2019-02-06 22:35+0100\n"
 "Last-Translator: NathanBnm\n"
 "Language-Team: Français\n"
@@ -17,162 +17,100 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/Application.vala:576
-#, fuzzy
-msgid "snippet"
+#: src/Settings/Shortcut.vala:30
+msgid "Disabled"
+msgstr ""
+
+#: src/Settings/Shortcut.vala:39
+msgid "Ctrl"
+msgstr ""
+
+#: src/Widgets/MainWindowHeader.vala:26
+msgid "Add snippet"
 msgstr "Ajouter un raccourci"
 
-#: src/Application.vala:618 src/Application.vala:736
-msgid "date"
-msgstr ""
-
-#: src/Application.vala:618 src/Application.vala:740
-msgid "time"
-msgstr ""
-
-#: src/Application.vala:652
-#, c-format
-msgid ""
-"Date adjustment does not seem to have a positive or negative integer in "
-"placeholder '%1$s'."
-msgstr ""
-
-#: src/Application.vala:667
-#, c-format
-msgid ""
-"Date adjustment number %1$d does not seem to start with a positive or "
-"negative integer in placeholder '%2$s'."
-msgstr ""
-
-#: src/Application.vala:698
-#, c-format
-msgid ""
-"Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', "
-"'D', 'h', 'm' or 's' in placeholder '%2$s'."
-msgstr ""
-
-#: src/Application.vala:706 src/Application.vala:719
-#, c-format
-msgid "Oops, date format '%1$s' could not be parsed."
-msgstr ""
-
-#: src/Application.vala:748
-msgid "clipboard"
-msgstr ""
-
-#: src/Application.vala:784
-msgid "cursor"
-msgstr ""
-
-#: src/Application.vala:1100
-msgid "Show Snippet Pixie's window (default action)"
-msgstr "Afficher la fenêtre de Snippet Pixie (action par défaut)"
-
-#: src/Application.vala:1101
+#: src/Widgets/MainWindowHeader.vala:45
 #, fuzzy
-msgid "Show Snippet Pixie's quick search and paste window"
-msgstr "Afficher la fenêtre de Snippet Pixie (action par défaut)"
+msgid "Auto expand snippets"
+msgstr "Ajouter un raccourci"
 
-#: src/Application.vala:1102
-msgid "Start with no window"
-msgstr "Lancer sans fenêtre"
-
-#: src/Application.vala:1103
-msgid "Fully quit the application, including the background process"
-msgstr ""
-"Quitter complétement l'application, ainsi que le processus en arrière-plan"
-
-#: src/Application.vala:1104
-msgid ""
-"Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
-msgstr ""
-"Activer le démarrage automatique de Snippet Pixie lors de la connexion, "
-"activer, désactiver ou afficher l'état des paramètres"
-
-#: src/Application.vala:1105
-msgid ""
-"Shows status of the application, exits with status 0 if running, 1 if not"
-msgstr ""
-"Affiche l'état de l'application, quitte avec le statut 0 si en cours "
-"d'exécution, 1 sinon"
-
-#: src/Application.vala:1106
-msgid "Export snippets to file"
-msgstr "Exporter les raccourcis vers un fichier"
-
-#: src/Application.vala:1107
-msgid ""
-"Import snippets from file, skips snippets where abbreviation already exists"
-msgstr ""
-"Importer des raccourcis à partir d'un fichier, ignore les raccourcis où "
-"l'abréviation existe déjà"
-
-#: src/Application.vala:1107
-msgid "filename"
-msgstr "Nom du fichier"
-
-#: src/Application.vala:1108
-msgid ""
-"If used in conjunction with import, existing snippets with same abbreviation "
-"are updated"
-msgstr ""
-"S'ils sont utilisés conjointement avec l'importation, les raccourcis "
-"existants avec la même abréviation sont mis à jour"
-
-#: src/Application.vala:1109
-msgid "Display version number"
-msgstr "Afficher le numéro de version"
-
-#: src/Application.vala:1110
-msgid "Display this help"
-msgstr "Afficher cette aide"
-
-#: src/Application.vala:1129
-#, c-format
-msgid "error: %s\n"
-msgstr "Erreur : %s\n"
-
-#: src/Application.vala:1130
-#, c-format
-msgid "Run '%s --help' to see a full list of available command line options.\n"
-msgstr ""
-"Exécutez « %s --help » pour visualiser la liste complète des options "
-"disponibles en ligne de commande.\n"
-
-#: src/Application.vala:1146
-msgid "Quitting…\n"
-msgstr "Fermeture…\n"
-
-#: src/Application.vala:1154
-msgid "Running.\n"
-msgstr "En cours d'exécution.\n"
-
-#: src/Application.vala:1157
-msgid "Not Running.\n"
-msgstr "Pas en cours d'exécution.\n"
-
-#: src/Application.vala:1179
-#, c-format
-msgid "Invalid autostart value \"%s\".\n"
-msgstr "Valeur de démarrage automatique invalide « %s ».\n"
-
-#: src/Application.vala:1225
-msgid "Cannot run without threads.\n"
+#: src/Widgets/MainWindowHeader.vala:48 src/Widgets/MainWindowHeader.vala:74
+msgid "Shortcut"
 msgstr ""
 
-#: src/MainWindow.vala:112 src/WelcomeView.vala:24
+#: src/Widgets/MainWindowHeader.vala:51
+msgid "Import snippets…"
+msgstr "Importer des raccourcis…"
+
+#: src/Widgets/MainWindowHeader.vala:54
+msgid "Export snippets…"
+msgstr "Exporter des raccourcis…"
+
+#: src/Widgets/MainWindowHeader.vala:57
+msgid "About…"
+msgstr "À propos…"
+
+#: src/Widgets/MainWindowHeader.vala:79
+msgid "Search selected text"
+msgstr ""
+
+#: src/Widgets/MainWindowHeader.vala:82
+msgid "Focus search box"
+msgstr ""
+
+#: src/Widgets/MainWindowHeader.vala:96
+msgid "Shortcut:"
+msgstr ""
+
+#: src/Widgets/ViewStack.vala:55
+msgid "Abbreviation"
+msgstr "Abbréviation"
+
+#: src/Widgets/ViewStack.vala:64
+msgid "Body"
+msgstr "Corps"
+
+#: src/Widgets/ViewStack.vala:73
+msgid "Remove Snippet"
+msgstr "Supprimer le raccourci"
+
+#: src/Widgets/WelcomeView.vala:22
+msgid "No snippets found."
+msgstr "Aucun raccourci trouvé."
+
+#: src/Widgets/WelcomeView.vala:23
+msgid "Add Snippet"
+msgstr "Ajouter un raccourci"
+
+#: src/Widgets/WelcomeView.vala:23
+msgid "Create your first snippet."
+msgstr "Créez votre premier raccourci."
+
+#: src/Widgets/WelcomeView.vala:24 src/Windows/MainWindow.vala:115
 msgid "Import Snippets"
 msgstr "Importer des raccourcis"
 
-#: src/MainWindow.vala:112
+#: src/Widgets/WelcomeView.vala:24
+msgid "Import previously exported snippets."
+msgstr "Importez vos raccourcis précédemment exportés."
+
+#: src/Widgets/WelcomeView.vala:25
+msgid "Quick Start Guide"
+msgstr "Guide de démarrage rapide"
+
+#: src/Widgets/WelcomeView.vala:25
+msgid "Learn the basics of how to use Snippet Pixie."
+msgstr "Apprenez les bases de l'utilisation de Snippet Pixie."
+
+#: src/Windows/MainWindow.vala:115
 msgid "Import"
 msgstr "Importer"
 
-#: src/MainWindow.vala:119
+#: src/Windows/MainWindow.vala:122
 msgid "Overwrite Duplicate Snippets?"
 msgstr "Écraser les raccourcis en double ?"
 
-#: src/MainWindow.vala:119
+#: src/Windows/MainWindow.vala:122
 msgid ""
 "If any of the snippet abbreviations about to be imported already exist, do "
 "you want to skip importing them or update the existing snippet?"
@@ -181,31 +119,31 @@ msgstr ""
 "déjà, voulez-vous sauter l'importation ou mettre à jour le raccourci "
 "existant ?"
 
-#: src/MainWindow.vala:120
+#: src/Windows/MainWindow.vala:123
 msgid "Update Existing"
 msgstr "Mettre à jour l'existant"
 
-#: src/MainWindow.vala:121
+#: src/Windows/MainWindow.vala:124
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/MainWindow.vala:122
+#: src/Windows/MainWindow.vala:125
 msgid "Skip Duplicates"
 msgstr "Ignorer les doublons"
 
-#: src/MainWindow.vala:149
+#: src/Windows/MainWindow.vala:152
 msgid "Imported Snippets"
 msgstr "Raccourcis importés"
 
-#: src/MainWindow.vala:149
+#: src/Windows/MainWindow.vala:152
 msgid "Your snippets were successfully imported."
 msgstr "Vos raccourcis ont été importés avec succès."
 
-#: src/MainWindow.vala:153
+#: src/Windows/MainWindow.vala:156
 msgid "Failed to import selected file"
 msgstr "Échec de l'importation du fichier sélectionné"
 
-#: src/MainWindow.vala:153
+#: src/Windows/MainWindow.vala:156
 msgid ""
 "Snippet Pixie can currently only import the JSON format files that it also "
 "exports."
@@ -213,50 +151,195 @@ msgstr ""
 "Snippet Pixie ne peut actuellement importer que les fichiers au format JSON "
 "qu'il exporte également."
 
-#: src/MainWindow.vala:161
+#: src/Windows/MainWindow.vala:164
 msgid "Export Snippets"
 msgstr "Exporter les raccourcis"
 
-#: src/MainWindow.vala:169
+#: src/Windows/MainWindow.vala:172
 msgid "Exported Snippets"
 msgstr "Raccourcis exportés"
 
-#: src/MainWindow.vala:169
+#: src/Windows/MainWindow.vala:172
 msgid "Your snippets were successfully exported."
 msgstr "Vos raccourcis ont été exportés avec succès."
 
-#: src/MainWindow.vala:173
+#: src/Windows/MainWindow.vala:176
 msgid "Failed to export to file"
 msgstr "Échec de l'exportation du fichier"
 
-#: src/MainWindow.vala:173
+#: src/Windows/MainWindow.vala:176
 msgid "Something went wrong, sorry."
 msgstr "Une erreur s'est produite, désolé."
 
-#: src/MainWindow.vala:187
+#: src/Windows/MainWindow.vala:190
 msgid "@NathanBnm https://github.com/NathanBnm/"
 msgstr ""
 
-#: src/MainWindow.vala:190
+#: src/Windows/MainWindow.vala:193
 #, fuzzy
 msgid "Copyright © Byte Pixie Limited"
 msgstr "Copyright © Byte Pixie Limited"
 
-#: src/MainWindowHeader.vala:26
-msgid "Add snippet"
-msgstr "Ajouter un raccourci"
-
-#: src/MainWindowHeader.vala:44
-msgid "Import snippets…"
+#: src/Windows/SearchAndPasteWindow.vala:57
+#, fuzzy
+msgid "Search Snippets…"
 msgstr "Importer des raccourcis…"
 
-#: src/MainWindowHeader.vala:46
-msgid "Export snippets…"
-msgstr "Exporter des raccourcis…"
+#: src/Windows/SearchAndPasteWindow.vala:102
+#, fuzzy
+msgid "No Snippets Found"
+msgstr "Aucun raccourci trouvé."
 
-#: src/MainWindowHeader.vala:48
-msgid "About…"
-msgstr "À propos…"
+#: src/Windows/SearchAndPasteWindow.vala:199
+msgid "Try changing search terms."
+msgstr ""
+
+#: src/Windows/SearchAndPasteWindow.vala:201
+msgid "Please add some snippets!"
+msgstr ""
+
+#: src/Application.vala:593
+#, fuzzy
+msgid "snippet"
+msgstr "Ajouter un raccourci"
+
+#: src/Application.vala:635 src/Application.vala:753
+msgid "date"
+msgstr ""
+
+#: src/Application.vala:635 src/Application.vala:757
+msgid "time"
+msgstr ""
+
+#: src/Application.vala:669
+#, c-format
+msgid ""
+"Date adjustment does not seem to have a positive or negative integer in "
+"placeholder '%1$s'."
+msgstr ""
+
+#: src/Application.vala:684
+#, c-format
+msgid ""
+"Date adjustment number %1$d does not seem to start with a positive or "
+"negative integer in placeholder '%2$s'."
+msgstr ""
+
+#: src/Application.vala:715
+#, c-format
+msgid ""
+"Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', "
+"'D', 'h', 'm' or 's' in placeholder '%2$s'."
+msgstr ""
+
+#: src/Application.vala:723 src/Application.vala:736
+#, c-format
+msgid "Oops, date format '%1$s' could not be parsed."
+msgstr ""
+
+#: src/Application.vala:765
+msgid "clipboard"
+msgstr ""
+
+#: src/Application.vala:801
+msgid "cursor"
+msgstr ""
+
+#: src/Application.vala:1124
+msgid "Show Snippet Pixie's window (default action)"
+msgstr "Afficher la fenêtre de Snippet Pixie (action par défaut)"
+
+#: src/Application.vala:1125
+#, fuzzy
+msgid "Show Snippet Pixie's quick search and paste window"
+msgstr "Afficher la fenêtre de Snippet Pixie (action par défaut)"
+
+#: src/Application.vala:1126
+msgid "Start with no window"
+msgstr "Lancer sans fenêtre"
+
+#: src/Application.vala:1127
+msgid "Fully quit the application, including the background process"
+msgstr ""
+"Quitter complétement l'application, ainsi que le processus en arrière-plan"
+
+#: src/Application.vala:1128
+msgid ""
+"Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
+msgstr ""
+"Activer le démarrage automatique de Snippet Pixie lors de la connexion, "
+"activer, désactiver ou afficher l'état des paramètres"
+
+#: src/Application.vala:1129
+msgid ""
+"Shows status of the application, exits with status 0 if running, 1 if not"
+msgstr ""
+"Affiche l'état de l'application, quitte avec le statut 0 si en cours "
+"d'exécution, 1 sinon"
+
+#: src/Application.vala:1130
+msgid "Export snippets to file"
+msgstr "Exporter les raccourcis vers un fichier"
+
+#: src/Application.vala:1131
+msgid ""
+"Import snippets from file, skips snippets where abbreviation already exists"
+msgstr ""
+"Importer des raccourcis à partir d'un fichier, ignore les raccourcis où "
+"l'abréviation existe déjà"
+
+#: src/Application.vala:1131
+msgid "filename"
+msgstr "Nom du fichier"
+
+#: src/Application.vala:1132
+msgid ""
+"If used in conjunction with import, existing snippets with same abbreviation "
+"are updated"
+msgstr ""
+"S'ils sont utilisés conjointement avec l'importation, les raccourcis "
+"existants avec la même abréviation sont mis à jour"
+
+#: src/Application.vala:1133
+msgid "Display version number"
+msgstr "Afficher le numéro de version"
+
+#: src/Application.vala:1134
+msgid "Display this help"
+msgstr "Afficher cette aide"
+
+#: src/Application.vala:1153
+#, c-format
+msgid "error: %s\n"
+msgstr "Erreur : %s\n"
+
+#: src/Application.vala:1154
+#, c-format
+msgid "Run '%s --help' to see a full list of available command line options.\n"
+msgstr ""
+"Exécutez « %s --help » pour visualiser la liste complète des options "
+"disponibles en ligne de commande.\n"
+
+#: src/Application.vala:1170
+msgid "Quitting…\n"
+msgstr "Fermeture…\n"
+
+#: src/Application.vala:1178
+msgid "Running.\n"
+msgstr "En cours d'exécution.\n"
+
+#: src/Application.vala:1181
+msgid "Not Running.\n"
+msgstr "Pas en cours d'exécution.\n"
+
+#: src/Application.vala:1203
+#, c-format
+msgid "Invalid autostart value \"%s\".\n"
+msgstr "Valeur de démarrage automatique invalide « %s ».\n"
+
+#: src/Application.vala:1249
+msgid "Cannot run without threads.\n"
+msgstr ""
 
 #: src/Snippet.vala:22
 msgid "new"
@@ -265,39 +348,3 @@ msgstr "Nouveau"
 #: src/Snippet.vala:23
 msgid "Something to be replaced"
 msgstr "Quelque chose à remplacer"
-
-#: src/ViewStack.vala:55
-msgid "Abbreviation"
-msgstr "Abbréviation"
-
-#: src/ViewStack.vala:64
-msgid "Body"
-msgstr "Corps"
-
-#: src/ViewStack.vala:73
-msgid "Remove Snippet"
-msgstr "Supprimer le raccourci"
-
-#: src/WelcomeView.vala:22
-msgid "No snippets found."
-msgstr "Aucun raccourci trouvé."
-
-#: src/WelcomeView.vala:23
-msgid "Add Snippet"
-msgstr "Ajouter un raccourci"
-
-#: src/WelcomeView.vala:23
-msgid "Create your first snippet."
-msgstr "Créez votre premier raccourci."
-
-#: src/WelcomeView.vala:24
-msgid "Import previously exported snippets."
-msgstr "Importez vos raccourcis précédemment exportés."
-
-#: src/WelcomeView.vala:25
-msgid "Quick Start Guide"
-msgstr "Guide de démarrage rapide"
-
-#: src/WelcomeView.vala:25
-msgid "Learn the basics of how to use Snippet Pixie."
-msgstr "Apprenez les bases de l'utilisation de Snippet Pixie."
