@@ -41,9 +41,9 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 *--search-and-paste*
 	Show Snippet Pixie's quick search and paste window.
 
-	A default shortcut of *Ctrl*+*Alt*+*Space* for using the search and replace window is installed on first run.
+	A default shortcut of *Ctrl*+*`* for using the search and replace window is installed on first run.
 
-	You should change this to your preferred shortcut via your operating system's settings UI or files.
+	You should change this to your preferred shortcut via Snippet Pixie's preferences menu or your operating system's settings UI or files.
 
 *--start*
 	Start with no window.

@@ -20,7 +20,7 @@ Save your often used text snippets and then expand them whenever you type their 
 
 For example:- "spr`" expands to "Snippet Pixie rules!"
 
-For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is `Ctrl`+`Alt`+`Space`) for opening a search window that pastes the selected snippet.
+For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is Ctrl+`) for opening a search window that pastes the selected snippet.
 
 Supports [placeholders](#placeholders):-
 
