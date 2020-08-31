@@ -169,6 +169,7 @@ namespace SnippetPixie {
 
                 // Ensure focused_control is re-evaluated and listeners potentially (de)registered.
                 focused_control = null;
+                last_focused_control = null;
             });
             auto_expand = settings.get_boolean ("auto-expand");
         }
@@ -264,6 +265,7 @@ namespace SnippetPixie {
                     return;
                 }
                 focused_control = null;
+                last_focused_control = null;
                 listeners_registered = false;
 
                 debug ("De-registering listeners...");
