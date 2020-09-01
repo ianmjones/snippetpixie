@@ -29,6 +29,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     """
         .large-search-entry {
             font-size: 175%;
+            color: #1a1a1a;
         }
     """;
 
