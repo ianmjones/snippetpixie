@@ -215,13 +215,13 @@ public class SnippetPixie.SnippetsManager : Object {
     public Gee.ArrayList<Snippet>? search_snippets (string term) {
         Sqlite.Statement stmt;
 
-        const string query = "
+        const string query = """
             SELECT id, abbreviation, body
             FROM snippets
             WHERE abbreviation LIKE $ABR
             OR body LIKE $BODY
             ORDER BY abbreviation, id;
-        ";
+        """;
         int ec = db.prepare_v2 (query, query.length, out stmt);
         if (ec != Sqlite.OK) {
             warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());

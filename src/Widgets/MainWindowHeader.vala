@@ -87,7 +87,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         CustomShortcutSettings.init ();
         foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
-            if (shortcut.command == Application.ID + " --search-and-paste") {
+            if (shortcut.command == Application.get_default ().SEARCH_AND_PASTE_CMD) {
                 accel = shortcut.shortcut;
                 accel_path = shortcut.relocatable_schema;
             }

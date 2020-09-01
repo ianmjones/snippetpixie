@@ -21,7 +21,9 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.4.0";
+        public const string VERSION = "1.4.1";
+
+        public string SEARCH_AND_PASTE_CMD = "";
 
         private const ulong SLEEP_INTERVAL = (ulong) TimeSpan.MILLISECOND * 10;
         private const ulong SLEEP_INTERVAL_RETRY = SLEEP_INTERVAL * 2;
@@ -56,6 +58,7 @@ namespace SnippetPixie {
         private Atspi.EventListenerCB focused_event_listener_cb;
         private Atspi.EventListenerCB text_changed_event_listener_cb;
         private Atspi.EditableText? focused_control = null;
+        private Atspi.Accessible? last_focused_control = null;
 
         // For tracking window events that mean focused control has likely changed.
         private Atspi.EventListenerCB window_deactivated_event_listener_cb;
@@ -166,6 +169,7 @@ namespace SnippetPixie {
 
                 // Ensure focused_control is re-evaluated and listeners potentially (de)registered.
                 focused_control = null;
+                last_focused_control = null;
             });
             auto_expand = settings.get_boolean ("auto-expand");
         }
@@ -261,6 +265,7 @@ namespace SnippetPixie {
                     return;
                 }
                 focused_control = null;
+                last_focused_control = null;
                 listeners_registered = false;
 
                 debug ("De-registering listeners...");
@@ -318,10 +323,28 @@ namespace SnippetPixie {
         [CCode (instance_pos = -1)]
         private bool on_focus (Atspi.Event event) {
             try {
-                // Quick shortcut out if control not changed.
+                // Quick shortcut out if editable text focused control not changed.
                 if (focused_control != null && focused_control == event.source) {
                     return false;
                 }
+
+                // Quick shortcut out if control doesn't have keyboard focus.
+                var state = event.source.get_state_set ();
+                if (
+                    ! state.contains (Atspi.StateType.EDITABLE) ||
+                    ! state.contains (Atspi.StateType.FOCUSABLE) ||
+                    ! state.contains (Atspi.StateType.FOCUSED) ||
+                    ! state.contains (Atspi.StateType.SHOWING) ||
+                    ! state.contains (Atspi.StateType.VISIBLE)
+                ) {
+                    return false;
+                }
+
+                // Quick shortcut out if some unusable focused control not changed.
+                if (focused_control == null && last_focused_control != null && last_focused_control == event.source) {
+                    return false;
+                }
+                last_focused_control = event.source;
 
                 var app = event.source.get_application ();
                 debug ("!!! FOCUS EVENT Type ='%s', Source: '%s'", event.type, app.get_name ());
@@ -822,13 +845,16 @@ namespace SnippetPixie {
         }
 
         private void set_default_shortcut () {
-            var cmd = ID + " --search-and-paste";
+            if (SEARCH_AND_PASTE_CMD.length == 0) {
+                return;
+            }
+
             var keystroke = "<Control>grave";
 
             CustomShortcutSettings.init ();
 
             foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
-                if (shortcut.command == cmd) {
+                if (shortcut.command == SEARCH_AND_PASTE_CMD) {
                     debug ("Found shortcut: %s, for command: %s, in schema: %s", shortcut.shortcut, shortcut.command, shortcut.relocatable_schema);
                     return;
                 }
@@ -837,7 +863,7 @@ namespace SnippetPixie {
             var shortcut = CustomShortcutSettings.create_shortcut ();
             if (shortcut != null) {
                 CustomShortcutSettings.edit_shortcut (shortcut, keystroke);
-                CustomShortcutSettings.edit_command (shortcut, cmd);
+                CustomShortcutSettings.edit_command (shortcut, SEARCH_AND_PASTE_CMD);
             }
         }
 
@@ -1106,6 +1132,7 @@ namespace SnippetPixie {
 
             if (snap_env != null && snap_env.contains ("snippetpixie")) {
                 snap = true;
+                SEARCH_AND_PASTE_CMD = "snippetpixie --search-and-paste";
             }
 
             show = true;
@@ -1254,6 +1281,7 @@ namespace SnippetPixie {
             X.init_threads ();
 
             var app = get_default ();
+            app.SEARCH_AND_PASTE_CMD = Path.get_basename (args[0]) + " --search-and-paste";
             var exit_code = app.run (args);
 
             debug ("Application terminated with exit code %d.", exit_code);

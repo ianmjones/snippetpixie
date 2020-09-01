@@ -1,215 +1,209 @@
-# French translations for com.github.bytepixie.snippetpixie package.
-# Copyright (C) 2019 THE com.github.bytepixie.snippetpixie'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the com.github.bytepixie.snippetpixie package.
-# NathanBnm, 2019.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-30 15:59+0100\n"
-"PO-Revision-Date: 2019-02-06 22:35+0100\n"
-"Last-Translator: NathanBnm\n"
-"Language-Team: Français\n"
-"Language: fr\n"
+"PO-Revision-Date: 2020-09-01 13:10+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"Language-Team: \n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.4.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/Settings/Shortcut.vala:30
 msgid "Disabled"
-msgstr ""
+msgstr "Uitgeschakeld"
 
 #: src/Settings/Shortcut.vala:39
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #: src/Widgets/MainWindowHeader.vala:26
 msgid "Add snippet"
-msgstr "Ajouter un raccourci"
+msgstr "Knipsel toevoegen"
 
 #: src/Widgets/MainWindowHeader.vala:45
-#, fuzzy
 msgid "Auto expand snippets"
-msgstr "Ajouter un raccourci"
+msgstr "Knipsels automatisch invoegen"
 
 #: src/Widgets/MainWindowHeader.vala:48 src/Widgets/MainWindowHeader.vala:74
 msgid "Shortcut"
-msgstr ""
+msgstr "Sneltoets"
 
 #: src/Widgets/MainWindowHeader.vala:51
 msgid "Import snippets…"
-msgstr "Importer des raccourcis…"
+msgstr "Knipsels importeren…"
 
 #: src/Widgets/MainWindowHeader.vala:54
 msgid "Export snippets…"
-msgstr "Exporter des raccourcis…"
+msgstr "Knipsels exporteren…"
 
 #: src/Widgets/MainWindowHeader.vala:57
 msgid "About…"
-msgstr "À propos…"
+msgstr "Over…"
 
 #: src/Widgets/MainWindowHeader.vala:79
 msgid "Search selected text"
-msgstr ""
+msgstr "Zoeken naar geselecteerde tekst"
 
 #: src/Widgets/MainWindowHeader.vala:82
 msgid "Focus search box"
-msgstr ""
+msgstr "Zoekvak focussen"
 
 #: src/Widgets/MainWindowHeader.vala:96
 msgid "Shortcut:"
-msgstr ""
+msgstr "Sneltoets:"
 
 #: src/Widgets/ViewStack.vala:55
 msgid "Abbreviation"
-msgstr "Abbréviation"
+msgstr "Afkorting"
 
 #: src/Widgets/ViewStack.vala:64
 msgid "Body"
-msgstr "Corps"
+msgstr "Inhoud"
 
 #: src/Widgets/ViewStack.vala:73
 msgid "Remove Snippet"
-msgstr "Supprimer le raccourci"
+msgstr "Knipsel verwijderen"
 
 #: src/Widgets/WelcomeView.vala:22
 msgid "No snippets found."
-msgstr "Aucun raccourci trouvé."
+msgstr "Je hebt nog geen knipsels."
 
 #: src/Widgets/WelcomeView.vala:23
 msgid "Add Snippet"
-msgstr "Ajouter un raccourci"
+msgstr "Knipsel toevoegen"
 
 #: src/Widgets/WelcomeView.vala:23
 msgid "Create your first snippet."
-msgstr "Créez votre premier raccourci."
+msgstr "Maak je eerste knipsel."
 
 #: src/Widgets/WelcomeView.vala:24 src/Windows/MainWindow.vala:115
 msgid "Import Snippets"
-msgstr "Importer des raccourcis"
+msgstr "Knipsels importeren"
 
 #: src/Widgets/WelcomeView.vala:24
 msgid "Import previously exported snippets."
-msgstr "Importez vos raccourcis précédemment exportés."
+msgstr "Importeer eerder geëxporteerde knipsels."
 
 #: src/Widgets/WelcomeView.vala:25
 msgid "Quick Start Guide"
-msgstr "Guide de démarrage rapide"
+msgstr "Snelstartgids"
 
 #: src/Widgets/WelcomeView.vala:25
 msgid "Learn the basics of how to use Snippet Pixie."
-msgstr "Apprenez les bases de l'utilisation de Snippet Pixie."
+msgstr "Leer hoe je met Snippet Pixie werkt."
 
 #: src/Windows/MainWindow.vala:115
 msgid "Import"
-msgstr "Importer"
+msgstr "Importeren"
 
 #: src/Windows/MainWindow.vala:122
 msgid "Overwrite Duplicate Snippets?"
-msgstr "Écraser les raccourcis en double ?"
+msgstr "Duplicaten overschrijven?"
 
 #: src/Windows/MainWindow.vala:122
 msgid ""
 "If any of the snippet abbreviations about to be imported already exist, do "
 "you want to skip importing them or update the existing snippet?"
 msgstr ""
-"Si l'un des raccourcis d'abréviation sur le point d'être importé existe "
-"déjà, voulez-vous sauter l'importation ou mettre à jour le raccourci "
-"existant ?"
+"Als de te importeren knipsels  zijn, wil je ze dan overslaan of de aanwezige "
+"knipsels bijwerken?"
 
 #: src/Windows/MainWindow.vala:123
 msgid "Update Existing"
-msgstr "Mettre à jour l'existant"
+msgstr "Bestaande bijwerken"
 
 #: src/Windows/MainWindow.vala:124
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "Annuleren"
 
 #: src/Windows/MainWindow.vala:125
 msgid "Skip Duplicates"
-msgstr "Ignorer les doublons"
+msgstr "Duplicaten overslaan"
 
 #: src/Windows/MainWindow.vala:152
 msgid "Imported Snippets"
-msgstr "Raccourcis importés"
+msgstr "Geïmporteerde knipsels"
 
 #: src/Windows/MainWindow.vala:152
 msgid "Your snippets were successfully imported."
-msgstr "Vos raccourcis ont été importés avec succès."
+msgstr "Je knipsels zijn geïmporteerd."
 
 #: src/Windows/MainWindow.vala:156
 msgid "Failed to import selected file"
-msgstr "Échec de l'importation du fichier sélectionné"
+msgstr "Importeren mislukt"
 
 #: src/Windows/MainWindow.vala:156
 msgid ""
 "Snippet Pixie can currently only import the JSON format files that it also "
 "exports."
 msgstr ""
-"Snippet Pixie ne peut actuellement importer que les fichiers au format JSON "
-"qu'il exporte également."
+"Snippet Pixie kan alleen eerder geëxporteerde json-bestanden importeren."
 
 #: src/Windows/MainWindow.vala:164
 msgid "Export Snippets"
-msgstr "Exporter les raccourcis"
+msgstr "Knipsels exporteren"
 
 #: src/Windows/MainWindow.vala:172
 msgid "Exported Snippets"
-msgstr "Raccourcis exportés"
+msgstr "Geëxporteerde knipsels"
 
 #: src/Windows/MainWindow.vala:172
 msgid "Your snippets were successfully exported."
-msgstr "Vos raccourcis ont été exportés avec succès."
+msgstr "Je knipsels zijn geëxporteerd."
 
 #: src/Windows/MainWindow.vala:176
 msgid "Failed to export to file"
-msgstr "Échec de l'exportation du fichier"
+msgstr "Exporteren mislukt"
 
 #: src/Windows/MainWindow.vala:176
 msgid "Something went wrong, sorry."
-msgstr "Une erreur s'est produite, désolé."
+msgstr "Er is iets misgegaan."
 
 #: src/Windows/MainWindow.vala:190
 msgid "@NathanBnm https://github.com/NathanBnm/"
-msgstr ""
+msgstr "@NathanBnm https://github.com/NathanBnm/"
 
 #: src/Windows/MainWindow.vala:193
-#, fuzzy
 msgid "Copyright © Byte Pixie Limited"
 msgstr "Copyright © Byte Pixie Limited"
 
 #: src/Windows/SearchAndPasteWindow.vala:57
-#, fuzzy
 msgid "Search Snippets…"
-msgstr "Importer des raccourcis…"
+msgstr "Knipsels doorzoeken…"
 
 #: src/Windows/SearchAndPasteWindow.vala:102
-#, fuzzy
 msgid "No Snippets Found"
-msgstr "Aucun raccourci trouvé."
+msgstr "Geen knipsel gevonden"
 
 #: src/Windows/SearchAndPasteWindow.vala:199
 msgid "Try changing search terms."
-msgstr ""
+msgstr "Probeer andere zoektermen."
 
 #: src/Windows/SearchAndPasteWindow.vala:201
 msgid "Please add some snippets!"
-msgstr ""
+msgstr "Voeg knipsels toe!"
 
 #: src/Application.vala:593
-#, fuzzy
 msgid "snippet"
-msgstr "Ajouter un raccourci"
+msgstr "knipsel"
 
 #: src/Application.vala:635 src/Application.vala:753
 msgid "date"
-msgstr ""
+msgstr "datum"
 
 #: src/Application.vala:635 src/Application.vala:757
 msgid "time"
-msgstr ""
+msgstr "tijd"
 
 #: src/Application.vala:669
 #, c-format
@@ -217,6 +211,8 @@ msgid ""
 "Date adjustment does not seem to have a positive or negative integer in "
 "placeholder '%1$s'."
 msgstr ""
+"De datumaanpassing lijkt geen positief of negatief geheel getal te bevatten "
+"in plaatshouder '%1$s'."
 
 #: src/Application.vala:684
 #, c-format
@@ -224,6 +220,8 @@ msgid ""
 "Date adjustment number %1$d does not seem to start with a positive or "
 "negative integer in placeholder '%2$s'."
 msgstr ""
+"De datumaanpassing %1$d lijkt niet te beginnen met een positief of negatief "
+"geheel in plaatshouder '%2$s'."
 
 #: src/Application.vala:715
 #, c-format
@@ -231,120 +229,115 @@ msgid ""
 "Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', "
 "'D', 'h', 'm' or 's' in placeholder '%2$s'."
 msgstr ""
+"De datumaanpassing %1$d lijkt niet te eindigen op 'Y', 'M', 'W', 'D', 'h', "
+"'m' of 's' in plaatshouder '%2$s'."
 
 #: src/Application.vala:723 src/Application.vala:736
 #, c-format
 msgid "Oops, date format '%1$s' could not be parsed."
-msgstr ""
+msgstr "De datumopmaak '%1$s' kan niet worden verwerkt."
 
 #: src/Application.vala:765
 msgid "clipboard"
-msgstr ""
+msgstr "klembord"
 
 #: src/Application.vala:801
 msgid "cursor"
-msgstr ""
+msgstr "cursor"
 
 #: src/Application.vala:1124
 msgid "Show Snippet Pixie's window (default action)"
-msgstr "Afficher la fenêtre de Snippet Pixie (action par défaut)"
+msgstr "Snippet Pixie's venster tonen (standaardactie)"
 
 #: src/Application.vala:1125
-#, fuzzy
 msgid "Show Snippet Pixie's quick search and paste window"
-msgstr "Afficher la fenêtre de Snippet Pixie (action par défaut)"
+msgstr "Snippet Pixie's snelzoekvak-en-plakvenster tonen"
 
 #: src/Application.vala:1126
 msgid "Start with no window"
-msgstr "Lancer sans fenêtre"
+msgstr "Geminimaliseerd starten"
 
 #: src/Application.vala:1127
 msgid "Fully quit the application, including the background process"
-msgstr ""
-"Quitter complétement l'application, ainsi que le processus en arrière-plan"
+msgstr "Sluit de toepassing volledig af, inclusief het achtergrondproces"
 
 #: src/Application.vala:1128
 msgid ""
 "Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
 msgstr ""
-"Activer le démarrage automatique de Snippet Pixie lors de la connexion, "
-"activer, désactiver ou afficher l'état des paramètres"
+"Start Snippet Pixie automatisch op of toon de status van deze instelling"
 
 #: src/Application.vala:1129
 msgid ""
 "Shows status of the application, exits with status 0 if running, 1 if not"
 msgstr ""
-"Affiche l'état de l'application, quitte avec le statut 0 si en cours "
-"d'exécution, 1 sinon"
+"Toon de toepassingsstatus, sluit af met status 0 (indien actief) of (indien "
+"niet actief)"
 
 #: src/Application.vala:1130
 msgid "Export snippets to file"
-msgstr "Exporter les raccourcis vers un fichier"
+msgstr "Knipsels exporteren naar bestand"
 
 #: src/Application.vala:1131
 msgid ""
 "Import snippets from file, skips snippets where abbreviation already exists"
-msgstr ""
-"Importer des raccourcis à partir d'un fichier, ignore les raccourcis où "
-"l'abréviation existe déjà"
+msgstr "Importeer knipsels uit een bestand en sla bestaande knipsels over"
 
 #: src/Application.vala:1131
 msgid "filename"
-msgstr "Nom du fichier"
+msgstr "bestandsnaam"
 
 #: src/Application.vala:1132
 msgid ""
 "If used in conjunction with import, existing snippets with same abbreviation "
 "are updated"
-msgstr ""
-"S'ils sont utilisés conjointement avec l'importation, les raccourcis "
-"existants avec la même abréviation sont mis à jour"
+msgstr "Gebruik tezamen met importeren om bestaande knipsels ook bij te werken"
 
 #: src/Application.vala:1133
 msgid "Display version number"
-msgstr "Afficher le numéro de version"
+msgstr "Toon het versienummer"
 
 #: src/Application.vala:1134
 msgid "Display this help"
-msgstr "Afficher cette aide"
+msgstr "Toon deze hulp"
 
 #: src/Application.vala:1153
 #, c-format
 msgid "error: %s\n"
-msgstr "Erreur : %s\n"
+msgstr "fout: %s\n"
 
 #: src/Application.vala:1154
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
-"Exécutez « %s --help » pour visualiser la liste complète des options "
-"disponibles en ligne de commande.\n"
+"Voer '%s --help' uit om een volledige lijst met opdrachtregelopties te "
+"tonen.\n"
 
 #: src/Application.vala:1170
 msgid "Quitting…\n"
-msgstr "Fermeture…\n"
+msgstr "Bezig met afsluiten…\n"
 
 #: src/Application.vala:1178
 msgid "Running.\n"
-msgstr "En cours d'exécution.\n"
+msgstr "Actief.\n"
 
 #: src/Application.vala:1181
 msgid "Not Running.\n"
-msgstr "Pas en cours d'exécution.\n"
+msgstr "Niet actief.\n"
 
 #: src/Application.vala:1203
 #, c-format
 msgid "Invalid autostart value \"%s\".\n"
-msgstr "Valeur de démarrage automatique invalide « %s ».\n"
+msgstr "Ongeldige automatisch opstarten-waarde \"%s\".\n"
 
 #: src/Application.vala:1249
 msgid "Cannot run without threads.\n"
-msgstr ""
+msgstr "Kan niet worden uitgevoerd zonder threads.\n"
 
 #: src/Snippet.vala:22
 msgid "new"
-msgstr "Nouveau"
+msgstr "nieuw"
 
 #: src/Snippet.vala:23
 msgid "Something to be replaced"
-msgstr "Quelque chose à remplacer"
+msgstr "Te vervangen"

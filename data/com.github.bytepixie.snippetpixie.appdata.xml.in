@@ -24,6 +24,16 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.4.1" date="2020-09-02">
+      <description>
+        <ul>
+          <li>Added Dutch translations. Huge thanks to @Vistaus on GitHub! 🇳🇱</li>
+          <li>Fixed occasional performance issues when auto-expand turned on.</li>
+          <li>Fixed incorrect shortcut command being saved when binary file renamed.</li>
+          <li>Fixed visibility of Search and Paste entry text in some circumstances.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.0" date="2020-08-30">
       <description>
         <ul>
