@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.4.0";
+        public const string VERSION = "1.4.1";
 
         public string SEARCH_AND_PASTE_CMD = "";
 

@@ -1,3 +1,12 @@
+com.github.bytepixie.snippetpixie (1.4.1) xenial; urgency=medium
+
+  * Added Dutch translations. Huge thanks to @Vistaus on GitHub! 🇳🇱
+  * Fixed occasional performance issues when auto-expand turned on.
+  * Fixed incorrect shortcut command being saved when binary file renamed.
+  * Fixed visibility of Search and Paste entry text in some circumstances.
+
+ -- Byte Pixie <hello@bytepixie.com>  Wed, 02 Sep 2020 00:11:22 +0000
+
 com.github.bytepixie.snippetpixie (1.4.0) xenial; urgency=medium
 
   * Added Search and Paste window, opened with shortcut Ctrl+` by default.
