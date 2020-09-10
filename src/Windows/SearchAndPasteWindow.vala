@@ -47,6 +47,12 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     private Settings settings = new Settings (Application.ID);
 
     public SearchAndPasteWindow (Gee.ArrayList<Snippet?> snippets, string selected_text) {
+        Gtk.Container content_area = get_content_area () as Gtk.Container;
+
+        if (content_area == null) {
+            return;
+        }
+
         icon_name = Application.ID;
 
         set_keep_above (true);
@@ -96,7 +102,13 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         list_box_scroll.show_all ();
 
         list_box.row_activated.connect ((row) => {
-            paste_snippet ((row as SearchAndPasteListRow).snippet);
+            SearchAndPasteListRow sprow = row as SearchAndPasteListRow;
+
+            if (sprow == null) {
+                return;
+            }
+
+            paste_snippet (sprow.snippet);
             destroy ();
         });
 
@@ -113,7 +125,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
             add_snippet (snippet);
         }
 
-        (get_content_area () as Gtk.Container).add (stack);
+        content_area.add (stack);
 
         key_press_event.connect ((event) => {
             switch (event.keyval) {
