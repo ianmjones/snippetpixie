@@ -25,6 +25,5 @@ public class SnippetPixie.SearchAndPasteList : Gtk.ListBox {
 
     public SearchAndPasteList () {
         set_selection_mode (Gtk.SelectionMode.SINGLE);
-        //activate_on_single_click = false;
     }
 }

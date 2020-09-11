@@ -29,14 +29,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     """
         .large-search-entry {
             font-size: 175%;
-            color: #1a1a1a;
-        }
-    """;
-
-    private const string BACKGROUND_CSS =
-    """
-        .background {
-            background-color: #fff;
+            border: none;
         }
     """;
 
@@ -58,7 +51,7 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         set_keep_above (true);
         window_position = Gtk.WindowPosition.CENTER;
 
-        set_default_size (768, 500);
+        set_default_size (640, 480);
 
         search_headerbar = new Gtk.SearchEntry ();
         search_headerbar.placeholder_text = _("Search Snippets\u2026");
@@ -86,14 +79,6 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         var style_context = search_headerbar.get_style_context ();
         style_context.add_provider (font_size_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
         style_context.add_class ("large-search-entry");
-
-        var background_provider = new Gtk.CssProvider ();
-        try {
-            background_provider.load_from_data (BACKGROUND_CSS, -1);
-        } catch (Error e) {
-            warning ("Failed to load CSS style for search window background");
-        }
-        get_style_context ().add_provider (background_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
         var list_box_scroll = new Gtk.ScrolledWindow (null, null);
         list_box_scroll.vexpand = true;
