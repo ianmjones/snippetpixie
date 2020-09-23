@@ -102,6 +102,8 @@ namespace SnippetPixie {
                         body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
                         Gtk.Clipboard.get_default (Gdk.Display.get_default ()).set_text (body, -1);
                         paste ();
+                        snippet_to_paste.last_used = dt;
+                        snippets_manager.update (snippet_to_paste);
                     }
                     if (closed_window == search_and_paste_window) {
                         close_search_and_paste_window ();
@@ -526,13 +528,16 @@ namespace SnippetPixie {
                             break;
                         }
 
-                        var body = snippets_manager.abbreviations.get (str);
+                        var selected_snippet = snippets_manager.select_snippet (str);
 
                         // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
                         var new_offset = -1;
                         var dt = new DateTime.now_local ();
-                        body = expand_snippet (body, ref new_offset, dt);
+                        var body = expand_snippet (selected_snippet.body, ref new_offset, dt);
                         body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
+
+                        selected_snippet.last_used = dt;
+                        snippets_manager.update (selected_snippet);
 
                         try {
                             if (! editable_ctrl.insert_text (sel_start, body, body.length)) {
@@ -971,16 +976,11 @@ namespace SnippetPixie {
                 }
             }
 
-            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.snippets, selected_text);
+            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.search_snippets (selected_text), selected_text);
             add_window (search_and_paste_window);
 
             search_and_paste_window.search_changed.connect ((text) => {
-                if (text == "") {
-                    // TODO: Record and use most recently used.
-                    refresh_search_and_paste_snippets (snippets_manager.snippets);
-                } else {
-                    refresh_search_and_paste_snippets (snippets_manager.search_snippets (text));
-                }
+                refresh_search_and_paste_snippets (snippets_manager.search_snippets (text));
             });
 
             // Sometimes wingpanel will focus out the window on startup, so wait 200ms
