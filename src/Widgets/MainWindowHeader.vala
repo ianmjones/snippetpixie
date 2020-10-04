@@ -18,7 +18,8 @@
 */
 
 public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
-    //public Gtk.SearchEntry search_entry { get; private set; } // TODO: Add search.
+    public signal void search_changed (string search_term);
+    private Gtk.SearchEntry search_entry;
 
     construct {
         var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
@@ -33,12 +34,12 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // redo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REDO;
         // redo_button.tooltip_text = _("Redo last undo");
 
-        /*
-         * TODO: Add search.
         search_entry = new Gtk.SearchEntry ();
         search_entry.valign = Gtk.Align.CENTER;
         search_entry.placeholder_text = _("Search Snippets");
-        */
+        search_entry.search_changed.connect (() => {
+            search_changed (search_entry.text);
+        });
 
         // Main menu.
         var auto_expand_menuitem = new Gtk.ModelButton ();
@@ -128,10 +129,22 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // pack_start (undo_button); // TODO: Add undo.
         // pack_start (redo_button); // TODO: Add redo.
         pack_end (menu_button);
-        // pack_end (search_entry); // TODO: Add search.
+        pack_end (search_entry);
         set_title ("Snippet Pixie");
         show_all ();
+
+        // Hide the search box as necessary.
+        update_ui (Application.get_default ().snippets_manager.snippets);
+        Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
      }
+
+    private void update_ui (Gee.ArrayList<Snippet> snippets) {
+        if (snippets.size > 0) {
+            search_entry.show ();
+        } else {
+            search_entry.hide ();
+        }
+    }
 
     private Gtk.Label create_label (string text) {
         var label = new Gtk.Label (text);
