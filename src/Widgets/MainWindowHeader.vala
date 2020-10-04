@@ -141,6 +141,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
     private void update_ui (Gee.ArrayList<Snippet> snippets) {
         if (snippets.size > 0) {
             search_entry.show ();
+            search_entry.text = "";
         } else {
             search_entry.hide ();
         }
