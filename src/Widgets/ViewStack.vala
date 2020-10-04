@@ -25,6 +25,9 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
     private SnippetsList snippets_list;
     private bool form_updating = false;
     private bool abbr_updating = false;
+    private bool search_changing = false;
+
+    private string search_term = "";
 
     construct {
         this.transition_type = Gtk.StackTransitionType.CROSSFADE;
@@ -82,9 +85,28 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         main_hpaned.position = 100; // TODO: Get from settings, enforce minimum.
         main_hpaned.show_all ();
 
+        var not_found = new Granite.Widgets.Welcome ( _("No Snippets Found"), _("Please try entering a different search term."));
+
         this.add_named (welcome, "welcome");
         this.add_named (main_hpaned, "snippets");
+        this.add_named (not_found, "not_found");
         this.show_all ();
+
+        // Set up for filtering snippets by search box.
+        snippets_list.set_filter_func (filter_snippets_by_search_term, false);
+        Application.get_default ().search_changed.connect ((term) => {
+            search_changing = true;
+            search_term = term;
+            snippets_list.refilter ();
+            var item = snippets_list.get_first_child (snippets_list.root);
+            if (item == null) {
+                visible_child_name = "not_found";
+            } else {
+                snippets_list.selected = item;
+                visible_child_name = "snippets";
+            }
+            search_changing = false;
+        });
 
         // Grab the current snippets.
         snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
@@ -95,7 +117,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         abbreviation_entry.text = snippet.abbreviation;
         body_entry.buffer.text = snippet.body;
 
-        if (! abbr_updating) {
+        if (! abbr_updating && ! search_changing) {
             abbreviation_entry.grab_focus ();
         }
         form_updating = false;
@@ -149,5 +171,19 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         if (snippets_list.latest_item != null) {
             select_item (snippets_list.latest_item);
         }
+    }
+
+    public bool filter_snippets_by_search_term (Granite.Widgets.SourceList.Item item) {
+        if (search_term.length == 0) {
+            return true;
+        }
+
+        var snippet = ((SnippetsListItem) item).snippet;
+
+        if (snippet.abbreviation.contains (search_term) || snippet.body.contains (search_term)) {
+            return true;
+        }
+
+        return false;
     }
 }

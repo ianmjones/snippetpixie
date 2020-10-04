@@ -18,6 +18,7 @@
 */
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
+    public signal void search_changed (string search_term);
     public SimpleActionGroup actions { get; construct; }
 
     public const string ACTION_PREFIX = "win.";
@@ -79,6 +80,9 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         this.add (main_view);
 
         headerbar = new MainWindowHeader ();
+        headerbar.search_changed.connect ((search_term) => {
+            search_changed (search_term);
+        });
         this.set_titlebar (headerbar);
 
         // Depending on whether there are snippets or not, might set "snippets" visible etc.
