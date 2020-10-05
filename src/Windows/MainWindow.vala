@@ -90,11 +90,13 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
     }
 
-    private void update_ui (Gee.ArrayList<Snippet> snippets) {
+    private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
         SimpleAction export_action = (SimpleAction) actions.lookup_action (ACTION_EXPORT);
 
         if (snippets.size > 0) {
-            main_view.visible_child_name = "snippets";
+            if (reason != "remove") {
+                main_view.visible_child_name = "snippets";
+            }
 
             if (export_action == null) {
                 export_action = new SimpleAction (ACTION_EXPORT, null);
