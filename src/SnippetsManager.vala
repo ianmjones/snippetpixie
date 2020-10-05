@@ -22,7 +22,7 @@ public errordomain SnippetPixieError {
 }
 
 public class SnippetPixie.SnippetsManager : Object {
-    public signal void snippets_changed (Gee.ArrayList<Snippet> snippets);
+    public signal void snippets_changed (Gee.ArrayList<Snippet> snippets, string reason);
 
     // Current collection of snippets.
     public Gee.ArrayList<Snippet> snippets { get; private set; }
@@ -514,7 +514,7 @@ public class SnippetPixie.SnippetsManager : Object {
 
     public void add (Snippet snippet) {
         insert_snippet (snippet);
-        refresh_snippets ();
+        refresh_snippets ("add");
     }
 
     public void update (Snippet snippet) {
@@ -524,10 +524,10 @@ public class SnippetPixie.SnippetsManager : Object {
 
     public void remove (Snippet snippet) {
         delete_snippet (snippet);
-        refresh_snippets ();
+        refresh_snippets ("remove");
     }
 
-    public void refresh_snippets () {
+    public void refresh_snippets (string reason = "update") {
         snippets = select_snippets ();
         abbreviations = new Gee.HashMap<string,string> ();
         triggers = new Gee.HashMap<string,bool> ();
@@ -542,7 +542,7 @@ public class SnippetPixie.SnippetsManager : Object {
             }
         }
 
-        snippets_changed (snippets);
+        snippets_changed (snippets, reason);
     }
 
     public int export_to_file (string filepath) {

@@ -138,10 +138,12 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
      }
 
-    private void update_ui (Gee.ArrayList<Snippet> snippets) {
+    private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
         if (snippets.size > 0) {
             search_entry.show ();
-            search_entry.text = "";
+            if (reason == "add") {
+                search_entry.text = "";
+            }
         } else {
             search_entry.hide ();
         }

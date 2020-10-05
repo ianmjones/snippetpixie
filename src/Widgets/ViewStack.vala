@@ -41,11 +41,7 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
 
         snippets_list = new SnippetsList();
         snippets_list.selection_changed.connect (update_form);
-        Application.get_default ().snippets_manager.snippets_changed.connect ((snippets) => {
-            if (! abbr_updating) {
-                snippets_list.set_snippets (snippets);
-            }
-        });
+        Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
 
         left_pane.add (snippets_list);
 
@@ -98,18 +94,32 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
             search_changing = true;
             search_term = term;
             snippets_list.refilter ();
-            var item = snippets_list.get_first_child (snippets_list.root);
-            if (item == null) {
-                visible_child_name = "not_found";
-            } else {
-                snippets_list.selected = item;
-                visible_child_name = "snippets";
-            }
+            filter_ui ();
             search_changing = false;
         });
 
         // Grab the current snippets.
         snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
+    }
+
+    private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
+        if (! abbr_updating) {
+            snippets_list.set_snippets (snippets);
+
+            if (snippets.size > 0 && reason == "remove" && search_term.length > 0) {
+                filter_ui ();
+            }
+        }
+    }
+
+    private void filter_ui () {
+        var item = snippets_list.get_first_child (snippets_list.root);
+        if (item == null) {
+            visible_child_name = "not_found";
+        } else {
+            snippets_list.selected = item;
+            visible_child_name = "snippets";
+        }
     }
 
     private void update_form (Snippet snippet) {
@@ -157,10 +167,6 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var item = snippets_list.selected as SnippetsListItem;
 
         Application.get_default ().snippets_manager.remove (item.snippet);
-
-        if (snippets_list.first_item != null) {
-            select_item (snippets_list.first_item);
-        }
     }
 
     public void select_item (SnippetsListItem item) {
@@ -181,6 +187,10 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
         var snippet = ((SnippetsListItem) item).snippet;
 
         if (snippet.abbreviation.contains (search_term) || snippet.body.contains (search_term)) {
+            return true;
+        }
+
+        if (! search_changing && snippets_list.selected != null && snippets_list.selected == item) {
             return true;
         }
 
