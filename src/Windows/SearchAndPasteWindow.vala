@@ -35,7 +35,6 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
 
     private SearchAndPasteList list_box;
     private Gtk.Stack stack;
-    private SearchAndPasteAlertView empty_alert;
     private Gtk.SearchEntry search_headerbar;
     private Settings settings = new Settings (Application.ID);
 
@@ -97,14 +96,13 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
             destroy ();
         });
 
-        empty_alert = new SearchAndPasteAlertView (_("No Snippets Found"), "", "edit-find-symbolic");
-        empty_alert.show_all ();
+        var not_found = new Granite.Widgets.Welcome ( _("No Snippets Found"), _("Please try entering a different search term."));
+        var no_snippets = new Granite.Widgets.Welcome ( _("No Snippets Found"), _("Please add some snippets!"));
 
         stack = new Gtk.Stack ();
         stack.add_named (list_box_scroll, "listbox");
-        stack.add_named (empty_alert, "empty");
-
-        update_stack_visibility ();
+        stack.add_named (not_found, "not_found");
+        stack.add_named (no_snippets, "no_snippets");
 
         foreach (var snippet in snippets) {
             add_snippet (snippet);
@@ -174,6 +172,8 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         if (settings.get_boolean ("focus-search")) {
             search_headerbar.grab_focus ();
         }
+
+        update_stack_visibility ();
     }
 
     public void add_snippet (Snippet snippet) {
@@ -191,13 +191,10 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     private void update_stack_visibility () {
         if (list_box.get_children ().length () > 0) {
             stack.visible_child_name = "listbox";
+        } else if (Application.get_default ().snippets_manager.snippets.size > 0) {
+            stack.visible_child_name = "not_found";
         } else {
-            stack.visible_child_name = "empty";
-            if (search_headerbar.text.length > 0) {
-                empty_alert.description = _("Try changing search terms.");
-            } else {
-                empty_alert.description = _("Please add some snippets!");
-            }
+            stack.visible_child_name = "no_snippets";
         }
     }
 

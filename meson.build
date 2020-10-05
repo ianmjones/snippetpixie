@@ -23,7 +23,6 @@ executable(
     'src/Widgets/MainWindowHeader.vala',
     'src/Widgets/SearchAndPasteList.vala',
     'src/Widgets/SearchAndPasteListRow.vala',
-    'src/Widgets/SearchAndPasteAlertView.vala',
     'src/Widgets/ShortcutEntry.vala',
     'src/Widgets/SnippetsList.vala',
     'src/Widgets/SnippetsListItem.vala',
