@@ -24,6 +24,7 @@ namespace SnippetPixie {
         public const string VERSION = "1.5.0.dev";
 
         public signal void search_changed (string search_term);
+        public signal void search_escaped ();
 
         public string SEARCH_AND_PASTE_CMD = "";
 
@@ -942,6 +943,9 @@ namespace SnippetPixie {
             app_window = new MainWindow (this);
             app_window.search_changed.connect ((search_term) => {
                 search_changed (search_term);
+            });
+            app_window.search_escaped.connect (() => {
+                search_escaped ();
             });
             app_window.show_all ();
             add_window (app_window);
