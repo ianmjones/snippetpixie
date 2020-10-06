@@ -2,7 +2,6 @@ src/Settings/CustomShortcutSettings.vala
 src/Settings/Shortcut.vala
 src/Widgets/FramedTextView.vala
 src/Widgets/MainWindowHeader.vala
-src/Widgets/SearchAndPasteAlertView.vala
 src/Widgets/SearchAndPasteList.vala
 src/Widgets/SearchAndPasteListRow.vala
 src/Widgets/ShortcutEntry.vala
