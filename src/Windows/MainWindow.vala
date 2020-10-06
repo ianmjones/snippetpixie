@@ -19,6 +19,7 @@
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     public signal void search_changed (string search_term);
+    public signal void search_escaped ();
 
     public weak SnippetPixie.Application app { get; construct; }
 
@@ -30,6 +31,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     // public const string ACTION_REDO = "action_redo";
     public const string ACTION_IMPORT = "action_import";
     public const string ACTION_EXPORT = "action_export";
+    public const string ACTION_SEARCH = "action_search";
     public const string ACTION_ABOUT = "action_about";
 
     public static Gee.MultiMap<string, string> action_accelerators = new Gee.HashMultiMap<string, string> ();
@@ -61,6 +63,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         action_accelerators.set (ACTION_ADD, "<Control>n");
         action_accelerators.set (ACTION_IMPORT, "<Control>o");
         action_accelerators.set (ACTION_EXPORT, "<Control>s");
+        action_accelerators.set (ACTION_SEARCH, "<Control>f");
     }
 
     construct {
@@ -101,6 +104,9 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         headerbar.search_changed.connect ((search_term) => {
             search_changed (search_term);
         });
+        headerbar.search_escaped.connect (() => {
+            search_escaped ();
+        });
         this.set_titlebar (headerbar);
 
         // Depending on whether there are snippets or not, might set "snippets" visible etc.
@@ -110,6 +116,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
     private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
         SimpleAction export_action = (SimpleAction) actions.lookup_action (ACTION_EXPORT);
+        SimpleAction search_action = (SimpleAction) actions.lookup_action (ACTION_SEARCH);
 
         if (snippets.size > 0) {
             if (reason != "remove") {
@@ -121,11 +128,19 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
                 export_action.activate.connect (action_export);
                 actions.add_action (export_action);
             }
+            if (search_action == null) {
+                search_action = new SimpleAction (ACTION_SEARCH, null);
+                search_action.activate.connect (action_search);
+                actions.add_action (search_action);
+            }
         } else {
             main_view.visible_child_name = "welcome";
 
             if (export_action != null) {
                 actions.remove_action (ACTION_EXPORT);
+            }
+            if (search_action != null) {
+                actions.remove_action (ACTION_SEARCH);
             }
         }
     }
@@ -202,6 +217,10 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
                 boo.destroy ();
             }
         }
+    }
+
+    private void action_search () {
+        headerbar.search_entry.grab_focus ();
     }
 
     private void action_about () {

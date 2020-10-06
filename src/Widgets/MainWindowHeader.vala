@@ -19,7 +19,8 @@
 
 public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
     public signal void search_changed (string search_term);
-    private Gtk.SearchEntry search_entry;
+    public signal void search_escaped ();
+    public Gtk.SearchEntry search_entry;
 
     construct {
         var app = Application.get_default ();
@@ -42,6 +43,20 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         search_entry = new Gtk.SearchEntry ();
         search_entry.valign = Gtk.Align.CENTER;
         search_entry.placeholder_text = _("Search Snippets");
+        search_entry.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (MainWindow.ACTION_PREFIX + MainWindow.ACTION_SEARCH),
+            _("Search Snippets…")
+        );
+        search_entry.key_press_event.connect ((event) => {
+            switch (event.keyval) {
+                case Gdk.Key.Escape:
+                    search_entry.text = "";
+                    search_escaped ();
+                    return true;
+                default:
+                    return false;
+            }
+        });
         search_entry.search_changed.connect (() => {
             search_changed (search_entry.text);
         });

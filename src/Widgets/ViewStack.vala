@@ -97,6 +97,9 @@ public class SnippetPixie.ViewStack : Gtk.Stack {
             filter_ui ();
             search_changing = false;
         });
+        Application.get_default ().search_escaped.connect (() => {
+            abbreviation_entry.grab_focus ();
+        });
 
         // Grab the current snippets.
         snippets_list.set_snippets (Application.get_default ().snippets_manager.snippets);
