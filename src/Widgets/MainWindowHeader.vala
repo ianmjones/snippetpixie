@@ -22,9 +22,14 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
     private Gtk.SearchEntry search_entry;
 
     construct {
+        var app = Application.get_default ();
+
         var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
         add_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ADD;
-        add_button.tooltip_text = _("Add snippet");
+        add_button.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (add_button.action_name),
+            _("Add Snippet")
+        );
 
         // var undo_button = new Gtk.Button.from_icon_name ("edit-undo", Gtk.IconSize.LARGE_TOOLBAR);
         // undo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_UNDO;
@@ -43,17 +48,25 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         // Main menu.
         var auto_expand_menuitem = new Gtk.ModelButton ();
-        auto_expand_menuitem.text = _("Auto expand snippets");
+        auto_expand_menuitem.text = _("Auto expand Snippets");
         auto_expand_menuitem.action_name = MainWindow.ACTION_PREFIX + "auto-expand";
         var shortcut_sub_menuitem = new Gtk.ModelButton ();
         shortcut_sub_menuitem.text = _("Shortcut");
         shortcut_sub_menuitem.menu_name = "shortcut";
         var import_menuitem = new Gtk.ModelButton ();
-        import_menuitem.text = _("Import snippets…");
+        import_menuitem.text = _("Import Snippets…");
         import_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
+        import_menuitem.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (import_menuitem.action_name),
+            _("Import Snippets…")
+        );
         var export_menuitem = new Gtk.ModelButton ();
-        export_menuitem.text = _("Export snippets…");
+        export_menuitem.text = _("Export Snippets…");
         export_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
+        export_menuitem.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (export_menuitem.action_name),
+            _("Export Snippets…")
+        );
         var about_menuitem = new Gtk.ModelButton ();
         about_menuitem.text = _("About…");
         about_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ABOUT;
@@ -88,7 +101,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         CustomShortcutSettings.init ();
         foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
-            if (shortcut.command == Application.get_default ().SEARCH_AND_PASTE_CMD) {
+            if (shortcut.command == app.SEARCH_AND_PASTE_CMD) {
                 accel = shortcut.shortcut;
                 accel_path = shortcut.relocatable_schema;
             }
@@ -134,8 +147,8 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         show_all ();
 
         // Hide the search box as necessary.
-        update_ui (Application.get_default ().snippets_manager.snippets);
-        Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
+        update_ui (app.snippets_manager.snippets);
+        app.snippets_manager.snippets_changed.connect (update_ui);
      }
 
     private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {

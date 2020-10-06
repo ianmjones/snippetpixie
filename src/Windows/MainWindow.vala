@@ -19,6 +19,9 @@
 
 public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     public signal void search_changed (string search_term);
+
+    public weak SnippetPixie.Application app { get; construct; }
+
     public SimpleActionGroup actions { get; construct; }
 
     public const string ACTION_PREFIX = "win.";
@@ -28,6 +31,8 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     public const string ACTION_IMPORT = "action_import";
     public const string ACTION_EXPORT = "action_export";
     public const string ACTION_ABOUT = "action_about";
+
+    public static Gee.MultiMap<string, string> action_accelerators = new Gee.HashMultiMap<string, string> ();
 
     private const ActionEntry[] action_entries = {
         { ACTION_ADD, action_add },
@@ -41,15 +46,21 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     private MainWindowHeader headerbar;
     private ViewStack main_view;
 
-    public MainWindow (Gtk.Application application) {
+    public MainWindow (SnippetPixie.Application application) {
         Object (
-            application: application,
+            app: application,
             height_request: 600,
             icon_name: Application.ID,
             resizable: true,
             title: "Snippet Pixie",
             width_request: 800
         );
+    }
+
+    static construct {
+        action_accelerators.set (ACTION_ADD, "<Control>n");
+        action_accelerators.set (ACTION_IMPORT, "<Control>o");
+        action_accelerators.set (ACTION_EXPORT, "<Control>s");
     }
 
     construct {
@@ -61,6 +72,13 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         actions.add_action (settings.create_action ("search-selected-text"));
         actions.add_action (settings.create_action ("focus-search"));
         insert_action_group ("win", actions);
+
+        foreach (var action in action_accelerators.get_keys ()) {
+            var accels_array = action_accelerators[action].to_array ();
+            accels_array += null;
+
+            app.set_accels_for_action (ACTION_PREFIX + action, accels_array);
+        }
 
         var window_x = settings.get_int ("window-x");
         var window_y = settings.get_int ("window-y");
@@ -86,8 +104,8 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         this.set_titlebar (headerbar);
 
         // Depending on whether there are snippets or not, might set "snippets" visible etc.
-        update_ui (Application.get_default ().snippets_manager.snippets);
-        Application.get_default ().snippets_manager.snippets_changed.connect (update_ui);
+        update_ui (app.snippets_manager.snippets);
+        app.snippets_manager.snippets_changed.connect (update_ui);
     }
 
     private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
@@ -113,7 +131,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     }
 
     private void action_add () {
-        Application.get_default ().snippets_manager.add (new Snippet ());
+        app.snippets_manager.add (new Snippet ());
         main_view.select_latest_item ();
     }
 
@@ -123,7 +141,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         if (response == Gtk.ResponseType.ACCEPT) {
             var overwrite = false;
-            if (Application.get_default ().snippets_manager.snippets.size > 0) {
+            if (app.snippets_manager.snippets.size > 0) {
                 var cancel = false;
                 var overwrite_diag = new Granite.MessageDialog.with_image_from_icon_name (_("Overwrite Duplicate Snippets?"), _("If any of the snippet abbreviations about to be imported already exist, do you want to skip importing them or update the existing snippet?"), "dialog-warning", Gtk.ButtonsType.NONE);
                 overwrite_diag.add_button (_("Update Existing"), 1);
@@ -152,7 +170,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
             }
 
             var filepath  = diag.get_filename ();
-            var result = Application.get_default ().snippets_manager.import_from_file (filepath, overwrite);
+            var result = app.snippets_manager.import_from_file (filepath, overwrite);
 
             if (result == 0) {
                 var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Imported Snippets"), _("Your snippets were successfully imported."), "document-import", Gtk.ButtonsType.CLOSE);
@@ -172,7 +190,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         if (response == Gtk.ResponseType.ACCEPT) {
             var filepath  = diag.get_filename ();
-            var result = Application.get_default ().snippets_manager.export_to_file (filepath);
+            var result = app.snippets_manager.export_to_file (filepath);
 
             if (result == 0) {
                 var cheer = new Granite.MessageDialog.with_image_from_icon_name (_("Exported Snippets"), _("Your snippets were successfully exported."), "document-export", Gtk.ButtonsType.CLOSE);
