@@ -966,7 +966,6 @@ namespace SnippetPixie {
 
         private void show_search_and_paste_window () {
             if (search_and_paste_window != null) {
-                close_search_and_paste_window ();
                 return;
             }
 
