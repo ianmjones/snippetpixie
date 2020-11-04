@@ -19,7 +19,10 @@ description: |
 
 grade: stable
 confinement: classic
-architectures: [amd64, arm64, armhf]
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
 icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 
 apps:
@@ -32,7 +35,7 @@ apps:
 
 parts:
   snippetpixie:
-    after: [granite, desktop-gnome-platform]
+    after: [ granite, desktop-gnome-platform ]
     plugin: meson
     meson-parameters:
       - --prefix=/usr
@@ -158,7 +161,7 @@ parts:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: gtk
     plugin: make
-    make-parameters: ["FLAVOR=gtk3"]
+    make-parameters: [ "FLAVOR=gtk3" ]
     build-packages:
       - build-essential
       - gettext
