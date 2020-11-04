@@ -29,30 +29,28 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     """
         .large-search-entry {
             font-size: 175%;
-            color: #1a1a1a;
-        }
-    """;
-
-    private const string BACKGROUND_CSS =
-    """
-        .background {
-            background-color: #fff;
+            border: none;
         }
     """;
 
     private SearchAndPasteList list_box;
     private Gtk.Stack stack;
-    private SearchAndPasteAlertView empty_alert;
     private Gtk.SearchEntry search_headerbar;
     private Settings settings = new Settings (Application.ID);
 
     public SearchAndPasteWindow (Gee.ArrayList<Snippet?> snippets, string selected_text) {
+        Gtk.Container content_area = get_content_area () as Gtk.Container;
+
+        if (content_area == null) {
+            return;
+        }
+
         icon_name = Application.ID;
 
         set_keep_above (true);
         window_position = Gtk.WindowPosition.CENTER;
 
-        set_default_size (768, 500);
+        set_default_size (640, 480);
 
         search_headerbar = new Gtk.SearchEntry ();
         search_headerbar.placeholder_text = _("Search Snippets\u2026");
@@ -81,14 +79,6 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         style_context.add_provider (font_size_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
         style_context.add_class ("large-search-entry");
 
-        var background_provider = new Gtk.CssProvider ();
-        try {
-            background_provider.load_from_data (BACKGROUND_CSS, -1);
-        } catch (Error e) {
-            warning ("Failed to load CSS style for search window background");
-        }
-        get_style_context ().add_provider (background_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-
         var list_box_scroll = new Gtk.ScrolledWindow (null, null);
         list_box_scroll.vexpand = true;
         list_box = new SearchAndPasteList ();
@@ -96,24 +86,29 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         list_box_scroll.show_all ();
 
         list_box.row_activated.connect ((row) => {
-            paste_snippet ((row as SearchAndPasteListRow).snippet);
+            SearchAndPasteListRow sprow = row as SearchAndPasteListRow;
+
+            if (sprow == null) {
+                return;
+            }
+
+            paste_snippet (sprow.snippet);
             destroy ();
         });
 
-        empty_alert = new SearchAndPasteAlertView (_("No Snippets Found"), "", "edit-find-symbolic");
-        empty_alert.show_all ();
+        var not_found = new Granite.Widgets.Welcome ( _("No Snippets Found"), _("Please try entering a different search term."));
+        var no_snippets = new Granite.Widgets.Welcome ( _("No Snippets Found"), _("Please add some snippets!"));
 
         stack = new Gtk.Stack ();
         stack.add_named (list_box_scroll, "listbox");
-        stack.add_named (empty_alert, "empty");
-
-        update_stack_visibility ();
+        stack.add_named (not_found, "not_found");
+        stack.add_named (no_snippets, "no_snippets");
 
         foreach (var snippet in snippets) {
             add_snippet (snippet);
         }
 
-        (get_content_area () as Gtk.Container).add (stack);
+        content_area.add (stack);
 
         key_press_event.connect ((event) => {
             switch (event.keyval) {
@@ -177,6 +172,8 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
         if (settings.get_boolean ("focus-search")) {
             search_headerbar.grab_focus ();
         }
+
+        update_stack_visibility ();
     }
 
     public void add_snippet (Snippet snippet) {
@@ -194,13 +191,10 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
     private void update_stack_visibility () {
         if (list_box.get_children ().length () > 0) {
             stack.visible_child_name = "listbox";
+        } else if (Application.get_default ().snippets_manager.snippets.size > 0) {
+            stack.visible_child_name = "not_found";
         } else {
-            stack.visible_child_name = "empty";
-            if (search_headerbar.text.length > 0) {
-                empty_alert.description = _("Try changing search terms.");
-            } else {
-                empty_alert.description = _("Please add some snippets!");
-            }
+            stack.visible_child_name = "no_snippets";
         }
     }
 

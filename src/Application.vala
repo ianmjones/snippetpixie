@@ -21,7 +21,10 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.4.1";
+        public const string VERSION = "1.5.0.dev";
+
+        public signal void search_changed (string search_term);
+        public signal void search_escaped ();
 
         public string SEARCH_AND_PASTE_CMD = "";
 
@@ -84,6 +87,8 @@ namespace SnippetPixie {
         }
 
         protected override void activate () {
+            // There's a couple of things that need setting up once,
+            // even before a window is shown.
             if (snippets_manager == null) {
                 snippets_manager = new SnippetsManager ();
 
@@ -100,10 +105,26 @@ namespace SnippetPixie {
                         body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
                         Gtk.Clipboard.get_default (Gdk.Display.get_default ()).set_text (body, -1);
                         paste ();
+                        snippet_to_paste.last_used = dt;
+                        snippets_manager.update (snippet_to_paste);
                     }
                     if (closed_window == search_and_paste_window) {
                         close_search_and_paste_window ();
                     }
+                });
+
+                // Style stuff needed before any window shown.
+                var provider = new Gtk.CssProvider ();
+                provider.load_from_resource ("com/bytepixie/snippetpixie/Application.css");
+                Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+                var granite_settings = Granite.Settings.get_default ();
+                var gtk_settings = Gtk.Settings.get_default ();
+
+                gtk_settings.gtk_application_prefer_dark_theme = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
+
+                granite_settings.notify["prefers-color-scheme"].connect (() => {
+                    gtk_settings.gtk_application_prefer_dark_theme = granite_settings.prefers_color_scheme == Granite.Settings.ColorScheme.DARK;
                 });
             }
 
@@ -510,13 +531,16 @@ namespace SnippetPixie {
                             break;
                         }
 
-                        var body = snippets_manager.abbreviations.get (str);
+                        var selected_snippet = snippets_manager.select_snippet (str);
 
                         // Before trying to insert the snippet's body, parse it to expand placeholders such as date/time and embedded snippets.
                         var new_offset = -1;
                         var dt = new DateTime.now_local ();
-                        body = expand_snippet (body, ref new_offset, dt);
+                        var body = expand_snippet (selected_snippet.body, ref new_offset, dt);
                         body = collapse_escaped_placeholder_delimiter (body, ref new_offset);
+
+                        selected_snippet.last_used = dt;
+                        snippets_manager.update (selected_snippet);
 
                         try {
                             if (! editable_ctrl.insert_text (sel_start, body, body.length)) {
@@ -916,12 +940,13 @@ namespace SnippetPixie {
                 return;
             }
 
-            var provider = new Gtk.CssProvider ();
-            provider.load_from_resource ("com/bytepixie/snippetpixie/Application.css");
-            Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-
             app_window = new MainWindow (this);
+            app_window.search_changed.connect ((search_term) => {
+                search_changed (search_term);
+            });
+            app_window.search_escaped.connect (() => {
+                search_escaped ();
+            });
             app_window.show_all ();
             add_window (app_window);
 
@@ -941,7 +966,6 @@ namespace SnippetPixie {
 
         private void show_search_and_paste_window () {
             if (search_and_paste_window != null) {
-                close_search_and_paste_window ();
                 return;
             }
 
@@ -960,16 +984,11 @@ namespace SnippetPixie {
                 }
             }
 
-            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.snippets, selected_text);
+            search_and_paste_window = new SearchAndPasteWindow (snippets_manager.search_snippets (selected_text), selected_text);
             add_window (search_and_paste_window);
 
             search_and_paste_window.search_changed.connect ((text) => {
-                if (text == "") {
-                    // TODO: Record and use most recently used.
-                    refresh_search_and_paste_snippets (snippets_manager.snippets);
-                } else {
-                    refresh_search_and_paste_snippets (snippets_manager.search_snippets (text));
-                }
+                refresh_search_and_paste_snippets (snippets_manager.search_snippets (text));
             });
 
             // Sometimes wingpanel will focus out the window on startup, so wait 200ms

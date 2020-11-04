@@ -1,11 +1,13 @@
 name: snippetpixie
 base: core18
-version: 1.4.1
+version: 1.5.0.dev
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
 
   For example:- "spr`" expands to "Snippet Pixie rules!"
+
+  For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is Ctrl+`) for opening a search window that pastes the selected snippet.
 
   Supports placeholders:-
 
@@ -43,6 +45,8 @@ parts:
     override-build: |
       snapcraftctl build
       sed -i 's|Icon=com.github.bytepixie.snippetpixie|Icon=\${SNAP}/meta/gui/icon.svg|' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/com.github.bytepixie.snippetpixie.desktop
+    build-environment:
+      - VALAFLAGS: " --vapidir $SNAPCRAFT_STAGE/usr/share/vala/vapi"
     build-packages:
       - valac
       - desktop-file-utils

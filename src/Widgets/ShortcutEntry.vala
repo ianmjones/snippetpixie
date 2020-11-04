@@ -42,10 +42,16 @@ public class SnippetPixie.ShortcutEntry : Gtk.TreeView {
     }
 
     private void change_shortcut (string path, Shortcut? shortcut) {
+        Gtk.ListStore store = model as Gtk.ListStore;
+
+        if (store == null) {
+            return;
+        }
+
         Gtk.TreeIter iter;
 
-        model.get_iter (out iter, new Gtk.TreePath.from_string (path));
-
-        (model as Gtk.ListStore).set (iter, 0, shortcut.to_readable ());
+        if (store.get_iter (out iter, new Gtk.TreePath.from_string (path))) {
+            store.set (iter, 0, shortcut.to_readable ());
+        }
     }
 }

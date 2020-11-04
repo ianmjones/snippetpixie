@@ -26,16 +26,6 @@ public class SnippetPixie.SearchAndPasteListRow : Gtk.ListBoxRow {
 
     private const string KEYCAP_CSS = """
         .keycap {
-            margin-top: 2px;
-            padding-bottom: 3px;
-            padding-left: 6px;
-            padding-right: 6px;
-            color: #2e3436;
-            background-color: #ffffff;
-            border: 1px solid;
-            border-color: #cfcfcd;
-            border-radius: 5px;
-            box-shadow: inset 0 -3px #ededec;
             font-size: 150%;
         }
     """;
