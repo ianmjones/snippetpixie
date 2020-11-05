@@ -22,6 +22,10 @@ For example:- "spr`" expands to "Snippet Pixie rules!"
 
 For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is Ctrl+`) for opening a search window that pastes the selected snippet.
 
+The Search and Paste window opened with Ctrl+` (can be changed) is very convenient for quickly finding and pasting snippets, and shows the most recently used snippets first for quick access.
+
+Snippets can be imported and exported in a simple JSON format.
+
 Supports [placeholders](#placeholders):-
 
 * **[Date/Time](#date):** Insert the current or calculated date/time with configurable format.
@@ -100,7 +104,7 @@ If `$$@cursor$$` is entered more than once in a snippet's body or via snippet em
 * ~~Automatically add to Startup apps~~
 * ~~Export/Import snippets~~
 * ~~Date/Time, clipboard, other snippets and cursor placeholders~~
-* Snippet search
+* ~~Snippet search~~
 * Group snippets?
 * Undo/Redo of snippet edits
 * Right To Left (RTL) language support
@@ -121,8 +125,8 @@ You'll need the following dependencies to build:
 * libibus-1.0-dev
 * libjson-glib-dev
 * libsqlite3-dev
-* libx11-dev
 * libxtst-dev
+* libx11-dev
 
 Run `meson build` to configure the build environment and then change to the build directory and run `ninja test` to build and run automated tests
 
