@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-30 15:59+0100\n"
+"POT-Creation-Date: 2020-11-05 21:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,52 +25,70 @@ msgstr ""
 msgid "Ctrl"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:26
-msgid "Add snippet"
+#: src/Widgets/MainWindowHeader.vala:32 src/Widgets/WelcomeView.vala:23
+msgid "Add Snippet"
 msgstr ""
 
 #: src/Widgets/MainWindowHeader.vala:45
-msgid "Auto expand snippets"
+msgid "Search Snippets"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:48 src/Widgets/MainWindowHeader.vala:74
+#: src/Widgets/MainWindowHeader.vala:48
+#: src/Windows/SearchAndPasteWindow.vala:56
+msgid "Search Snippets…"
+msgstr ""
+
+#: src/Widgets/MainWindowHeader.vala:66
+msgid "Auto expand Snippets"
+msgstr ""
+
+#: src/Widgets/MainWindowHeader.vala:69 src/Widgets/MainWindowHeader.vala:103
 msgid "Shortcut"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:51
-msgid "Import snippets…"
+#: src/Widgets/MainWindowHeader.vala:72 src/Widgets/MainWindowHeader.vala:76
+msgid "Import Snippets…"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:54
-msgid "Export snippets…"
+#: src/Widgets/MainWindowHeader.vala:79 src/Widgets/MainWindowHeader.vala:83
+msgid "Export Snippets…"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:57
+#: src/Widgets/MainWindowHeader.vala:86
 msgid "About…"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:79
+#: src/Widgets/MainWindowHeader.vala:108
 msgid "Search selected text"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:82
+#: src/Widgets/MainWindowHeader.vala:111
 msgid "Focus search box"
 msgstr ""
 
-#: src/Widgets/MainWindowHeader.vala:96
+#: src/Widgets/MainWindowHeader.vala:125
 msgid "Shortcut:"
 msgstr ""
 
-#: src/Widgets/ViewStack.vala:55
+#: src/Widgets/ViewStack.vala:54
 msgid "Abbreviation"
 msgstr ""
 
-#: src/Widgets/ViewStack.vala:64
+#: src/Widgets/ViewStack.vala:63
 msgid "Body"
 msgstr ""
 
-#: src/Widgets/ViewStack.vala:73
+#: src/Widgets/ViewStack.vala:72
 msgid "Remove Snippet"
+msgstr ""
+
+#: src/Widgets/ViewStack.vala:84 src/Windows/SearchAndPasteWindow.vala:99
+#: src/Windows/SearchAndPasteWindow.vala:100
+msgid "No Snippets Found"
+msgstr ""
+
+#: src/Widgets/ViewStack.vala:84 src/Windows/SearchAndPasteWindow.vala:99
+msgid "Please try entering a different search term."
 msgstr ""
 
 #: src/Widgets/WelcomeView.vala:22
@@ -78,14 +96,10 @@ msgid "No snippets found."
 msgstr ""
 
 #: src/Widgets/WelcomeView.vala:23
-msgid "Add Snippet"
-msgstr ""
-
-#: src/Widgets/WelcomeView.vala:23
 msgid "Create your first snippet."
 msgstr ""
 
-#: src/Widgets/WelcomeView.vala:24 src/Windows/MainWindow.vala:115
+#: src/Widgets/WelcomeView.vala:24 src/Windows/MainWindow.vala:154
 msgid "Import Snippets"
 msgstr ""
 
@@ -101,221 +115,211 @@ msgstr ""
 msgid "Learn the basics of how to use Snippet Pixie."
 msgstr ""
 
-#: src/Windows/MainWindow.vala:115
+#: src/Windows/MainWindow.vala:154
 msgid "Import"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:122
+#: src/Windows/MainWindow.vala:161
 msgid "Overwrite Duplicate Snippets?"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:122
+#: src/Windows/MainWindow.vala:161
 msgid ""
 "If any of the snippet abbreviations about to be imported already exist, do "
 "you want to skip importing them or update the existing snippet?"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:123
+#: src/Windows/MainWindow.vala:162
 msgid "Update Existing"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:124
+#: src/Windows/MainWindow.vala:163
 msgid "Cancel"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:125
+#: src/Windows/MainWindow.vala:164
 msgid "Skip Duplicates"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:152
+#: src/Windows/MainWindow.vala:191
 msgid "Imported Snippets"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:152
+#: src/Windows/MainWindow.vala:191
 msgid "Your snippets were successfully imported."
 msgstr ""
 
-#: src/Windows/MainWindow.vala:156
+#: src/Windows/MainWindow.vala:195
 msgid "Failed to import selected file"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:156
+#: src/Windows/MainWindow.vala:195
 msgid ""
 "Snippet Pixie can currently only import the JSON format files that it also "
 "exports."
 msgstr ""
 
-#: src/Windows/MainWindow.vala:164
+#: src/Windows/MainWindow.vala:203
 msgid "Export Snippets"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:172
+#: src/Windows/MainWindow.vala:211
 msgid "Exported Snippets"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:172
+#: src/Windows/MainWindow.vala:211
 msgid "Your snippets were successfully exported."
 msgstr ""
 
-#: src/Windows/MainWindow.vala:176
+#: src/Windows/MainWindow.vala:215
 msgid "Failed to export to file"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:176
+#: src/Windows/MainWindow.vala:215
 msgid "Something went wrong, sorry."
 msgstr ""
 
-#: src/Windows/MainWindow.vala:190
-msgid "@NathanBnm https://github.com/NathanBnm/"
+#: src/Windows/MainWindow.vala:233
+msgid ""
+"@NathanBnm https://github.com/NathanBnm/\n"
+"            @Vistaus https://github.com/Vistaus/"
 msgstr ""
 
-#: src/Windows/MainWindow.vala:193
+#: src/Windows/MainWindow.vala:237
 msgid "Copyright © Byte Pixie Limited"
 msgstr ""
 
-#: src/Windows/SearchAndPasteWindow.vala:57
-msgid "Search Snippets…"
-msgstr ""
-
-#: src/Windows/SearchAndPasteWindow.vala:102
-msgid "No Snippets Found"
-msgstr ""
-
-#: src/Windows/SearchAndPasteWindow.vala:199
-msgid "Try changing search terms."
-msgstr ""
-
-#: src/Windows/SearchAndPasteWindow.vala:201
+#: src/Windows/SearchAndPasteWindow.vala:100
 msgid "Please add some snippets!"
 msgstr ""
 
-#: src/Application.vala:593
+#: src/Application.vala:640
 msgid "snippet"
 msgstr ""
 
-#: src/Application.vala:635 src/Application.vala:753
+#: src/Application.vala:682 src/Application.vala:800
 msgid "date"
 msgstr ""
 
-#: src/Application.vala:635 src/Application.vala:757
+#: src/Application.vala:682 src/Application.vala:804
 msgid "time"
 msgstr ""
 
-#: src/Application.vala:669
+#: src/Application.vala:716
 #, c-format
 msgid ""
 "Date adjustment does not seem to have a positive or negative integer in "
 "placeholder '%1$s'."
 msgstr ""
 
-#: src/Application.vala:684
+#: src/Application.vala:731
 #, c-format
 msgid ""
 "Date adjustment number %1$d does not seem to start with a positive or "
 "negative integer in placeholder '%2$s'."
 msgstr ""
 
-#: src/Application.vala:715
+#: src/Application.vala:762
 #, c-format
 msgid ""
 "Date adjustment number %1$d does not seem to end with either 'Y', 'M', 'W', "
 "'D', 'h', 'm' or 's' in placeholder '%2$s'."
 msgstr ""
 
-#: src/Application.vala:723 src/Application.vala:736
+#: src/Application.vala:770 src/Application.vala:783
 #, c-format
 msgid "Oops, date format '%1$s' could not be parsed."
 msgstr ""
 
-#: src/Application.vala:765
+#: src/Application.vala:812
 msgid "clipboard"
 msgstr ""
 
-#: src/Application.vala:801
+#: src/Application.vala:848
 msgid "cursor"
 msgstr ""
 
-#: src/Application.vala:1124
+#: src/Application.vala:1170
 msgid "Show Snippet Pixie's window (default action)"
 msgstr ""
 
-#: src/Application.vala:1125
+#: src/Application.vala:1171
 msgid "Show Snippet Pixie's quick search and paste window"
 msgstr ""
 
-#: src/Application.vala:1126
+#: src/Application.vala:1172
 msgid "Start with no window"
 msgstr ""
 
-#: src/Application.vala:1127
+#: src/Application.vala:1173
 msgid "Fully quit the application, including the background process"
 msgstr ""
 
-#: src/Application.vala:1128
+#: src/Application.vala:1174
 msgid ""
 "Turn auto start of Snippet Pixie on login, on, off, or show status of setting"
 msgstr ""
 
-#: src/Application.vala:1129
+#: src/Application.vala:1175
 msgid ""
 "Shows status of the application, exits with status 0 if running, 1 if not"
 msgstr ""
 
-#: src/Application.vala:1130
+#: src/Application.vala:1176
 msgid "Export snippets to file"
 msgstr ""
 
-#: src/Application.vala:1131
+#: src/Application.vala:1177
 msgid ""
 "Import snippets from file, skips snippets where abbreviation already exists"
 msgstr ""
 
-#: src/Application.vala:1131
+#: src/Application.vala:1177
 msgid "filename"
 msgstr ""
 
-#: src/Application.vala:1132
+#: src/Application.vala:1178
 msgid ""
 "If used in conjunction with import, existing snippets with same abbreviation "
 "are updated"
 msgstr ""
 
-#: src/Application.vala:1133
+#: src/Application.vala:1179
 msgid "Display version number"
 msgstr ""
 
-#: src/Application.vala:1134
+#: src/Application.vala:1180
 msgid "Display this help"
 msgstr ""
 
-#: src/Application.vala:1153
+#: src/Application.vala:1199
 #, c-format
 msgid "error: %s\n"
 msgstr ""
 
-#: src/Application.vala:1154
+#: src/Application.vala:1200
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 
-#: src/Application.vala:1170
+#: src/Application.vala:1216
 msgid "Quitting…\n"
 msgstr ""
 
-#: src/Application.vala:1178
+#: src/Application.vala:1224
 msgid "Running.\n"
 msgstr ""
 
-#: src/Application.vala:1181
+#: src/Application.vala:1227
 msgid "Not Running.\n"
 msgstr ""
 
-#: src/Application.vala:1203
+#: src/Application.vala:1249
 #, c-format
 msgid "Invalid autostart value \"%s\".\n"
 msgstr ""
 
-#: src/Application.vala:1249
+#: src/Application.vala:1295
 msgid "Cannot run without threads.\n"
 msgstr ""
 
