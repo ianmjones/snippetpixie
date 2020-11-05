@@ -24,6 +24,17 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.5.0" date="2020-11-05">
+      <description>
+        <ul>
+          <li>Added search of Snippets in main window.</li>
+          <li>Added last used Snippets shown first in Search and Paste window.</li>
+          <li>Added shortcuts for main window actions such as Add Snippet (Ctrl+n).</li>
+          <li>Added support for system Light and Dark appearance preference.</li>
+          <li>Improved theming of window controls to be more consistent with system.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.1" date="2020-09-02">
       <description>
         <ul>

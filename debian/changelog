@@ -1,3 +1,13 @@
+com.github.bytepixie.snippetpixie (1.5.0) xenial; urgency=medium
+
+  * Added search of Snippets in main window.
+  * Added last used Snippets shown first in Search and Paste window.
+  * Added shortcuts for main window actions such as Add Snippet (Ctrl+n).
+  * Added support for system Light and Dark appearance preference.
+  * Improved theming of window controls to be more consistent with system.
+
+ -- Byte Pixie <hello@bytepixie.com>  Thu, 05 Nov 2020 23:24:25 +0000
+
 com.github.bytepixie.snippetpixie (1.4.1) xenial; urgency=medium
 
   * Added Dutch translations. Huge thanks to @Vistaus on GitHub! 🇳🇱
