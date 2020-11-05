@@ -22,7 +22,7 @@ public errordomain SnippetPixieError {
 }
 
 public class SnippetPixie.SnippetsManager : Object {
-    public signal void snippets_changed (Gee.ArrayList<Snippet> snippets);
+    public signal void snippets_changed (Gee.ArrayList<Snippet> snippets, string reason);
 
     // Current collection of snippets.
     public Gee.ArrayList<Snippet> snippets { get; private set; }
@@ -31,6 +31,7 @@ public class SnippetPixie.SnippetsManager : Object {
     public int max_abbr_len = 0;
 
     private Sqlite.Database db;
+    private int db_version = 150;
 
     public SnippetsManager () {
         init_database ();
@@ -55,8 +56,13 @@ public class SnippetPixie.SnippetsManager : Object {
 
         open_database (db_file);
 
-        if (new_db) {
-            upgrade_database ();
+        int curr_db_version = 0;
+        if (!new_db) {
+            curr_db_version = get_db_version();
+        }
+
+        if (curr_db_version < db_version) {
+            upgrade_database (curr_db_version);
         }
     }
 
@@ -67,20 +73,181 @@ public class SnippetPixie.SnippetsManager : Object {
         }
     }
 
-    private void upgrade_database () {
-        string query = """
-            CREATE TABLE IF NOT EXISTS snippets (
-                id INTEGER PRIMARY KEY NOT NULL,
-                abbreviation TEXT NOT NULL UNIQUE,
-                body TEXT NOT NULL
-            );
-            """;
+    public int get_db_version () {
+        int version = 0;
+        int count = 0;
+        Sqlite.Statement stmt;
+
+        // Make sure settings table exists before trying to get db version from it.
+        string query = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'settings';";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            critical ("Error preparing to fetch from database schema: %s\n", db.errmsg ());
+            return version;
+        }
+
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            count = stmt.column_int (0);
+        }
+        if (ec != Sqlite.DONE) {
+            critical ("Error checking whether settings table exists: %s\n", db.errmsg ());
+            return version;
+        }
+
+        // If no table, assume db is from pre v1.5.0 and therefore has schema version 100.
+        version = 100;
+        if (count < 1) {
+            return version;
+        }
+
+        query = "SELECT setting_value FROM settings WHERE setting_key = 'SCHEMA_VERSION';";
+        ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            critical ("Error preparing to fetch schema version from settings table: %s\n", db.errmsg ());
+            return version;
+        }
+
+        while ((ec = stmt.step ()) == Sqlite.ROW) {
+            version = int.parse (stmt.column_text (0));
+            return version;
+        }
+        if (ec != Sqlite.DONE) {
+            warning ("Error getting schema version from settings table: %s\n", db.errmsg ());
+            return version;
+        }
+
+        return version;
+    }
+
+    private void upgrade_database (int curr_db_version) {
+        string query;
         string error_message;
-        int ec = db.exec (query, null, out error_message);
-        if(ec != Sqlite.OK) {
-            critical ("Unable to create snippets table in database. Error: %s", error_message);
+        int ec;
+
+        // 100: Snippets!
+        if (curr_db_version < 100) {
+            query = """
+                CREATE TABLE IF NOT EXISTS snippets (
+                    id INTEGER PRIMARY KEY NOT NULL,
+                    abbreviation TEXT NOT NULL UNIQUE,
+                    body TEXT NOT NULL
+                );
+                """;
+            ec = db.exec (query, null, out error_message);
+            if (ec != Sqlite.OK) {
+                critical ("Unable to create snippets table in database. Error: %s", error_message);
+            }
+        }
+
+        // 150: Track schema changes and last time snippet used.
+        if (curr_db_version < 150) {
+            query = """
+                CREATE TABLE IF NOT EXISTS settings (
+                    setting_key TEXT NOT NULL UNIQUE,
+                    setting_value TEXT NOT NULL
+                );
+                """;
+            ec = db.exec (query, null, out error_message);
+            if (ec != Sqlite.OK) {
+                critical ("Unable to create settings table in database. Error: %s", error_message);
+            }
+
+            query = """
+                ALTER TABLE snippets ADD COLUMN last_used TIMESTAMP;
+                """;
+            ec = db.exec (query, null, out error_message);
+            if (ec != Sqlite.OK) {
+                critical ("Unable to add last_used column to snippets table in database. Error: %s", error_message);
+            }
+
+            query = """
+                CREATE UNIQUE INDEX idx_snippets_last_used ON snippets (last_used, id);
+                """;
+            ec = db.exec (query, null, out error_message);
+            if (ec != Sqlite.OK) {
+                critical ("Unable to create index for last_used column on snippets table in database. Error: %s", error_message);
+            }
+        }
+
+        // At the moment we'll play it safe and not use UPSERT.
+        if (curr_db_version < 150) {
+            insert_setting ("SCHEMA_VERSION", db_version.to_string ());
+        } else {
+            update_setting ("SCHEMA_VERSION", db_version.to_string ());
         }
     }
+
+    private void insert_setting (string setting_key, string setting_value) {
+        Sqlite.Statement stmt;
+
+        const string query = "INSERT INTO settings (setting_key, setting_value) VALUES ($KEY, $VAL);";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to insert setting: %s\n", db.errmsg ());
+            return;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$KEY");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, setting_key);
+
+        param_position = stmt.bind_parameter_index ("$VAL");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, setting_value);
+
+        ec = stmt.step();
+        if (ec != Sqlite.DONE) {
+            warning ("Error inserting setting: %s\n", db.errmsg ());
+        }
+    }
+
+    private void update_setting (string setting_key, string setting_value) {
+        Sqlite.Statement stmt;
+
+        const string query = "UPDATE settings SET (setting_value) = ($VAL) WHERE setting_key = $KEY;";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to update setting: %s\n", db.errmsg ());
+            return;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$VAL");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, setting_value);
+
+        param_position = stmt.bind_parameter_index ("$KEY");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, setting_key);
+
+        ec = stmt.step();
+        if (ec != Sqlite.DONE) {
+            warning ("Error updating setting: %s\n", db.errmsg ());
+        }
+    }
+
+    /*
+     * TODO: Enable when needed.
+     *
+    private void delete_setting (string setting_key) {
+        Sqlite.Statement stmt;
+
+        const string query = "DELETE FROM settings WHERE setting_key = $KEY;";
+        int ec = db.prepare_v2 (query, query.length, out stmt);
+        if (ec != Sqlite.OK) {
+            warning ("Error preparing to delete setting: %s\n", db.errmsg ());
+            return;
+        }
+
+        int param_position = stmt.bind_parameter_index ("$KEY");
+        assert (param_position > 0);
+        stmt.bind_text (param_position, setting_key);
+
+        ec = stmt.step();
+        if (ec != Sqlite.DONE) {
+            warning ("Error deleting setting: %s\n", db.errmsg ());
+        }
+    }
+    */
 
     private void insert_snippet (Snippet snippet) {
         Sqlite.Statement stmt;
@@ -109,7 +276,7 @@ public class SnippetPixie.SnippetsManager : Object {
     private void update_snippet (Snippet snippet) {
         Sqlite.Statement stmt;
 
-        const string query = "UPDATE snippets SET (abbreviation, body) = ($ABBR, $BODY) WHERE id = $ID;";
+        const string query = "UPDATE snippets SET (abbreviation, body, last_used) = ($ABBR, $BODY, $LASTUSED) WHERE id = $ID;";
         int ec = db.prepare_v2 (query, query.length, out stmt);
         if (ec != Sqlite.OK) {
             warning ("Error preparing to update snippet: %s\n", db.errmsg ());
@@ -124,13 +291,17 @@ public class SnippetPixie.SnippetsManager : Object {
         assert (param_position > 0);
         stmt.bind_text (param_position, snippet.body);
 
+        param_position = stmt.bind_parameter_index ("$LASTUSED");
+        assert (param_position > 0);
+        stmt.bind_int64 (param_position, snippet.last_used.to_unix ());
+
         param_position = stmt.bind_parameter_index ("$ID");
         assert (param_position > 0);
         stmt.bind_int (param_position, snippet.id);
 
         ec = stmt.step();
         if (ec != Sqlite.DONE) {
-            warning ("Error update snippet: %s\n", db.errmsg ());
+            warning ("Error updating snippet: %s\n", db.errmsg ());
         }
     }
 
@@ -157,7 +328,7 @@ public class SnippetPixie.SnippetsManager : Object {
     private Gee.ArrayList<Snippet>? select_snippets () {
         Sqlite.Statement stmt;
 
-        const string query = "SELECT id, abbreviation, body FROM snippets ORDER BY abbreviation, id;";
+        const string query = "SELECT id, abbreviation, body, last_used FROM snippets ORDER BY abbreviation, id;";
         int ec = db.prepare_v2 (query, query.length, out stmt);
         if (ec != Sqlite.OK) {
             warning ("Error preparing to fetch snippets: %s\n", db.errmsg ());
@@ -170,6 +341,7 @@ public class SnippetPixie.SnippetsManager : Object {
             snippet.id = stmt.column_int (0);
             snippet.abbreviation = stmt.column_text (1);
             snippet.body = stmt.column_text (2);
+            snippet.last_used = new DateTime.from_unix_utc (stmt.column_int64 (3));
             snippets.add (snippet);
         }
         if (ec != Sqlite.DONE) {
@@ -180,7 +352,7 @@ public class SnippetPixie.SnippetsManager : Object {
         return snippets;
     }
 
-    private Snippet? select_snippet (string abbreviation) {
+    public Snippet? select_snippet (string abbreviation) {
         Sqlite.Statement stmt;
 
         const string query = "SELECT id, abbreviation, body FROM snippets WHERE abbreviation = $ABR ORDER BY id;";
@@ -200,6 +372,7 @@ public class SnippetPixie.SnippetsManager : Object {
             snippet.id = stmt.column_int (0);
             snippet.abbreviation = stmt.column_text (1);
             snippet.body = stmt.column_text (2);
+            snippet.last_used = new DateTime.from_unix_utc (stmt.column_int64 (3));
 
             // Return the first found, duplicates are ignored.
             return snippet;
@@ -216,11 +389,11 @@ public class SnippetPixie.SnippetsManager : Object {
         Sqlite.Statement stmt;
 
         const string query = """
-            SELECT id, abbreviation, body
+            SELECT id, abbreviation, body, last_used
             FROM snippets
             WHERE abbreviation LIKE $ABR
             OR body LIKE $BODY
-            ORDER BY abbreviation, id;
+            ORDER BY last_used DESC, abbreviation, id;
         """;
         int ec = db.prepare_v2 (query, query.length, out stmt);
         if (ec != Sqlite.OK) {
@@ -241,6 +414,7 @@ public class SnippetPixie.SnippetsManager : Object {
             snippet.id = stmt.column_int (0);
             snippet.abbreviation = stmt.column_text (1);
             snippet.body = stmt.column_text (2);
+            snippet.last_used = new DateTime.from_unix_utc (stmt.column_int64 (3));
             snippets.add (snippet);
         }
         if (ec != Sqlite.DONE) {
@@ -340,7 +514,7 @@ public class SnippetPixie.SnippetsManager : Object {
 
     public void add (Snippet snippet) {
         insert_snippet (snippet);
-        refresh_snippets ();
+        refresh_snippets ("add");
     }
 
     public void update (Snippet snippet) {
@@ -350,10 +524,10 @@ public class SnippetPixie.SnippetsManager : Object {
 
     public void remove (Snippet snippet) {
         delete_snippet (snippet);
-        refresh_snippets ();
+        refresh_snippets ("remove");
     }
 
-    public void refresh_snippets () {
+    public void refresh_snippets (string reason = "update") {
         snippets = select_snippets ();
         abbreviations = new Gee.HashMap<string,string> ();
         triggers = new Gee.HashMap<string,bool> ();
@@ -368,7 +542,7 @@ public class SnippetPixie.SnippetsManager : Object {
             }
         }
 
-        snippets_changed (snippets);
+        snippets_changed (snippets, reason);
     }
 
     public int export_to_file (string filepath) {

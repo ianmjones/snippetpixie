@@ -18,12 +18,19 @@
 */
 
 public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
-    //public Gtk.SearchEntry search_entry { get; private set; } // TODO: Add search.
+    public signal void search_changed (string search_term);
+    public signal void search_escaped ();
+    public Gtk.SearchEntry search_entry;
 
     construct {
+        var app = Application.get_default ();
+
         var add_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
         add_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ADD;
-        add_button.tooltip_text = _("Add snippet");
+        add_button.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (add_button.action_name),
+            _("Add Snippet")
+        );
 
         // var undo_button = new Gtk.Button.from_icon_name ("edit-undo", Gtk.IconSize.LARGE_TOOLBAR);
         // undo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_UNDO;
@@ -33,26 +40,48 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // redo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REDO;
         // redo_button.tooltip_text = _("Redo last undo");
 
-        /*
-         * TODO: Add search.
         search_entry = new Gtk.SearchEntry ();
         search_entry.valign = Gtk.Align.CENTER;
         search_entry.placeholder_text = _("Search Snippets");
-        */
+        search_entry.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (MainWindow.ACTION_PREFIX + MainWindow.ACTION_SEARCH),
+            _("Search Snippets…")
+        );
+        search_entry.key_press_event.connect ((event) => {
+            switch (event.keyval) {
+                case Gdk.Key.Escape:
+                    search_entry.text = "";
+                    search_escaped ();
+                    return true;
+                default:
+                    return false;
+            }
+        });
+        search_entry.search_changed.connect (() => {
+            search_changed (search_entry.text);
+        });
 
         // Main menu.
         var auto_expand_menuitem = new Gtk.ModelButton ();
-        auto_expand_menuitem.text = _("Auto expand snippets");
+        auto_expand_menuitem.text = _("Auto expand Snippets");
         auto_expand_menuitem.action_name = MainWindow.ACTION_PREFIX + "auto-expand";
         var shortcut_sub_menuitem = new Gtk.ModelButton ();
         shortcut_sub_menuitem.text = _("Shortcut");
         shortcut_sub_menuitem.menu_name = "shortcut";
         var import_menuitem = new Gtk.ModelButton ();
-        import_menuitem.text = _("Import snippets…");
+        import_menuitem.text = _("Import Snippets…");
         import_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_IMPORT;
+        import_menuitem.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (import_menuitem.action_name),
+            _("Import Snippets…")
+        );
         var export_menuitem = new Gtk.ModelButton ();
-        export_menuitem.text = _("Export snippets…");
+        export_menuitem.text = _("Export Snippets…");
         export_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_EXPORT;
+        export_menuitem.tooltip_markup = Granite.markup_accel_tooltip (
+            app.get_accels_for_action (export_menuitem.action_name),
+            _("Export Snippets…")
+        );
         var about_menuitem = new Gtk.ModelButton ();
         about_menuitem.text = _("About…");
         about_menuitem.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_ABOUT;
@@ -87,7 +116,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
 
         CustomShortcutSettings.init ();
         foreach (var shortcut in CustomShortcutSettings.list_custom_shortcuts ()) {
-            if (shortcut.command == Application.get_default ().SEARCH_AND_PASTE_CMD) {
+            if (shortcut.command == app.SEARCH_AND_PASTE_CMD) {
                 accel = shortcut.shortcut;
                 accel_path = shortcut.relocatable_schema;
             }
@@ -128,10 +157,25 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // pack_start (undo_button); // TODO: Add undo.
         // pack_start (redo_button); // TODO: Add redo.
         pack_end (menu_button);
-        // pack_end (search_entry); // TODO: Add search.
+        pack_end (search_entry);
         set_title ("Snippet Pixie");
         show_all ();
+
+        // Hide the search box as necessary.
+        update_ui (app.snippets_manager.snippets);
+        app.snippets_manager.snippets_changed.connect (update_ui);
      }
+
+    private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
+        if (snippets.size > 0) {
+            search_entry.show ();
+            if (reason == "add") {
+                search_entry.text = "";
+            }
+        } else {
+            search_entry.hide ();
+        }
+    }
 
     private Gtk.Label create_label (string text) {
         var label = new Gtk.Label (text);
