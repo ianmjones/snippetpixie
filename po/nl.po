@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-05 21:56+0000\n"
-"PO-Revision-Date: 2020-09-01 13:10+0200\n"
+"PO-Revision-Date: 2020-11-06 17:24+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -31,9 +31,8 @@ msgid "Add Snippet"
 msgstr "Knipsel toevoegen"
 
 #: src/Widgets/MainWindowHeader.vala:45
-#, fuzzy
 msgid "Search Snippets"
-msgstr "Knipsels doorzoeken…"
+msgstr "Knipsels doorzoeken"
 
 #: src/Widgets/MainWindowHeader.vala:48
 #: src/Windows/SearchAndPasteWindow.vala:56
@@ -41,21 +40,18 @@ msgid "Search Snippets…"
 msgstr "Knipsels doorzoeken…"
 
 #: src/Widgets/MainWindowHeader.vala:66
-#, fuzzy
 msgid "Auto expand Snippets"
-msgstr "Knipsels automatisch invoegen"
+msgstr "Knipsels automatisch aanvullen"
 
 #: src/Widgets/MainWindowHeader.vala:69 src/Widgets/MainWindowHeader.vala:103
 msgid "Shortcut"
 msgstr "Sneltoets"
 
 #: src/Widgets/MainWindowHeader.vala:72 src/Widgets/MainWindowHeader.vala:76
-#, fuzzy
 msgid "Import Snippets…"
 msgstr "Knipsels importeren…"
 
 #: src/Widgets/MainWindowHeader.vala:79 src/Widgets/MainWindowHeader.vala:83
-#, fuzzy
 msgid "Export Snippets…"
 msgstr "Knipsels exporteren…"
 
@@ -94,7 +90,7 @@ msgstr "Geen knipsel gevonden"
 
 #: src/Widgets/ViewStack.vala:84 src/Windows/SearchAndPasteWindow.vala:99
 msgid "Please try entering a different search term."
-msgstr ""
+msgstr "Probeer een andere zoekopdracht."
 
 #: src/Widgets/WelcomeView.vala:22
 msgid "No snippets found."
@@ -133,8 +129,8 @@ msgid ""
 "If any of the snippet abbreviations about to be imported already exist, do "
 "you want to skip importing them or update the existing snippet?"
 msgstr ""
-"Als de te importeren knipsels  zijn, wil je ze dan overslaan of de aanwezige "
-"knipsels bijwerken?"
+"Als de te importeren knipsels al bestaan, wil je ze dan overslaan of de "
+"bestaande knipsels bijwerken?"
 
 #: src/Windows/MainWindow.vala:162
 msgid "Update Existing"
@@ -188,11 +184,12 @@ msgid "Something went wrong, sorry."
 msgstr "Er is iets misgegaan."
 
 #: src/Windows/MainWindow.vala:233
-#, fuzzy
 msgid ""
 "@NathanBnm https://github.com/NathanBnm/\n"
 "            @Vistaus https://github.com/Vistaus/"
-msgstr "@NathanBnm https://github.com/NathanBnm/"
+msgstr ""
+"@NathanBnm https://github.com/NathanBnm/\n"
+"            @Vistaus https://github.com/Vistaus/"
 
 #: src/Windows/MainWindow.vala:237
 msgid "Copyright © Byte Pixie Limited"
@@ -256,15 +253,15 @@ msgstr "cursor"
 
 #: src/Application.vala:1170
 msgid "Show Snippet Pixie's window (default action)"
-msgstr "Snippet Pixie's venster tonen (standaardactie)"
+msgstr "Toon Snippet Pixie's venster (standaardactie)"
 
 #: src/Application.vala:1171
 msgid "Show Snippet Pixie's quick search and paste window"
-msgstr "Snippet Pixie's snelzoekvak-en-plakvenster tonen"
+msgstr "Toon Snippet Pixie's snelzoekvak-en-plakvenster"
 
 #: src/Application.vala:1172
 msgid "Start with no window"
-msgstr "Geminimaliseerd starten"
+msgstr "Geminimaliseerd opstarten"
 
 #: src/Application.vala:1173
 msgid "Fully quit the application, including the background process"
