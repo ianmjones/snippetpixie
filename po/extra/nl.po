@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: extra\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-05 21:56+0000\n"
-"PO-Revision-Date: 2020-09-01 13:13+0200\n"
+"PO-Revision-Date: 2020-11-06 17:30+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -94,27 +94,32 @@ msgstr "Voorbeeld: de huidige datum kan worden ingevoegd met '$$@date$$'."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:30
 msgid "Added search of Snippets in main window."
-msgstr ""
+msgstr "Zoekvak toegevoegd aan hoofdvenster."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:31
 msgid "Added last used Snippets shown first in Search and Paste window."
-msgstr ""
+msgstr "Recentste knipsels toegevoegd aan het zoeken-en-plakkenvenster."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:32
 msgid "Added shortcuts for main window actions such as Add Snippet (Ctrl+n)."
 msgstr ""
+"Sneltoetsen toegevoegd voor hoofdvensteracties, zoals 'Knipsel "
+"toevoegen' (Ctrl+n)."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:33
 msgid "Added support for system Light and Dark appearance preference."
-msgstr ""
+msgstr "Ondersteuning voor lichte en donkere systeemthema's."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:34
 msgid "Improved theming of window controls to be more consistent with system."
 msgstr ""
+"Vormgeving van vensterknoppen verbeterd zodat ze beter integreren met het "
+"systeem."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:41
 msgid "Added Dutch translations. Huge thanks to @Vistaus on GitHub! 🇳🇱"
 msgstr ""
+"Nederlandse vertaling toegevoegd, met veel dank aan @Vistaus op GitHub! 🇳🇱"
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:42
 msgid "Fixed occasional performance issues when auto-expand turned on."
@@ -125,10 +130,8 @@ msgid "Fixed incorrect shortcut command being saved when binary file renamed."
 msgstr ""
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:44
-#, fuzzy
 msgid "Fixed visibility of Search and Paste entry text in some circumstances."
-msgstr ""
-"Mogelijkheid toegevoegd om de sneltoets zoeken-en-plakken aan te passen."
+msgstr "Zichtbaarheid van de zoeken-en-plakkentekst verbeterd."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:51
 msgid "Added Search and Paste window, opened with shortcut Ctrl+` by default."
@@ -153,11 +156,15 @@ msgid ""
 "Added preference for whether text selected before using shortcut is used for "
 "initial search."
 msgstr ""
+"Instelling toegevoegd om al dan niet te zoeken naar geselecteerde tekst bij "
+"gebruik van de sneltoets."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:55
 msgid ""
 "Added option to focus search box when using the search and paste shortcut."
 msgstr ""
+"Instelling toegevoegd om het zoekvak te focussen bij gebruik van de zoeken-"
+"en-plakkensneltoets."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:56
 msgid "Fixed support for Wayland."
@@ -169,6 +176,9 @@ msgid ""
 "browsers and electron apps (use shortcut for search and paste window "
 "instead)."
 msgstr ""
+"Automatisch aanvullen verwijderd in niet-toegankelijke toepassingen, zoals "
+"webbrowsers en Electron-toepassingen (gebruik in plaats daarvan de sneltoets "
+"voor zoeken-en-plakken)."
 
 #: data/com.github.bytepixie.snippetpixie.appdata.xml.in:64
 msgid "Fixed Snippet Pixie stopping Super+[other-key] from working."
