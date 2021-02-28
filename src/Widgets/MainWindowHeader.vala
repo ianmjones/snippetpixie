@@ -40,27 +40,6 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // redo_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REDO;
         // redo_button.tooltip_text = _("Redo last undo");
 
-        search_entry = new Gtk.SearchEntry ();
-        search_entry.valign = Gtk.Align.CENTER;
-        search_entry.placeholder_text = _("Search Snippets");
-        search_entry.tooltip_markup = Granite.markup_accel_tooltip (
-            app.get_accels_for_action (MainWindow.ACTION_PREFIX + MainWindow.ACTION_SEARCH),
-            _("Search Snippets…")
-        );
-        search_entry.key_press_event.connect ((event) => {
-            switch (event.keyval) {
-                case Gdk.Key.Escape:
-                    search_entry.text = "";
-                    search_escaped ();
-                    return true;
-                default:
-                    return false;
-            }
-        });
-        search_entry.search_changed.connect (() => {
-            search_changed (search_entry.text);
-        });
-
         // Main menu.
         var auto_expand_menuitem = new Gtk.ModelButton ();
         auto_expand_menuitem.text = _("Auto expand Snippets");
@@ -152,28 +131,60 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         menu_button.popover = popover;
         menu_button.valign = Gtk.Align.CENTER;
 
+        set_title ("Snippet Pixie");
         show_close_button = true;
         pack_start (add_button);
         // pack_start (undo_button); // TODO: Add undo.
         // pack_start (redo_button); // TODO: Add redo.
         pack_end (menu_button);
-        pack_end (search_entry);
-        set_title ("Snippet Pixie");
-        show_all ();
 
         // Hide the search box as necessary.
         update_ui (app.snippets_manager.snippets);
         app.snippets_manager.snippets_changed.connect (update_ui);
-     }
+    }
+
+    private void enable_search () {
+        if (search_entry == null) {
+            search_entry = new Gtk.SearchEntry ();
+            search_entry.valign = Gtk.Align.CENTER;
+            search_entry.placeholder_text = _("Search Snippets");
+            search_entry.tooltip_markup = Granite.markup_accel_tooltip (
+            Application.get_default ().get_accels_for_action (MainWindow.ACTION_PREFIX + MainWindow.ACTION_SEARCH),
+                _("Search Snippets…")
+            );
+            search_entry.key_press_event.connect ((event) => {
+                switch (event.keyval) {
+                    case Gdk.Key.Escape:
+                        search_entry.text = "";
+                        search_escaped ();
+                        return true;
+                    default:
+                        return false;
+                }
+            });
+            search_entry.search_changed.connect (() => {
+                search_changed (search_entry.text);
+            });
+            pack_end (search_entry);
+        }
+
+        search_entry.show ();
+    }
+
+    private void disable_search () {
+        if (search_entry != null) {
+            search_entry.hide ();
+        }
+    }
 
     private void update_ui (Gee.ArrayList<Snippet> snippets, string reason = "update") {
         if (snippets.size > 0) {
-            search_entry.show ();
+            enable_search ();
             if (reason == "add") {
                 search_entry.text = "";
             }
         } else {
-            search_entry.hide ();
+            disable_search ();
         }
     }
 
