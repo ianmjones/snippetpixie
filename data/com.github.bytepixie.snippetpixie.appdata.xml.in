@@ -24,6 +24,14 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.5.1" date="2021-03-02">
+      <description>
+        <ul>
+          <li>Fixed search box showing when there are no Snippets to search.</li>
+          <li>Updated Dutch translations. Thanks @Vistaus on GitHub! 🇳🇱</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.5.0" date="2020-11-05">
       <description>
         <ul>
