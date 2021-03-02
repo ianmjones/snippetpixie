@@ -1,7 +1,7 @@
 com.github.bytepixie.snippetpixie (1.5.1) xenial; urgency=medium
 
-  * Fixed search box showing when there are no Snippets to search.</li>
-  * Updated Dutch translations. Thanks @Vistaus on GitHub! 🇳🇱</li>
+  * Fixed search box showing when there are no Snippets to search.
+  * Updated Dutch translations. Thanks @Vistaus on GitHub! 🇳🇱
 
  -- Byte Pixie <hello@bytepixie.com>  Thu, 02 Mar 2021 23:24:25 +0000
 
