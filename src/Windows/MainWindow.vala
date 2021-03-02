@@ -220,7 +220,9 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
     }
 
     private void action_search () {
-        headerbar.search_entry.grab_focus ();
+        if (headerbar.search_entry != null) {
+            headerbar.search_entry.grab_focus ();
+        }
     }
 
     private void action_about () {
