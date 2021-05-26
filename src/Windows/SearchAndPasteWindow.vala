@@ -152,12 +152,17 @@ public class SnippetPixie.SearchAndPasteWindow : Gtk.Dialog {
                     }
                     return true;
                 case Gdk.Key.Return:
+                    bool has_selection = list_box.get_selected_rows ().length () > 0;
+                    if (has_selection && Gdk.ModifierType.SHIFT_MASK in event.state) {
+                        list_box.activate_cursor_row ();
+                        return true;
+                    }
                     return false;
                 default:
                     break;
             }
 
-            if (event.keyval != Gdk.Key.Escape && !search_headerbar.is_focus) {
+            if (event.keyval != Gdk.Key.Escape && event.keyval != Gdk.Key.Shift_L && event.keyval != Gdk.Key.Shift_R && !search_headerbar.is_focus) {
                 search_headerbar.grab_focus ();
                 search_headerbar.key_press_event (event);
                 return true;
