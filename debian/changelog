@@ -1,3 +1,9 @@
+com.github.bytepixie.snippetpixie (1.5.2) xenial; urgency=medium
+
+  * Enable Shift-Return to Shift-Ctrl-V into terminal emulators from the Search and Paste window.
+
+ -- Byte Pixie <hello@bytepixie.com>  Thu, 26 May 2021 19:30:00 +0000
+
 com.github.bytepixie.snippetpixie (1.5.1) xenial; urgency=medium
 
   * Fixed search box showing when there are no Snippets to search.
