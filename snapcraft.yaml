@@ -73,6 +73,7 @@ parts:
       - libfreetype6
       - libgdk-pixbuf2.0-0
       - libgee-0.8-2
+      - libglib2.0-0
       - libgraphite2-3
       - libgtk-3-0
       - libharfbuzz0b
@@ -111,7 +112,7 @@ parts:
     plugin: meson
     meson-parameters:
       - --prefix=/usr
-    source: https://github.com/elementary/granite/archive/5.4.0.tar.gz
+    source: https://github.com/elementary/granite/archive/5.5.0.tar.gz
     source-type: tar
     override-build: |
       snapcraftctl build
