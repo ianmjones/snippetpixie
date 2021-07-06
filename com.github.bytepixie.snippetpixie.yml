@@ -1,0 +1,59 @@
+# This is the same ID that you've used in meson.build and other files
+app-id: com.github.bytepixie.snippetpixie
+
+# Instead of manually specifying a long list of build and runtime dependencies,
+# we can use a convenient pre-made runtime and SDK. For this example, we'll be
+# using the runtime and SDK provided by elementary.
+runtime: io.elementary.Platform
+runtime-version: 'daily'
+sdk: io.elementary.Sdk
+
+# This should match the exec line in your .desktop file and usually is the same
+# as your app ID
+command: com.github.bytepixie.snippetpixie
+
+# Here we can specify the kinds of permissions our app needs to run. Since we're
+# not using hardware like webcams, making sound, or reading external files, we
+# only need permission to draw our app on screen using either X11 or Wayland.
+finish-args:
+  - '--share=ipc'
+  - '--socket=fallback-x11'
+  - '--socket=wayland'
+  - '--socket=system-bus'
+
+# This section is where you list all the source code required to build your app.
+# If we had external dependencies that weren't included in our SDK, we would list
+# them here.
+modules:
+#  - name: pygobject
+#    buildsystem: autotools
+#    sources:
+#      - type: archive
+#        url: https://download.gnome.org/sources/pygobject/3.8/pygobject-3.8.3.tar.xz 
+#        sha256: 384b3e1b8d1e7c8796d7eb955380d62946dd0ed9c54ecf0817af2d6b254e082c
+#
+  - name: ibus
+    buildsystem: autotools
+    config-opts:
+      - '--disable-tests'
+      - '--disable-gtk2'
+      - '--disable-xim'
+      - '--disable-dconf'
+      - '--disable-appindicator'
+      - '--disable-python2'
+      - '--disable-python-library'
+      - '--disable-setup'
+      - '--disable-ui'
+      - '--disable-engine'
+      - '--disable-emoji-dict'
+      - '--disable-unicode-dict'
+    sources:
+      - type: archive
+        url: https://github.com/ibus/ibus/releases/download/1.5.24/ibus-1.5.24.tar.gz
+        sha256: abf33a965063629d3bbdab8a5948736ce3a9523cc3d6331e5ea0ec5e8ea7421f
+
+  - name: snippetpixie
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: .
