@@ -25,13 +25,11 @@ finish-args:
 # If we had external dependencies that weren't included in our SDK, we would list
 # them here.
 modules:
-#  - name: pygobject
-#    buildsystem: autotools
-#    sources:
-#      - type: archive
-#        url: https://download.gnome.org/sources/pygobject/3.8/pygobject-3.8.3.tar.xz 
-#        sha256: 384b3e1b8d1e7c8796d7eb955380d62946dd0ed9c54ecf0817af2d6b254e082c
-#
+  #
+  # ibus-1.0-dev is a dependency of snippetpixie.
+  # We disable as much as we can before build.
+  # We disable the default install step as it fails at uneeded pyobject target.
+  # We then install just the vapi files that are needed.
   - name: ibus
     buildsystem: autotools
     config-opts:
@@ -47,11 +45,16 @@ modules:
       - '--disable-engine'
       - '--disable-emoji-dict'
       - '--disable-unicode-dict'
+    build-commands:
+      - 'make -C bindings/vala install'
+    no-make-install: true
     sources:
       - type: archive
         url: https://github.com/ibus/ibus/releases/download/1.5.24/ibus-1.5.24.tar.gz
         sha256: abf33a965063629d3bbdab8a5948736ce3a9523cc3d6331e5ea0ec5e8ea7421f
 
+  #
+  # snippetpixie is built with localtion of extra vapi files specified.
   - name: snippetpixie
     buildsystem: meson
     sources:
