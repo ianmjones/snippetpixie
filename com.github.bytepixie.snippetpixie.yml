@@ -25,39 +25,6 @@ finish-args:
 # If we had external dependencies that weren't included in our SDK, we would list
 # them here.
 modules:
-  #
-  # ibus-1.0-dev is a dependency of snippetpixie.
-  # We disable as much as we can before build.
-  # We disable the default install step as it fails at uneeded pyobject target.
-  # We then install just the vapi files that are needed.
-  - name: ibus
-    buildsystem: autotools
-    config-opts:
-      - '--disable-tests'
-      - '--disable-gtk2'
-      - '--disable-xim'
-      - '--disable-dconf'
-      - '--disable-appindicator'
-      - '--disable-python2'
-      - '--disable-python-library'
-      - '--disable-setup'
-      - '--disable-ui'
-      - '--disable-engine'
-      - '--disable-emoji-dict'
-      - '--disable-unicode-dict'
-    make-args:
-      - -C
-      - bindings/vala
-    make-install-args:
-      - -C
-      - bindings/vala
-    sources:
-      - type: archive
-        url: https://github.com/ibus/ibus/releases/download/1.5.24/ibus-1.5.24.tar.gz
-        sha256: abf33a965063629d3bbdab8a5948736ce3a9523cc3d6331e5ea0ec5e8ea7421f
-
-  #
-  # snippetpixie is built with localtion of extra vapi files specified.
   - name: snippetpixie
     buildsystem: meson
     sources:
