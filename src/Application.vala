@@ -44,6 +44,7 @@ namespace SnippetPixie {
         private bool show = true;
         private bool search_and_paste = false;
         private bool snap = false;
+        private bool flatpak = false;
         public MainWindow app_window { get; private set; }
         private SearchAndPasteWindow? search_and_paste_window = null;
         private Snippet? snippet_to_paste = null;
@@ -1093,6 +1094,10 @@ namespace SnippetPixie {
                 var end = start + 12;
                 exec_string = exec_string.splice (start, end, "snippetpixie --start");
 
+                if (flatpak && ! exec_string.contains ("flatpak")) {
+                    exec_string = "flatpak run " + exec_string;
+                }
+
                 keyfile.set_string ("Desktop Entry", "Exec", exec_string);
                 keyfile.set_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled", autostart);
 
@@ -1147,12 +1152,22 @@ namespace SnippetPixie {
         }
 
         public override int command_line (ApplicationCommandLine command_line) {
+            // Snap setup.
             var snap_env = Environment.get_variable ("SNAP");
 
             if (snap_env != null && snap_env.contains ("snippetpixie")) {
                 snap = true;
                 SEARCH_AND_PASTE_CMD = "snippetpixie --search-and-paste";
             }
+
+            // Flatpak setup.
+            File file = File.new_for_path ("/var/run/host");
+            if (file.query_exists (null)) {
+                flatpak = true;
+                SEARCH_AND_PASTE_CMD = "flatpak run " + SEARCH_AND_PASTE_CMD;
+            }
+
+            debug ("Search & Paste command: '%s'.", SEARCH_AND_PASTE_CMD);
 
             show = true;
             search_and_paste = false;
