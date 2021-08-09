@@ -23,13 +23,18 @@ finish-args:
 
   # IBus/DBus
   - '--socket=system-bus'
+  - '--socket=session-bus'
+  - '--own-name=com.github.bytepixie.snippetpixie'
+  - '--talk-name=org.a11y.*'
 
   # Autostart
   - '--filesystem=xdg-config/autostart:create'
 
   # Settings
-  - '--system-talk-name=org.freedesktop.Accounts'
-  - '--talk-name=org.gnome.SettingsDaemon'
+  #- '--talk-name=org.gnome.SettingsDaemon'
+  #- '--talk-name=org.gnome.SettingsDaemon.Keyboard'
+  #- '--talk-name=org.gnome.SettingsDaemon.MediaKeys'
+  #- '--talk-name=io.elementary.settings-daemon'
 
 # This section is where you list all the source code required to build your app.
 # If we had external dependencies that weren't included in our SDK, we would list
