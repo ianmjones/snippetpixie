@@ -41,6 +41,9 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         // redo_button.tooltip_text = _("Redo last undo");
 
         // Main menu.
+        var autostart_menuitem = new Gtk.ModelButton ();
+        autostart_menuitem.text = _("Auto start on login");
+        autostart_menuitem.action_name = MainWindow.ACTION_PREFIX + "autostart";
         var auto_expand_menuitem = new Gtk.ModelButton ();
         auto_expand_menuitem.text = _("Auto expand Snippets");
         auto_expand_menuitem.action_name = MainWindow.ACTION_PREFIX + "auto-expand";
@@ -68,6 +71,7 @@ public class SnippetPixie.MainWindowHeader : Gtk.HeaderBar {
         var main_menu = new Gtk.Grid ();
         main_menu.margin_top = main_menu.margin_bottom = 3;
         main_menu.orientation = Gtk.Orientation.VERTICAL;
+        main_menu.add (autostart_menuitem);
         main_menu.add (auto_expand_menuitem);
         main_menu.add (shortcut_sub_menuitem);
         main_menu.add (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));

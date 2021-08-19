@@ -23,6 +23,11 @@
       <summary>Most recent height of Snippet Pixie</summary>
       <description>Most recent height of Snippet Pixie</description>
     </key>
+    <key name="autostart" type="b">
+      <default>true</default>
+      <summary>Should Snippet Pixie autostart on log in?</summary>
+      <description>If turned on, then Snippet Pixie will automatically start in the background when you log in to the desktop</description>
+    </key>
     <key name="auto-expand" type="b">
       <default>true</default>
       <summary>Should Snippet Pixie auto-expand typed abbreviations?</summary>

@@ -71,6 +71,7 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
 
         actions = new SimpleActionGroup ();
         actions.add_action_entries (action_entries, this);
+        actions.add_action (settings.create_action ("autostart"));
         actions.add_action (settings.create_action ("auto-expand"));
         actions.add_action (settings.create_action ("search-selected-text"));
         actions.add_action (settings.create_action ("focus-search"));
