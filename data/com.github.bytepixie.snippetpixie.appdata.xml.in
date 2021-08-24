@@ -24,6 +24,13 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.5.3" date="2021-08-24">
+      <description>
+        <ul>
+          <li>Add an auto start on login menu setting.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.5.2" date="2021-05-26">
       <description>
         <ul>
@@ -202,6 +209,9 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/bytepixie/snippetpixie/master/data/screenshot-5.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/bytepixie/snippetpixie/master/data/screenshot-6.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1">
