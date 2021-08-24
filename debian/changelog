@@ -1,3 +1,9 @@
+com.github.bytepixie.snippetpixie (1.5.3) xenial; urgency=medium
+
+  * Add an auto start on login menu setting.
+
+ -- Byte Pixie <hello@bytepixie.com>  Tue, 24 Aug 2021 21:30:00 +0000
+
 com.github.bytepixie.snippetpixie (1.5.2) xenial; urgency=medium
 
   * Enable Shift-Return to Shift-Ctrl-V into terminal emulators from the Search and Paste window.
