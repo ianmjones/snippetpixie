@@ -55,6 +55,7 @@ namespace SnippetPixie {
         private static bool listening = false;
         private Thread check_thread;
         private static bool checking = false;
+        private bool autostart = true;
         private bool auto_expand = true;
 
         // For tracking current focused editable text control.
@@ -182,6 +183,17 @@ namespace SnippetPixie {
                 message ("Could not register window deactivated event listener: %s", e.message);
                 Atspi.exit ();
                 quit ();
+            }
+
+            // Are we auto-starting on log in?
+            settings.changed["autostart"].connect (() => {
+                autostart = settings.get_boolean ("autostart");
+
+                update_autostart (autostart);
+            });
+            autostart = settings.get_boolean ("autostart");
+            if (get_autostart () != autostart) {
+                settings.set_boolean ("autostart", autostart);
             }
 
             // Are we auto expanding too?
@@ -1047,7 +1059,7 @@ namespace SnippetPixie {
          * Mostly "Borrowed" from Clipped by David Hewitt.
          * https://github.com/davidmhewitt/clipped/blob/edac68890c2a78357910f05bf44060c2aba5958e/src/Application.vala#L153
          */
-        private void update_autostart (bool autostart) {
+        private void update_autostart (bool new_autostart) {
             var desktop_file_name = application_id + ".desktop";
 
             if (snap) {
@@ -1071,6 +1083,21 @@ namespace SnippetPixie {
             );
             var dest_file = File.new_for_path (dest_path);
 
+            // If we're turning off autostart, attempt to remove file and shortcut out.
+            if (! new_autostart) {
+                if (dest_file.query_exists ()) {
+                    try {
+                        dest_file.delete ();
+                    } catch (Error e) {
+                        warning ("Error removing autostart file: %s", e.message);
+                        return;
+                    }
+                }
+
+                return;
+            }
+
+            // Create autostart file.
             try {
                 var parent = dest_file.get_parent ();
 
@@ -1094,7 +1121,7 @@ namespace SnippetPixie {
                 exec_string = exec_string.splice (start, end, "snippetpixie --start");
 
                 keyfile.set_string ("Desktop Entry", "Exec", exec_string);
-                keyfile.set_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled", autostart);
+                keyfile.set_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled", new_autostart);
 
                 if (keyfile.has_group ("Desktop Action Start")) {
                     keyfile.remove_group ("Desktop Action Start");
@@ -1126,24 +1153,30 @@ namespace SnippetPixie {
             );
 
             var dest_file = File.new_for_path (dest_path);
+            var autostart_exists = dest_file.query_exists ();
 
-            if (! dest_file.query_exists ()) {
-                // By default we want to autostart.
+            if (! autostart && ! autostart_exists) {
+                // We don't want autostart and it's file does not exist, we're done.
+                return false;
+            }
+
+            if (autostart && ! autostart_exists) {
+                // We want autostart but it does not exist, create it.
                 update_autostart (true);
                 return true;
             }
 
-            var autostart = false;
+            var curr_autostart = false;
             var keyfile = new KeyFile ();
 
             try {
                 keyfile.load_from_file (dest_path, KeyFileFlags.NONE);
-                autostart = keyfile.get_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled");
+                curr_autostart = keyfile.get_boolean ("Desktop Entry", "X-GNOME-Autostart-enabled");
             } catch (Error e) {
-                warning ("Error enabling autostart: %s", e.message);
+                warning ("Error getting autostart status: %s", e.message);
             }
 
-            return autostart;
+            return curr_autostart;
         }
 
         public override int command_line (ApplicationCommandLine command_line) {
@@ -1233,13 +1266,16 @@ namespace SnippetPixie {
                     case null:
                         break;
                     case "on":
+                        settings.set_boolean ("autostart", true);
                         update_autostart (true);
                         return 0;
                     case "off":
+                        settings.set_boolean ("autostart", false);
                         update_autostart (false);
                         return 0;
                     case "status":
-                        if (get_autostart ()) {
+                        this.autostart = settings.get_boolean ("autostart");
+                        if (this.autostart) {
                             command_line.print ("on\n");
                         } else {
                             command_line.print ("off\n");
@@ -1273,7 +1309,6 @@ namespace SnippetPixie {
 
                 // If we get here we're either showing the window or running the background process.
                 if ( show == false || ! app_running ) {
-                    get_autostart ();
                     hold ();
                 }
             } // lock app_running
