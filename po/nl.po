@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: com.github.bytepixie.snippetpixie\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-08-19 09:43+0100\n"
-"PO-Revision-Date: 2020-11-06 17:24+0100\n"
-"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"PO-Revision-Date: 2021-08-26 17:08+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/Settings/Shortcut.vala:30
@@ -32,7 +32,7 @@ msgstr "Knipsel toevoegen"
 
 #: src/Widgets/MainWindowHeader.vala:45
 msgid "Auto start on login"
-msgstr ""
+msgstr "Automatisch opstarten"
 
 #: src/Widgets/MainWindowHeader.vala:48
 msgid "Auto expand Snippets"
@@ -222,7 +222,7 @@ msgid ""
 "placeholder '%1$s'."
 msgstr ""
 "De datumaanpassing lijkt geen positief of negatief geheel getal te bevatten "
-"in plaatshouder '%1$s'."
+"in plaatshouder ‘%1$s’."
 
 #: src/Application.vala:743
 #, c-format
@@ -231,7 +231,7 @@ msgid ""
 "negative integer in placeholder '%2$s'."
 msgstr ""
 "De datumaanpassing %1$d lijkt niet te beginnen met een positief of negatief "
-"geheel in plaatshouder '%2$s'."
+"geheel in plaatshouder ‘%2$s’."
 
 #: src/Application.vala:774
 #, c-format
@@ -240,12 +240,12 @@ msgid ""
 "'D', 'h', 'm' or 's' in placeholder '%2$s'."
 msgstr ""
 "De datumaanpassing %1$d lijkt niet te eindigen op 'Y', 'M', 'W', 'D', 'h', "
-"'m' of 's' in plaatshouder '%2$s'."
+"'m' of 's' in plaatshouder ‘%2$s’."
 
 #: src/Application.vala:782 src/Application.vala:795
 #, c-format
 msgid "Oops, date format '%1$s' could not be parsed."
-msgstr "De datumopmaak '%1$s' kan niet worden verwerkt."
+msgstr "De datumopmaak ‘%1$s’ kan niet worden verwerkt."
 
 #: src/Application.vala:824
 msgid "clipboard"
@@ -320,7 +320,7 @@ msgstr "fout: %s\n"
 #, c-format
 msgid "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
-"Voer '%s --help' uit om een volledige lijst met opdrachtregelopties te "
+"Voer ‘%s --help’ uit om een volledige lijst met opdrachtregelopties te "
 "tonen.\n"
 
 #: src/Application.vala:1249
@@ -338,7 +338,7 @@ msgstr "Niet actief.\n"
 #: src/Application.vala:1285
 #, c-format
 msgid "Invalid autostart value \"%s\".\n"
-msgstr "Ongeldige automatisch opstarten-waarde \"%s\".\n"
+msgstr "Ongeldige automatische opstartwaarde “%s”.\n"
 
 #: src/Application.vala:1330
 msgid "Cannot run without threads.\n"
