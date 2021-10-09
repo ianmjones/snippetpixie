@@ -5,9 +5,13 @@ summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
 
-  For example:- "spr`" expands to "Snippet Pixie rules!"
+  For example:- "spr\`" expands to "Snippet Pixie rules!"
 
-  For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is Ctrl+`) for opening a search window that pastes the selected snippet.
+  For non-accessible applications such as browsers and Electron apps, there's a shortcut (default is Ctrl+\`) for opening a search window that pastes the selected snippet.
+
+  The Search and Paste window, opened with Ctrl+\` (can be changed), is very convenient for quickly finding and pasting snippets, and shows the most recently used snippets first for quick access. Using `Shift`+`Return` or `Shift`+`Click` on an entry in the Search and Paste window will `Shift`+`Ctrl`+`V` paste, great for terminal emulators, vim etc.
+
+  Snippets can be imported and exported in a simple JSON format.
 
   Supports placeholders:-
 
