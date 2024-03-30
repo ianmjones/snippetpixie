@@ -1,7 +1,11 @@
-<p align="center">
-    <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie"><img src="https://img.shields.io/badge/platform-elementary-64BAFF.svg?logo=elementary&style=flat&logoColor=white"alt="Platform - elementary OS"></a> <a href="https://snapcraft.io/snippetpixie"><img alt="Snap" src="https://snapcraft.io/snippetpixie/badge.svg" /></a> <a href="https://travis-ci.com/bytepixie/snippetpixie"><img src="https://travis-ci.com/bytepixie/snippetpixie.svg?branch=master" alt="Build Status"></a> <a href="https://github.com/bytepixie/snippetpixie/releases"><img src="https://img.shields.io/github/tag/bytepixie/snippetpixie.svg" alt="GitHub tag (latest SemVer)"></a> <a href="https://github.com/bytepixie/snippetpixie/issues"><img src="https://img.shields.io/github/issues/bytepixie/snippetpixie.svg" alt="GitHub issues"></a> <a href="https://github.com/bytepixie/snippetpixie/pulls"><img src="https://img.shields.io/github/issues-pr/bytepixie/snippetpixie.svg" alt="GitHub pull requests"></a> <a href="https://github.com/bytepixie/snippetpixie/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/bytepixie/snippetpixie.svg" alt="License GPLv2"></a>
-</p>
+# Project Status
+Snippet Pixie is no longer being developed or maintained, please use [Snippet Expander](https://snippetexpander.org) instead.
 
+Snippet Expander is Snippet Pixie's successor, re-developed from scratch for better functionality, speed and stability.
+
+You can export your snippets from Snippet Pixie and [import them into Snippet Expander](https://snippetexpander.org/#import-and-export).
+
+---
 <p align="center">
     <img src="data/icons/128/com.github.bytepixie.snippetpixie.svg" alt="Icon" width="128" height="128" />
 </p>
