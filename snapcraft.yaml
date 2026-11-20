@@ -1,6 +1,5 @@
 name: snippetpixie
-base: core20
-version: 1.5.3
+title: Snippet Pixie
 summary: Your little expandable text snippet helper
 description: |
   Save your often used text snippets and then expand them whenever you type their abbreviation.
@@ -23,12 +22,27 @@ description: |
   All placeholders are delimited (wrapped) by "$$", with the placeholder name starting with an "@" symbol.
   For example, today's date can be inserted with "$$@date$$".
 
+version: 1.5.3
+base: core26
+
+source-code:
+  - https://github.com/ianmjones/snippetpixie
+license: GPL-2.0-only
+contact:
+  - ian@ianmjones.com
+  - https://ianmjones.com/contact
+issues:
+  - ian@ianmjones.com
+  - https://ianmjones.com/contact
+website:
+  - https://github.com/ianmjones/snippetpixie
+
 grade: stable
 confinement: classic
-architectures:
-  - build-on: amd64
-  - build-on: arm64
-  - build-on: armhf
+platforms:
+  amd64:
+  arm64:
+  armhf:
 icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 
 apps:
@@ -41,18 +55,23 @@ apps:
 
 parts:
   snippetpixie:
-    after: [ granite, desktop-gnome-platform ]
+    after: [ desktop-gnome-platform ]
     plugin: meson
     meson-parameters:
       - --prefix=/usr
     source: .
     override-build: |
-      snapcraftctl build
+      craftctl default
       sed -i 's|Icon=com.github.bytepixie.snippetpixie|Icon=\${SNAP}/meta/gui/icon.svg|' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/com.github.bytepixie.snippetpixie.desktop
+      glib-compile-schemas ${SNAPCRAFT_PART_INSTALL}/usr/share/glib-2.0/schemas
     build-environment:
       - VALAFLAGS: " --vapidir $SNAPCRAFT_STAGE/usr/share/vala/vapi"
+    build-attributes:
+      - enable-patchelf
     build-packages:
+      - meson
       - valac
+      - gettext
       - desktop-file-utils
       - appstream
       - libatspi2.0-dev
@@ -75,10 +94,11 @@ parts:
       - libepoxy0
       - libfontconfig1
       - libfreetype6
-      - libgdk-pixbuf2.0-0
+      - libgdk-pixbuf-2.0-0
       - libgee-0.8-2
       - libglib2.0-0
       - libgraphite2-3
+      - libgranite6
       - libgtk-3-0
       - libharfbuzz0b
       - libjson-glib-1.0-0
@@ -87,7 +107,6 @@ parts:
       - libpangoft2-1.0-0
       - libpixman-1-0
       - libpng16-16
-      - libstartup-notification0
       - libthai0
       - libwayland-client0
       - libwayland-cursor0
@@ -97,7 +116,6 @@ parts:
       - libxau6
       - libxcb-render0
       - libxcb-shm0
-      - libxcb-util1
       - libxcb1
       - libxcomposite1
       - libxcursor1
@@ -112,60 +130,6 @@ parts:
       - libxrender1
       - libxres1
       - libxtst6
-  granite:
-    plugin: meson
-    meson-parameters:
-      - --prefix=/usr
-    source: https://github.com/elementary/granite/archive/5.5.0.tar.gz
-    source-type: tar
-    override-build: |
-      snapcraftctl build
-    build-packages:
-      - gobject-introspection
-      - libgee-0.8-dev
-      - libgirepository1.0-dev
-      - libgtk-3-dev
-      - valac
-    stage-packages:
-      - libatk-bridge2.0-0
-      - libatk1.0-0
-      - libatspi2.0-0
-      - libcairo-gobject2
-      - libcairo2
-      - libdatrie1
-      - libepoxy0
-      - libfontconfig1
-      - libfreetype6
-      - libgdk-pixbuf2.0-0
-      - libgee-0.8-2
-      - libgraphite2-3
-      - libgtk-3-0
-      - libharfbuzz0b
-      - libpango-1.0-0
-      - libpangocairo-1.0-0
-      - libpangoft2-1.0-0
-      - libpixman-1-0
-      - libpng16-16
-      - libthai0
-      - libwayland-client0
-      - libwayland-cursor0
-      - libwayland-egl1
-      - libx11-6
-      - libxau6
-      - libxcb-render0
-      - libxcb-shm0
-      - libxcb1
-      - libxcomposite1
-      - libxcursor1
-      - libxdamage1
-      - libxdmcp6
-      - libxext6
-      - libxfixes3
-      - libxi6
-      - libxinerama1
-      - libxkbcommon0
-      - libxrandr2
-      - libxrender1
   desktop-gnome-platform:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: gtk
