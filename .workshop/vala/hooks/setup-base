@@ -1,0 +1,4 @@
+# apt-get update
+# apt-get install build-essential
+apt-get update
+apt-get install build-essential meson valac gettext desktop-file-utils appstream libatspi2.0-dev libgee-0.8-dev libglib2.0-dev libgranite-dev libgtk-3-dev libibus-1.0-dev libjson-glib-dev libsqlite3-dev libxtst-dev libx11-dev

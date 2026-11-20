@@ -1,0 +1,14 @@
+# For details: https://ubuntu.com/workshop/docs/explanation/sdks/concepts/#sketch-sdk
+name: vala
+plugs:
+# Use this configuration to mount a host directory to the workshop
+# models:
+#   interface: mount
+#   workshop-target: /home/workshop/models
+slots:
+
+# Use this configuration to expose a port, then add a corresponding system SDK plug
+# More details: https://ubuntu.com/workshop/docs/how-to/customize-workshops/forward-ports/
+# my-web-server:
+#   interface: tunnel
+#   endpoint: 8080

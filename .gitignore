@@ -2,6 +2,7 @@
 build/
 .idea/
 .buildconfig
+.workshop.lock
 parts/
 prime/
 snap/

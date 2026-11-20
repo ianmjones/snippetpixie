@@ -10,4 +10,4 @@ rm -rf ./build ./parts ./prime ./stage ./snap ./snippetpixie_*
 #
 # Set up local environment.
 #
-meson build --prefix=/usr
+meson setup build --prefix=/usr
