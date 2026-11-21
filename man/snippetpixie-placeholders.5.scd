@@ -66,4 +66,4 @@ snippetpixie(1)
 
 # AUTHORS
 
-Created and maintained by Ian Jones <ian@ianmjones.com>, supported by Byte Pixie Limited <hello@bytepixie.com> and other generous contributors of skills, time, and funds. Up to date sources can be found at https://github.com/bytepixie/snippetpixie, where bug reports and feature requests may also be submitted.
+Created and maintained by Ian Jones <ian@ianmjones.com>, supported by Ian M. Jones <ian@ianmjones.com> and other generous contributors of skills, time, and funds. Up to date sources can be found at https://github.com/bytepixie/snippetpixie, where bug reports and feature requests may also be submitted.

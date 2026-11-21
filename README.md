@@ -11,7 +11,6 @@ You can export your snippets from Snippet Pixie and [import them into Snippet Ex
 </p>
 <h1 align="center">Snippet Pixie</h1>
 <p align="center">
-    <a href="https://appcenter.elementary.io/com.github.bytepixie.snippetpixie"><img src="https://appcenter.elementary.io/badge.svg?new" alt="Get it on AppCenter" /></a>
     <a href="https://snapcraft.io/snippetpixie"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a>
 </p>
 <p align="center">

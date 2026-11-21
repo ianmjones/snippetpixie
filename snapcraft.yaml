@@ -22,7 +22,7 @@ description: |
   All placeholders are delimited (wrapped) by "$$", with the placeholder name starting with an "@" symbol.
   For example, today's date can be inserted with "$$@date$$".
 
-version: 1.5.3
+version: 1.5.4
 base: core26
 
 source-code:

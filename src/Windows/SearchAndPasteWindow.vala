@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 Byte Pixie Limited (https://www.bytepixie.com)
+* Copyright (c) 2020 Ian M. Jones (https://ianmjones.com)
 * Copyright (c) 2017 David Hewitt (https://github.com/davidmhewitt)
 *
 * This program is free software; you can redistribute it and/or

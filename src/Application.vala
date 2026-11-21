@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2018 Byte Pixie Limited (https://www.bytepixie.com)
+* Copyright (c) 2018 Ian M. Jones (https://ianmjones.com)
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public
@@ -21,7 +21,7 @@
 namespace SnippetPixie {
     public class Application : Gtk.Application {
         public const string ID = "com.github.bytepixie.snippetpixie";
-        public const string VERSION = "1.5.3";
+        public const string VERSION = "1.5.4";
 
         public signal void search_changed (string search_term);
         public signal void search_escaped ();

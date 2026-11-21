@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2018 Byte Pixie Limited <hello@bytepixie.com> -->
+<!-- Copyright 2018 Ian M. Jones <ian@ianmjones.com> -->
 <component type="desktop">
   <id>com.github.bytepixie.snippetpixie</id>
   <metadata_license>CC0</metadata_license>
-  <project_license>GPL-2.0+</project_license>
+  <project_license>GPL-2.0-only</project_license>
   <name>Snippet Pixie</name>
   <summary>Your little expandable text snippet helper</summary>
   <description>
@@ -26,6 +26,13 @@
     <binary>com.github.bytepixie.snippetpixie</binary>
   </provides>
   <releases>
+    <release version="1.5.4" date="2026-11-21">
+      <description>
+        <ul>
+          <li>Fix license, copyright and author references.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.5.3" date="2021-08-24">
       <description>
         <ul>

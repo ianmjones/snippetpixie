@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2018 Byte Pixie Limited (https://www.bytepixie.com)
+* Copyright (c) 2018 Ian M. Jones (https://ianmjones.com)
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public
@@ -232,16 +232,16 @@ public class SnippetPixie.MainWindow : Gtk.ApplicationWindow {
         dialog.set_transient_for (this);
         dialog.set_modal (true);
 
-        dialog.authors = {"@ianmjones https://github.com/ianmjones/"};
+        dialog.authors = {"@ianmjones https://ianmjones.com/"};
         dialog.translator_credits = _("""@NathanBnm https://github.com/NathanBnm/
             @Vistaus https://github.com/Vistaus/""");
 
         dialog.program_name = "Snippet Pixie";
-        dialog.copyright = _("Copyright © Byte Pixie Limited");
+        dialog.copyright = _("Copyright © Ian M. Jones");
         dialog.logo_icon_name = Application.ID;
         dialog.version = Application.VERSION;
 
-        dialog.license_type = Gtk.License.GPL_2_0;
+        dialog.license_type = Gtk.License.GPL_2_0_ONLY;
 
         dialog.website = "https://www.snippetpixie.com/";
         dialog.website_label = "www.snippetpixie.com";

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2018 Byte Pixie Limited (https://www.bytepixie.com)
+* Copyright (c) 2018 Ian M. Jones (https://ianmjones.com)
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public
