@@ -42,7 +42,6 @@ confinement: classic
 platforms:
   amd64:
   arm64:
-  armhf:
 icon: data/icons/256/com.github.bytepixie.snippetpixie.svg
 
 apps:
